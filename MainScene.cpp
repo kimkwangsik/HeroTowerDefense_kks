@@ -1,17 +1,17 @@
-﻿#include "HelloWorldScene.h"
+﻿#include "MainScene.h"
 
 USING_NS_CC;
 
-Scene* HelloWorld::createScene()
+Scene* MainScene::createScene()
 {
     auto scene = Scene::create();
-    auto layer = HelloWorld::create();
+    auto layer = MainScene::create();
     scene->addChild(layer);
 
     return scene;
 }
 
-bool HelloWorld::init()
+bool MainScene::init()
 {
 	if (!LayerColor::initWithColor(Color4B(255, 255, 255, 255)))
     {
