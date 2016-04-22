@@ -11,6 +11,10 @@ public:
 	virtual bool init();
 
 	CREATE_FUNC(IntroScene);
+
+	virtual void onEnter();
+	virtual void onExit();
+	virtual bool onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event);
 };
 
 #endif // __HELLOWORLD_SCENE_H__

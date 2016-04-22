@@ -11,6 +11,9 @@ public:
 	virtual bool init();
     
     CREATE_FUNC(MainScene);
+
+	void doClick(Ref* pSender);
+	void doNoClick(Ref* pSender);
 };
 
 #endif // __HELLOWORLD_SCENE_H__
