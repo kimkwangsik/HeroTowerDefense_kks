@@ -8,9 +8,7 @@ class GameStageScene : public cocos2d::LayerColor
 public:
 	static cocos2d::Scene* createScene();
 
-	virtual bool init();
-
-	CREATE_FUNC(GameStageScene);
+	GameStageScene(int stagelevel);
 };
 
 #endif // __HELLOWORLD_SCENE_H__

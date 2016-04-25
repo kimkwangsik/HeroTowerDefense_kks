@@ -46,7 +46,7 @@ void IntroScene::onExit() {
 }
 bool IntroScene::onTouchBegan(Touch* touch, Event* event) {
 	auto pScene = MainScene::createScene();
-	Director::getInstance()->replaceScene(pScene);
+	Director::getInstance()->pushScene(pScene);
 
 	return true;
 }

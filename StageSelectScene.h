@@ -25,6 +25,11 @@ public:
 	virtual Size tableCellSizeForIndex(TableView *table, ssize_t idx);
 	virtual TableViewCell* tableCellAtIndex(TableView *table, ssize_t idx);
 	virtual ssize_t numberOfCellsInTableView(TableView *table);
+
+	//cocos2d::MenuItemImage* pMenuItem1;
+	TableViewCell *cell;
+
+	void doClick(Ref* pSender, int a);
 };
 
 #endif // __HELLOWORLD_SCENE_H__

@@ -1,5 +1,6 @@
 ﻿#include "MainScene.h"
 #include "StageSelectScene.h"
+#include "Menus.h"
 
 USING_NS_CC;
 
@@ -18,6 +19,14 @@ bool MainScene::init()
     {
         return false;
     }
+
+
+
+	/*auto layer1 = LayerGradient::create(Color4B(255, 0, 0, 255), Color4B(255, 0, 255, 255));
+	layer1->setContentSize(Size(80, 80));
+	layer1->setPosition(Vec2(50, 50));
+	addChild(layer1);*/
+
 	auto pMenuItem1 = MenuItemFont::create(
 		" StageSelect ",
 		CC_CALLBACK_1(MainScene::doClick, this));
@@ -42,9 +51,16 @@ bool MainScene::init()
 	pMenu->alignItemsVertically();
 
 	this->addChild(pMenu);
+	auto pScene = Menus::createScene();
+	this->addChild(pScene);
 
     return true;
 }
+//void MainScene::onEnter()
+//{
+	//Layer::onEnter();
+	//Director::sharedDirector()->
+//}
 
 void MainScene::doClick(Ref* pSender)
 {

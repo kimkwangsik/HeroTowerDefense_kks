@@ -5,8 +5,8 @@ USING_NS_CC;
 
 static cocos2d::Size designResolutionSize = cocos2d::Size(480, 320);
 static cocos2d::Size smallResolutionSize = cocos2d::Size(480, 320);
-//static cocos2d::Size mediumResolutionSize = cocos2d::Size(1024, 768);
-static cocos2d::Size mediumResolutionSize = cocos2d::Size(960, 640);
+static cocos2d::Size mediumResolutionSize = cocos2d::Size(1024, 768);
+//static cocos2d::Size mediumResolutionSize = cocos2d::Size(960, 640);
 static cocos2d::Size largeResolutionSize = cocos2d::Size(2048, 1536);
 
 AppDelegate::AppDelegate() {
@@ -58,7 +58,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
     glview->setDesignResolutionSize(designResolutionSize.width, designResolutionSize.height, ResolutionPolicy::NO_BORDER);
     Size frameSize = glview->getFrameSize();
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
-	frameSize = Size(960, 640);
+	frameSize = Size(1024, 768);
 #endif	// CC_PLATFORM_WIN32
     // if the frame's height is larger than the height of medium size.
     if (frameSize.height > mediumResolutionSize.height)

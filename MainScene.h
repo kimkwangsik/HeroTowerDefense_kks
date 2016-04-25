@@ -14,6 +14,8 @@ public:
 
 	void doClick(Ref* pSender);
 	void doNoClick(Ref* pSender);
+
+	//virtual void onEnter();
 };
 
 #endif // __HELLOWORLD_SCENE_H__
