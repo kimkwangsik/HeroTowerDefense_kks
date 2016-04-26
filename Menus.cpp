@@ -20,14 +20,21 @@ bool Menus::init()
 	}
 	winSize = Director::getInstance()->getVisibleSize();
 
-	log("%f, %f", winSize.width, winSize.height);
+
+	//NotificationCenter::getInstance()->addObserver(this,
+	//	callfuncO_selector(Menus::doMsgReceived),
+	//	"SceneStatus",
+	//	nullptr);
+
+	//log("%f, %f", winSize.width, winSize.height);
 
 	auto menubar = Sprite::create("Images/CyanSquare32.png");// 100 x 100 사이즈 그림
 	menubar->setScaleX(10.24);
 	menubar->setScaleY(0.66);
 	menubar->setPosition(Vec2(winSize.width / 2, winSize.height));
-	menubar->setOpacity(100.0f);
+	//menubar->setOpacity(100.0f);
 	menubar->setAnchorPoint(Vec2(0.5, 1));
+	menubar->setTag(300);
 	addChild(menubar);
 
 	auto pMenuItem1 = MenuItemImage::create(
@@ -39,7 +46,7 @@ bool Menus::init()
 
 	MenuItemImage* pMenuItem2;
 
-	if (0)
+	if (1)
 	{
 		pMenuItem2 = MenuItemImage::create(
 			"Images/Button/scaled-at-50/b_No.png",
@@ -58,19 +65,10 @@ bool Menus::init()
 	pMenuItem2->setPosition(Vec2(0, winSize.height));
 	pMenuItem2->setAnchorPoint(Vec2(0, 1));
 
-	/*
-	auto pMenuItem3 = MenuItemFont::create(
-		" 영웅 관리 ",
-		CC_CALLBACK_1(Menus::doClick, this));
-	pMenuItem3->setColor(Color3B(0, 0, 0));*/
-
 	pMenuItem1->setTag(11);
 	pMenuItem2->setTag(12);
-	//pMenuItem3->setTag(13);
 
-	//auto pMenu = Menu::create(pMenuItem1, pMenuItem2, pMenuItem3, NULL);
 	auto pMenu = Menu::create(pMenuItem1, pMenuItem2, NULL);
-	//pMenu->alignItemsVertically();
 	pMenu->setPosition(Vec2::ZERO);
 	this->addChild(pMenu);
 
@@ -92,5 +90,17 @@ void Menus::doClick(Ref* pSender)
 		log("X를 클릭 하셧습니다.");
 		Director::getInstance()->popScene();
 	}
+	
+}
+
+void Menus::doMsgReceived(Ref* obj)
+{
+	
+
+	/*char *inputStr = (char*)obj;
+	
+	sprintf(sceneText, "%s", inputStr);
+
+	log("[%s] 메시지 도착", sceneText);*/
 	
 }

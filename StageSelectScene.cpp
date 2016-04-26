@@ -15,11 +15,16 @@ Scene* StageSelectScene::createScene()
 
 bool StageSelectScene::init()
 {
-	if (!LayerColor::initWithColor(Color4B(0, 0, 0, 255)))
+	if (!LayerColor::initWithColor(Color4B(255, 255, 255, 255)))
 	{
 		return false;
 	}
 
+	/*std::string str1 = "StageSelectScene";
+	char str2[20];
+	sprintf(str2, "%s", str1.c_str());
+
+	NotificationCenter::getInstance()->postNotification("SceneStatus", (Ref*)str2);*/
 	
 
 	TableView* tableView1 = TableView::create(this, Size(440, 280));

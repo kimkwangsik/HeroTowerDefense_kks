@@ -1,5 +1,6 @@
 #include "IntroScene.h"
 #include "MainScene.h"
+#include "Menus.h"
 
 USING_NS_CC;
 

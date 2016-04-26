@@ -13,7 +13,10 @@ public:
 	CREATE_FUNC(Menus);
 	cocos2d::Size winSize;
 
+	int SceneStatus;
+	char sceneText[20] = {0};
 	void doClick(Ref* pSender);
+	void doMsgReceived(Ref* obj);
 };
 
 #endif // __HELLOWORLD_SCENE_H__
