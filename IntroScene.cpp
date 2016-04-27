@@ -19,10 +19,13 @@ bool IntroScene::init()
 	{
 		return false;
 	}
+
+	Size winSize = Director::getInstance()->getVisibleSize();
+
 	auto pLabel = LabelTTF::create("touch to start",
 		"Arial", 34, Size(300, 200), TextHAlignment::CENTER, TextVAlignment::CENTER);
 
-	pLabel->setPosition(Vec2(240, 160));
+	pLabel->setPosition(Vec2(winSize.width / 2, winSize.height / 2));
 	pLabel->setColor(Color3B::BLACK);
 	pLabel->setOpacity(255.0);
 	this->addChild(pLabel);

@@ -18,6 +18,7 @@ GameStageScene::GameStageScene(int stagelevel)
 	{
 		return;
 	}
+	winSizePixel = Director::getInstance()->getWinSizeInPixels();
 	winSize = Director::getInstance()->getVisibleSize();
 
 	auto pScene = Menus::createScene();
@@ -69,14 +70,16 @@ GameStageScene::GameStageScene(int stagelevel)
 	gaugeBar->setAnchorPoint(Vec2(0, 0));
 	timerBase->addChild(gaugeBar,3);
 
-	
-
-
 	this->schedule(schedule_selector(GameStageScene::myTick), 0.5f);
 
 	tmap = TMXTiledMap::create(str);
 	tmap->setPosition(Vec2(winSize.width / 2, winSize.height / 2));
 	tmap->setAnchorPoint(Vec2(0.5, 0.5));
+	metainfo = tmap->getLayer("Options");
+
+	objects = tmap->getObjectGroup("ViaPoint");
+
+	metainfo->setVisible(false);
 	this->addChild(tmap, 0, 11);
 
 	heartCreate(5, Vec2(0, 290));
@@ -89,8 +92,116 @@ GameStageScene::GameStageScene(int stagelevel)
 
 	masicMenuCreate();
 	towerMenuCreate();
+	moveMonster();
 
 	return;
+}
+
+void GameStageScene::moveMonster()
+{
+	ValueMap startpoint = objects->getObject("Start");
+
+	int afterMovePointX = startpoint["x"].asInt();
+	int afterMovePointY = startpoint["y"].asInt();
+
+	auto slime = Sprite::create("Images/Monster/slime.png");
+	slime->setPosition(Vec2(afterMovePointX, afterMovePointY));
+	tmap->addChild(slime);
+
+	int beforeMovePointX = afterMovePointX;
+	int beforeMovePointY = afterMovePointY;
+
+	char via[10];
+	sprintf(via, "via%d", 1);
+	ValueMap viapoint = objects->getObject(via);
+
+	afterMovePointX = viapoint["x"].asInt();
+	afterMovePointY = viapoint["y"].asInt();
+
+	int disX = (beforeMovePointX - afterMovePointX);
+	int disY = (beforeMovePointY - afterMovePointY);
+
+	int dis;
+	if (disX == 0)
+	{
+		dis = disY;
+	}
+	else
+	{
+		dis = disX;
+	}
+
+	if (dis < 0)
+	{
+		dis = -1 * dis;
+	}
+
+	auto action1 = MoveTo::create(dis / 30, Vec2(afterMovePointX, afterMovePointY));
+
+	beforeMovePointX = afterMovePointX;
+	beforeMovePointY = afterMovePointY;
+
+
+	sprintf(via, "via%d", 2);
+	viapoint = objects->getObject(via);
+
+	afterMovePointX = viapoint["x"].asInt();
+	afterMovePointY = viapoint["y"].asInt();
+
+	disX = (beforeMovePointX - afterMovePointX);
+	disY = (beforeMovePointY - afterMovePointY);
+
+	dis;
+	if (disX == 0)
+	{
+		dis = disY;
+	}
+	else
+	{
+		dis = disX;
+	}
+
+	if (dis < 0)
+	{
+		dis = -1 * dis;
+	}
+
+	auto action2 = MoveTo::create(dis / 30, Vec2(afterMovePointX, afterMovePointY));
+
+	beforeMovePointX = afterMovePointX;
+	beforeMovePointY = afterMovePointY;
+
+
+	auto myAction = Sequence::create(
+		action1, action2,
+		nullptr);
+
+	slime->runAction(myAction);
+
+	/*
+	for (int n = 1; n < 30; n++)
+	{
+	char via[10];
+	sprintf(via, "via%d", n);
+
+	ValueMap viapoint = objects->getObject(via);
+
+	x = viapoint["x"].asInt();
+	y = viapoint["y"].asInt();
+
+	if (x == 0 && y == 0)
+	{
+	break;
+	}
+	log("%d : %d, %d",n, x, y);
+	}
+
+	ValueMap endpoint = objects->getObject("End");
+
+	x = endpoint["x"].asInt();
+	y = endpoint["y"].asInt();
+
+	log("end : %d, %d", x, y);*/
 }
 
 void GameStageScene::myTick(float f)
@@ -138,7 +249,56 @@ void GameStageScene::onExit() {
 bool GameStageScene::onTouchBegan(Touch* touch, Event* event) {
 	auto touchPoint = touch->getLocation();
 
-	log("onTouchBegan id = %d, x = %f, y = %f", touch->getID(), touchPoint.x, touchPoint.y);
+	//Vec2 setupPoint = touchPoint;
+
+	if (towerTouch)
+	{
+		Vec2 tmapConvertPoint = tmap->convertToNodeSpace(touchPoint);
+
+		//log("setupPoint id = %d, x = %f, y = %f", touch->getID(), setupPointw.x, setupPointw.y);
+
+		int xPoint = tmapConvertPoint.x / 30;
+		int yPoint = tmapConvertPoint.y / 30;
+
+		//int setupPoint = (xPoint * 30) + 15;
+
+		Vec2 tileCoord = this->tileCoordForPosition(Vec2(xPoint * 30 + 15, yPoint * 30 + 15));
+
+		int tileGid = this->metainfo->getTileGIDAt(tileCoord);
+
+		if (tileGid)
+		{
+
+		}
+		else
+		{
+			if (towerTpye == 1)
+			{
+				clickTower = new Tower(1);
+				clickTower->setTexture("Images/red.png");
+			}
+			else if (towerTpye == 2)
+			{
+				clickTower = new Tower(2);
+				clickTower->setTexture("Images/blue.png");
+			}
+			else
+			{
+				clickTower = new Tower(3);
+				clickTower->setTexture("Images/yellow.png");
+			}
+
+			clickTower->setAnchorPoint(Vec2(0.5, 0.5));
+			clickTower->setPriority(30);
+			clickTower->setPosition(Vec2(xPoint * 30 + 15, yPoint * 30 + 15));
+			tmap->addChild(clickTower, 10);
+
+			_sprite.pushBack(clickTower);
+		}
+
+		//towerTouch = false;
+
+	}
 
 	return true;
 }
@@ -185,9 +345,9 @@ Vec2 GameStageScene::positionForTileCoord(Vec2 position)
 
 Vec2 GameStageScene::tileCoordForPosition(Vec2 position)
 {
-	int x = position.x / tmap->getTileSize().width;
-	int y = ((tmap->getMapSize().height * tmap->getTileSize().height) - position.y)
-		/ tmap->getTileSize().height;
+	int x = position.x / 30;
+	int y = ((tmap->getMapSize().height * 30) - position.y)
+		/ 30;
 	return Vec2(x, y);
 }
 
@@ -216,7 +376,7 @@ void GameStageScene::masicMenuCreate()
 
 	masicMenu->setPosition(Vec2(0, 0));
 	//pMenu->setAnchorPoint(Vec2(0, 0.5));
-	addChild(masicMenu, 2);
+	//addChild(masicMenu, 2);
 }
 
 void GameStageScene::towerMenuCreate()
@@ -228,7 +388,7 @@ void GameStageScene::towerMenuCreate()
 	towerMenuItem2->setPosition(Vec2(winSize.width / 2, 0));
 	towerMenuItem2->setAnchorPoint(Vec2(0.5, 0));
 	towerMenuItem2->setScale(0.5);
-	towerMenuItem2->setTag(450);
+	towerMenuItem2->setTag(451);
 
 	auto towerMenuItem1 = MenuItemImage::create(
 		"Images/box-highres.png",
@@ -238,7 +398,7 @@ void GameStageScene::towerMenuCreate()
 			towerMenuItem2->getContentSize().width / 2, 0));
 	towerMenuItem1->setAnchorPoint(Vec2(0.5, 0));
 	towerMenuItem1->setScale(0.5);
-	towerMenuItem1->setTag(451);
+	towerMenuItem1->setTag(450);
 
 	auto towerMenuItem3 = MenuItemImage::create(
 		"Images/box-highres.png",
@@ -295,8 +455,19 @@ void GameStageScene::doClick(Ref* pSender)
 	{
 		gauge = 0;
 	}
-	else
+	else if(i == 450)
 	{
-		log("%d 메뉴 선택", i);
+		towerTpye = 1;
+		towerTouch = true;
+	}
+	else if(i == 451)
+	{
+		towerTpye = 2;
+		towerTouch = true;
+	}
+	else if (i == 452)
+	{
+		towerTpye = 3;
+		towerTouch = true;
 	}
 }
