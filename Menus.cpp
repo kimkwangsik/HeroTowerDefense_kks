@@ -19,20 +19,12 @@ bool Menus::init()
 		return false;
 	}
 	winSize = Director::getInstance()->getVisibleSize();
-
-
-	//NotificationCenter::getInstance()->addObserver(this,
-	//	callfuncO_selector(Menus::doMsgReceived),
-	//	"SceneStatus",
-	//	nullptr);
-
-	//log("%f, %f", winSize.width, winSize.height);
+	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
 	auto menubar = Sprite::create("Images/CyanSquare32.png");// 100 x 100 사이즈 그림
 	menubar->setScaleX(10.24);
 	menubar->setScaleY(0.66);
-	menubar->setPosition(Vec2(winSize.width / 2, winSize.height));
-	//menubar->setOpacity(100.0f);
+	menubar->setPosition(Vec2(winSize.width / 2, winSize.height + origin.y));
 	menubar->setAnchorPoint(Vec2(0.5, 1));
 	menubar->setTag(300);
 	addChild(menubar);
@@ -69,7 +61,7 @@ bool Menus::init()
 	pMenuItem2->setTag(12);
 
 	auto pMenu = Menu::create(pMenuItem1, pMenuItem2, NULL);
-	pMenu->setPosition(Vec2::ZERO);
+	pMenu->setPosition(Vec2(0, origin.y));
 	this->addChild(pMenu);
 
 	return true;

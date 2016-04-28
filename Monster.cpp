@@ -14,6 +14,13 @@ Monster::Monster()
 	}
 }
 
+void Monster::remove()
+{
+	log("remove()");
+	removeFromParent();
+	onExit();
+}
+
 void Monster::setPriority(int fixedPriority)
 {
 	_fixedPriority = fixedPriority;

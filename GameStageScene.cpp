@@ -20,6 +20,17 @@ GameStageScene::GameStageScene(int stagelevel)
 	}
 	winSizePixel = Director::getInstance()->getWinSizeInPixels();
 	winSize = Director::getInstance()->getVisibleSize();
+	auto winSize1 = Director::getInstance()->getWinSize();
+	Vec2 origin = Director::getInstance()->getVisibleOrigin();
+
+	char str123[50];
+	sprintf(str123, "%f , %f", winSizePixel.width, winSizePixel.height);
+
+	auto Label = LabelTTF::create(str123, "Arial", 20);
+	Label->setPosition(Vec2(winSize1.width / 2, winSize1.height / 2));
+	Label->setAnchorPoint(Vec2(0.5, 0.5));
+	Label->setColor(Color3B::BLACK);
+	addChild(Label, 2);
 
 	auto pScene = Menus::createScene();
 	this->addChild(pScene,2000);
@@ -73,137 +84,161 @@ GameStageScene::GameStageScene(int stagelevel)
 	this->schedule(schedule_selector(GameStageScene::myTick), 0.5f);
 
 	tmap = TMXTiledMap::create(str);
-	tmap->setPosition(Vec2(winSize.width / 2, winSize.height / 2));
+	tmap->setPosition(Vec2(winSize.width / 2, winSize.height / 2 + origin.y));
 	tmap->setAnchorPoint(Vec2(0.5, 0.5));
 	metainfo = tmap->getLayer("Options");
 
 	objects = tmap->getObjectGroup("ViaPoint");
 
+	ValueMap viapoint = objects->getObject("Start");
+	int x = viapoint["x"].asInt() + 15;
+	int y = viapoint["y"].asInt() + 15;
+	_Vec2Point.push_back(Vec2(x, y));
+
+	for (int n=1;;n++)
+	{
+		char via[10];
+		sprintf(via, "via%d", n);
+		ValueMap viapoint = objects->getObject(via);
+
+		int x = viapoint["x"].asInt() + 15;
+		int y = viapoint["y"].asInt() + 15;
+
+		if (x == 15 && y == 15)
+		{
+			break;
+		}
+
+		_Vec2Point.push_back(Vec2(x, y));
+	}
+
+	viapoint = objects->getObject("End");
+	x = viapoint["x"].asInt() + 15;
+	y = viapoint["y"].asInt() + 15;
+	_Vec2Point.push_back(Vec2(x, y));
+
 	metainfo->setVisible(false);
 	this->addChild(tmap, 0, 11);
 
 	heartCreate(5, Vec2(0, 290));
-	
-	//Size s = tmap->getContentSize();
-	//log("ContentSize: %f, %f", s.width, s.height);
-
-	//게임 스테이지 씬
-	//타일맵 추가
 
 	masicMenuCreate();
 	towerMenuCreate();
-	moveMonster();
 
 	return;
 }
 
-void GameStageScene::moveMonster()
+
+Sequence* GameStageScene::SequenceMonsterAdd(int num, int max)
 {
-	ValueMap startpoint = objects->getObject("Start");
-
-	int afterMovePointX = startpoint["x"].asInt();
-	int afterMovePointY = startpoint["y"].asInt();
-
-	auto slime = Sprite::create("Images/Monster/slime.png");
-	slime->setPosition(Vec2(afterMovePointX, afterMovePointY));
-	tmap->addChild(slime);
-
-	int beforeMovePointX = afterMovePointX;
-	int beforeMovePointY = afterMovePointY;
-
-	char via[10];
-	sprintf(via, "via%d", 1);
-	ValueMap viapoint = objects->getObject(via);
-
-	afterMovePointX = viapoint["x"].asInt();
-	afterMovePointY = viapoint["y"].asInt();
-
-	int disX = (beforeMovePointX - afterMovePointX);
-	int disY = (beforeMovePointY - afterMovePointY);
-
-	int dis;
-	if (disX == 0)
+	if (num == max)
 	{
-		dis = disY;
-	}
-	else
-	{
-		dis = disX;
+		auto nullseq = Sequence::create(DelayTime::create(0), nullptr);
+		return nullseq;
 	}
 
-	if (dis < 0)
-	{
-		dis = -1 * dis;
-	}
-
-	auto action1 = MoveTo::create(dis / 30, Vec2(afterMovePointX, afterMovePointY));
-
-	beforeMovePointX = afterMovePointX;
-	beforeMovePointY = afterMovePointY;
-
-
-	sprintf(via, "via%d", 2);
-	viapoint = objects->getObject(via);
-
-	afterMovePointX = viapoint["x"].asInt();
-	afterMovePointY = viapoint["y"].asInt();
-
-	disX = (beforeMovePointX - afterMovePointX);
-	disY = (beforeMovePointY - afterMovePointY);
-
-	dis;
-	if (disX == 0)
-	{
-		dis = disY;
-	}
-	else
-	{
-		dis = disX;
-	}
-
-	if (dis < 0)
-	{
-		dis = -1 * dis;
-	}
-
-	auto action2 = MoveTo::create(dis / 30, Vec2(afterMovePointX, afterMovePointY));
-
-	beforeMovePointX = afterMovePointX;
-	beforeMovePointY = afterMovePointY;
-
-
-	auto myAction = Sequence::create(
-		action1, action2,
+	auto addAction = Sequence::create(
+		CallFunc::create(CC_CALLBACK_0(GameStageScene::moveMonster, this)),
+		DelayTime::create(1),
 		nullptr);
 
-	slime->runAction(myAction);
-
-	/*
-	for (int n = 1; n < 30; n++)
-	{
-	char via[10];
-	sprintf(via, "via%d", n);
-
-	ValueMap viapoint = objects->getObject(via);
-
-	x = viapoint["x"].asInt();
-	y = viapoint["y"].asInt();
-
-	if (x == 0 && y == 0)
-	{
-	break;
-	}
-	log("%d : %d, %d",n, x, y);
-	}
-
-	ValueMap endpoint = objects->getObject("End");
-
-	x = endpoint["x"].asInt();
-	y = endpoint["y"].asInt();
-
-	log("end : %d, %d", x, y);*/
+	auto myAction = Sequence::create(
+		addAction, SequenceMonsterAdd(++num, max), nullptr);
+	return myAction;
 }
 
+void GameStageScene::moveMonster()
+{
+	Vec2 beforeVec2 = _Vec2Point.at(0);
+
+	auto slime = new Monster();
+
+	//auto slime = Sprite::create("Images/Monster/slime.png");
+	slime->setTexture("Images/Monster/slime.png");
+	slime->setPosition(beforeVec2);
+	slime->runAction(MoveAction(slime));
+	
+	_monster.pushBack(slime);
+
+	tmap->addChild(slime);
+}
+
+Sequence* GameStageScene::MoveAction(Monster* slime)
+{
+	for (int i = 1; i < _Vec2Point.size(); i++)
+	{
+		Vec2 beforeVec2 = _Vec2Point.at(i - 1);
+		Vec2 afterVec2 = _Vec2Point.at(i);
+
+		float disX = (beforeVec2.x - afterVec2.x);
+		float disY = (beforeVec2.y - afterVec2.y);
+
+		float dis;
+		if (disX == 0)
+		{
+			dis = disY;
+		}
+		else
+		{
+			dis = disX;
+		}
+
+		if (dis < 0)
+		{
+			dis = -1 * dis;
+		}
+
+		auto action = MoveTo::create(dis / 120.0f, Vec2(afterVec2.x, afterVec2.y));
+
+		_Action.pushBack(action);
+
+	}
+
+	auto myAction = Sequence::create(SequenceMoveAction(slime, 0, (_Vec2Point.size() - 2) + 1),
+		nullptr);
+	
+	_Action.clear();	// 액션 적용 하기 전에 _Action에 저장된 액션들을 지운다.
+
+	return myAction;
+}
+void GameStageScene::remove(Monster* slime)
+{
+	for (int i = 0; i < _monster.size(); i++)
+	{
+		auto obj = (Sprite*)_monster.at(i);
+		if (slime == obj)
+		{
+			_monster.at(i)->remove();
+			return;
+		}
+	}
+
+}
+Sequence* GameStageScene::SequenceMoveAction(Monster* slime,int num , int max)
+{
+	if (num == max)
+	{	
+		//auto removeAction = CallFunc::create(re,CC_CALLFUNC_SELECTOR(Node::removeFromParent));
+		//_Action의 다음액션이 없을때 호출되어 함수의 종료를 가능하게 해줌
+		//DelayTime::create(0)에는 CallFunc를 이용해
+		//몬스터의 제거 또는 행동을 추가
+		auto nullseq = Sequence::create(DelayTime::create(0),
+			CallFunc::create(CC_CALLBACK_0(GameStageScene::remove, this, slime)),
+			nullptr);
+		return nullseq;
+	}
+
+	//현재 _Action의 액션을 순차적으로 가져온다 
+	auto actionBefore = _Action.at(num);
+
+	//위의 액션을 Sequence 에 추가후 다른_Action을 추가해줄 SequenceMoveAction() 함수를 재귀
+	auto myAction = Sequence::create(
+		actionBefore, SequenceMoveAction(slime, ++num , max), nullptr);
+
+	//재귀 함수 호출이 완료되서 함수의 맨위에 있는 nullseq가 반환되면 재귀가 종료되며
+	//추가되어있는 Sequence 액션을 반환하여 몬스터에게 적용 시키게 된다.
+	return myAction;
+}
 void GameStageScene::myTick(float f)
 {
 	if (phaseLevel == 0)
@@ -222,6 +257,7 @@ void GameStageScene::myTick(float f)
 		char phase[20];
 		sprintf(phase, "%d phase", phaseLevel);
 		phaseLabel->setString(phase);
+		runAction(SequenceMonsterAdd(0, 10));
 	}
 }
 void GameStageScene::SpriteProgressToRadial(float f)
@@ -373,10 +409,12 @@ void GameStageScene::masicMenuCreate()
 	masicMenuItem2->setTag(351);
 
 	auto masicMenu = Menu::create(masicMenuItem1, masicMenuItem2, NULL);
+	
+	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-	masicMenu->setPosition(Vec2(0, 0));
-	//pMenu->setAnchorPoint(Vec2(0, 0.5));
-	//addChild(masicMenu, 2);
+	masicMenu->setPosition(Vec2(0 + origin.x, 0 + origin.y));
+
+	addChild(masicMenu, 2);
 }
 
 void GameStageScene::towerMenuCreate()
@@ -423,8 +461,11 @@ void GameStageScene::towerMenuCreate()
 
 	towerMenu = Menu::create(towerMenuItem1, towerMenuItem2, towerMenuItem3, towerMenuOnOff, NULL);
 
-	towerMenu->setPosition(Vec2(0, 0));
+	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
+	towerMenu->setPosition(Vec2(0 + origin.x, 0 + origin.y));
+
+	//towerMenuSize = towerMenuItem2->getContentSize().height / 2;
 	towerMenuSize = towerMenuItem2->getContentSize().height / 2;
 
 	addChild(towerMenu, 2);
@@ -440,13 +481,13 @@ void GameStageScene::doClick(Ref* pSender)
 		log("OK");
 		if (towerMenustatus)
 		{
-			auto myAction = MoveTo::create(1, Vec2(0, -1 * towerMenuSize));
+			auto myAction = MoveBy::create(1, Vec2(0, -1 * towerMenuSize));
 			towerMenu->runAction(myAction);
 			towerMenustatus = false;
 		}
 		else
 		{
-			auto myAction = MoveTo::create(1, Vec2(0, 0));
+			auto myAction = MoveBy::create(1, Vec2(0, towerMenuSize));
 			towerMenu->runAction(myAction);
 			towerMenustatus = true;
 		}

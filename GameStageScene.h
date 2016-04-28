@@ -3,6 +3,7 @@
 
 #include "cocos2d.h"
 #include "Tower.h"
+#include "Monster.h"
 
 class GameStageScene : public cocos2d::LayerColor
 {
@@ -13,7 +14,6 @@ public:
 	cocos2d::TMXLayer* metainfo;
 	cocos2d::TMXObjectGroup* objects;
 
-	void moveMonster();
 
 	cocos2d::Vector<cocos2d::Sprite*> _heart;
 	void heartCreate(int a, cocos2d::Vec2 position);
@@ -30,6 +30,18 @@ public:
 
 	int viaX[15];
 	int viaY[15];
+
+
+	void moveMonster();
+	void remove(Monster* slime);
+	//cocos2d::Sequence* abcde;
+
+	cocos2d::Sequence* MoveAction(Monster* slime);
+	cocos2d::Sequence* SequenceMoveAction(Monster* slime, int num, int max);
+	cocos2d::Sequence* SequenceMonsterAdd(int num, int max);
+	cocos2d::Vector<cocos2d::MoveTo*> _Action;
+	cocos2d::Vector<Monster*> _monster;
+	std::vector<cocos2d::Vec2> _Vec2Point;
 
 	//cocos2d::Vector<cocos2d::Vec2> objVec2;
 

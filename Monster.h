@@ -13,6 +13,7 @@ public:
 
 	virtual void onEnter();
 	virtual void onExit();
+	void remove();
 
 private:
 	cocos2d::EventListener* _listenter;
