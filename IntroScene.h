@@ -12,6 +12,10 @@ public:
 
 	CREATE_FUNC(IntroScene);
 
+	cocos2d::EventListenerTouchOneByOne* introListener;
+
+	cocos2d::Layer* layer1;
+
 	virtual void onEnter();
 	virtual void onExit();
 	virtual bool onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event);

@@ -120,14 +120,15 @@ GameStageScene::GameStageScene(int stagelevel)
 	metainfo->setVisible(false);
 	this->addChild(tmap, 0, 11);
 
-	heartCreate(5, Vec2(0, 290));
+	_heartCount = 5;
+	heartCreate(_heartCount, Vec2(0, 290));
+	
 
 	masicMenuCreate();
 	towerMenuCreate();
-
+	
 	return;
 }
-
 
 Sequence* GameStageScene::SequenceMonsterAdd(int num, int max)
 {
@@ -196,24 +197,14 @@ Sequence* GameStageScene::MoveAction(Monster* slime)
 
 	auto myAction = Sequence::create(SequenceMoveAction(slime, 0, (_Vec2Point.size() - 2) + 1),
 		nullptr);
-	
+
+	myAction->setTag(999);
+
 	_Action.clear();	// 액션 적용 하기 전에 _Action에 저장된 액션들을 지운다.
 
 	return myAction;
 }
-void GameStageScene::remove(Monster* slime)
-{
-	for (int i = 0; i < _monster.size(); i++)
-	{
-		auto obj = (Sprite*)_monster.at(i);
-		if (slime == obj)
-		{
-			_monster.at(i)->remove();
-			return;
-		}
-	}
 
-}
 Sequence* GameStageScene::SequenceMoveAction(Monster* slime,int num , int max)
 {
 	if (num == max)
@@ -239,6 +230,30 @@ Sequence* GameStageScene::SequenceMoveAction(Monster* slime,int num , int max)
 	//추가되어있는 Sequence 액션을 반환하여 몬스터에게 적용 시키게 된다.
 	return myAction;
 }
+
+void GameStageScene::remove(Monster* slime)
+{
+	for (int i = 0; i < _monster.size(); i++)
+	{
+		auto obj = (Monster*)_monster.at(i);
+		if (slime == obj)
+		{
+			_monster.at(i)->remove();
+			_monster.eraseObject(obj);
+			/*auto hrartObj = (Sprite*)_heart.at(_heart.size() - 1);
+			hrartObj->removeFromParent();
+			_heart.popBack();
+
+			if (_heart.size() == 0)
+			{
+			log("GameOver");
+			}*/
+
+			return;
+		}
+	}
+}
+
 void GameStageScene::myTick(float f)
 {
 	if (phaseLevel == 0)
@@ -273,67 +288,47 @@ void GameStageScene::onEnter() {
 	listener->setSwallowTouches(true);
 
 	listener->onTouchBegan = CC_CALLBACK_2(GameStageScene::onTouchBegan, this);
-	//listener->onTouchMoved = CC_CALLBACK_2(GameStageScene::onTouchMoved, this);
-	//listener->onTouchEnded = CC_CALLBACK_2(GameStageScene::onTouchEnded, this);
-
-	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
+	listener->onTouchMoved = CC_CALLBACK_2(GameStageScene::onTouchMoved, this);
+	listener->onTouchEnded = CC_CALLBACK_2(GameStageScene::onTouchEnded, this);
+	
+	_eventDispatcher->addEventListenerWithFixedPriority(listener, 50);
+	_listenter = listener;
+	//_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
 }
 void GameStageScene::onExit() {
-	//_eventDispatcher->removeEventListenersForType(EventListener::Type::TOUCH_ONE_BY_ONE);
+	_eventDispatcher->removeEventListener(_listenter);
 	Layer::onExit();
 }
 bool GameStageScene::onTouchBegan(Touch* touch, Event* event) {
+
+	log("onTouchBegan");
 	auto touchPoint = touch->getLocation();
 
-	//Vec2 setupPoint = touchPoint;
+	Vec2 tmapConvertPoint = tmap->convertToNodeSpace(touchPoint);
 
 	if (towerTouch)
 	{
-		Vec2 tmapConvertPoint = tmap->convertToNodeSpace(touchPoint);
-
-		//log("setupPoint id = %d, x = %f, y = %f", touch->getID(), setupPointw.x, setupPointw.y);
-
-		int xPoint = tmapConvertPoint.x / 30;
-		int yPoint = tmapConvertPoint.y / 30;
-
-		//int setupPoint = (xPoint * 30) + 15;
-
-		Vec2 tileCoord = this->tileCoordForPosition(Vec2(xPoint * 30 + 15, yPoint * 30 + 15));
-
-		int tileGid = this->metainfo->getTileGIDAt(tileCoord);
-
-		if (tileGid)
+		if (towerTpye == 1)
 		{
-
+			clickTower = new Tower(1);
+			clickTower->setTexture("Images/red.png");
+		}
+		else if (towerTpye == 2)
+		{
+			clickTower = new Tower(2);
+			clickTower->setTexture("Images/blue.png");
 		}
 		else
 		{
-			if (towerTpye == 1)
-			{
-				clickTower = new Tower(1);
-				clickTower->setTexture("Images/red.png");
-			}
-			else if (towerTpye == 2)
-			{
-				clickTower = new Tower(2);
-				clickTower->setTexture("Images/blue.png");
-			}
-			else
-			{
-				clickTower = new Tower(3);
-				clickTower->setTexture("Images/yellow.png");
-			}
-
-			clickTower->setAnchorPoint(Vec2(0.5, 0.5));
-			clickTower->setPriority(30);
-			clickTower->setPosition(Vec2(xPoint * 30 + 15, yPoint * 30 + 15));
-			tmap->addChild(clickTower, 10);
-
-			_sprite.pushBack(clickTower);
+			clickTower = new Tower(3);
+			clickTower->setTexture("Images/yellow.png");
 		}
 
-		//towerTouch = false;
+		clickTower->setAnchorPoint(Vec2(0.5, 0.5));
+		clickTower->setPosition(tmapConvertPoint);
+		clickTower->setOpacity(100.f);
 
+		tmap->addChild(clickTower, 10);
 	}
 
 	return true;
@@ -341,17 +336,82 @@ bool GameStageScene::onTouchBegan(Touch* touch, Event* event) {
 
 void GameStageScene::onTouchMoved(Touch* touch, Event* event)
 {
-
+	if (towerTouch)
+	{
+		auto touchPoint = touch->getLocation();
+		Vec2 tmapConvertPoint = tmap->convertToNodeSpace(touchPoint);
+		clickTower->setPosition(tmapConvertPoint);
+	}
 }
 
 void GameStageScene::onTouchEnded(Touch* touch, Event* event)
 {
-	
+
+	log("onTouchEnded");
+	auto touchPoint = touch->getLocation();
+
+	if (towerTouch)
+	{
+		Vec2 tmapConvertPoint = tmap->convertToNodeSpace(touchPoint);
+
+		int xPoint = tmapConvertPoint.x / 30;
+		int yPoint = tmapConvertPoint.y / 30;
+
+		for (int i = 0; i != _setupTower.size(); i++)
+		{
+			//현재 타워가 없는 위치 검색해서 삭제하는 구문
+			auto obj = (Tower*)_setupTower.at(i);
+			auto bol = obj->towerSetup;
+			if (bol)
+			{
+
+			}
+			else
+			{
+				_setupTower.eraseObject(obj);
+				break;
+			}
+		}
+
+		for (int i = 0; i != _setupTower.size(); i++)
+		{
+			auto obj = (Tower*)_setupTower.at(i);
+
+			if (obj->getPosition() == Vec2(xPoint * 30 + 15, yPoint * 30 + 15))
+			{
+				log("설치 불가");
+				clickTower->removeFromParent();
+				return;
+			}
+		}
+
+		Vec2 tileCoord = this->tileCoordForPosition(Vec2(xPoint * 30 + 15, yPoint * 30 + 15));
+
+		int tileGid = this->metainfo->getTileGIDAt(tileCoord);
+
+		if (tileGid)
+		{
+			log("설치 불가");
+			clickTower->removeFromParent();
+		}
+		else if (1)
+		{
+			clickTower->setAnchorPoint(Vec2(0.5, 0.5));
+			clickTower->setPosition(Vec2(xPoint * 30 + 15, yPoint * 30 + 15));
+
+			_setupTower.pushBack(clickTower);
+			towerTouch = false;
+		}
+	}
+}
+
+void GameStageScene::setupTower(Tower* clickTower)
+{
+
 }
 
 void GameStageScene::heartCreate(int num,Vec2 position)
 {
-
 	if (num == 0)
 	{
 		return;
@@ -370,6 +430,7 @@ void GameStageScene::heartCreate(int num,Vec2 position)
 	position.y = position.y - heart->getContentSize().height / 2.5;
 	heartCreate(num, position);
 }
+
 Vec2 GameStageScene::positionForTileCoord(Vec2 position)
 {
 	int x = position.x * tmap->getTileSize().width + tmap->getTileSize().width / 2;
@@ -465,12 +526,10 @@ void GameStageScene::towerMenuCreate()
 
 	towerMenu->setPosition(Vec2(0 + origin.x, 0 + origin.y));
 
-	//towerMenuSize = towerMenuItem2->getContentSize().height / 2;
 	towerMenuSize = towerMenuItem2->getContentSize().height / 2;
 
 	addChild(towerMenu, 2);
 }
-
 
 void GameStageScene::doClick(Ref* pSender)
 {
@@ -510,5 +569,9 @@ void GameStageScene::doClick(Ref* pSender)
 	{
 		towerTpye = 3;
 		towerTouch = true;
+	}
+	else if (i == 350)
+	{
+		
 	}
 }

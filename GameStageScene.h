@@ -14,8 +14,8 @@ public:
 	cocos2d::TMXLayer* metainfo;
 	cocos2d::TMXObjectGroup* objects;
 
-
 	cocos2d::Vector<cocos2d::Sprite*> _heart;
+	int _heartCount;
 	void heartCreate(int a, cocos2d::Vec2 position);
 
 	cocos2d::Size winSize;
@@ -26,7 +26,11 @@ public:
 
 	int towerTpye;
 	Tower* clickTower;
-	cocos2d::Vector<Tower*> _sprite;
+	cocos2d::Sprite* moveSprtie;
+	cocos2d::Vector<Tower*> _setupTower;
+	void setupTower(Tower* tower);
+
+	cocos2d::EventListener* _listenter;
 
 	int viaX[15];
 	int viaY[15];

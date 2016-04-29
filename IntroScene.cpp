@@ -36,21 +36,22 @@ bool IntroScene::init()
 void IntroScene::onEnter() {
 	Layer::onEnter();
 
-	auto listener = EventListenerTouchOneByOne::create();
+	introListener = EventListenerTouchOneByOne::create();
 
-	listener->setSwallowTouches(true);
+	introListener->setSwallowTouches(true);
 
-	listener->onTouchBegan = CC_CALLBACK_2(IntroScene::onTouchBegan, this);
+	introListener->onTouchBegan = CC_CALLBACK_2(IntroScene::onTouchBegan, this);
 
-	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(introListener, this);
 }
 void IntroScene::onExit() {
-	//_eventDispatcher->removeEventListenersForType(EventListener::Type::TOUCH_ONE_BY_ONE);
+	_eventDispatcher->removeEventListener(introListener);
 	Layer::onExit();
 }
 bool IntroScene::onTouchBegan(Touch* touch, Event* event) {
+
 	auto pScene = MainScene::createScene();
-	Director::getInstance()->pushScene(pScene);
+	Director::getInstance()->replaceScene(pScene);
 
 	return true;
 }

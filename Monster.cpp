@@ -16,7 +16,7 @@ Monster::Monster()
 
 void Monster::remove()
 {
-	log("remove()");
+	//log("remove()");
 	removeFromParent();
 	onExit();
 }
