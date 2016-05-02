@@ -21,48 +21,48 @@ bool Menus::init()
 	winSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-	auto menubar = Sprite::create("Images/CyanSquare32.png");// 100 x 100 사이즈 그림
-	menubar->setScaleX(10.24);
-	menubar->setScaleY(0.66);
+	auto menubar = Sprite::create("Images/MenuButton/menubar.png");// 1024 x 66 사이즈 그림
 	menubar->setPosition(Vec2(winSize.width / 2, winSize.height + origin.y));
 	menubar->setAnchorPoint(Vec2(0.5, 1));
 	menubar->setTag(300);
 	addChild(menubar);
 
+	log("%f", menubar->getContentSize().height);
+
 	auto pMenuItem1 = MenuItemImage::create(
-		"Images/Button/scaled-at-50/b_Parameters.png",
-		"Images/Button/scaled-at-50/b_Parameters.png",
+		"Images/Button/b_Parameters.png",
+		"Images/Button/b_Parameters.png",
 		CC_CALLBACK_1(Menus::doClick, this));
-	pMenuItem1->setPosition(Vec2(winSize.width, winSize.height));
-	pMenuItem1->setAnchorPoint(Vec2(1, 1));
+	pMenuItem1->setPosition(Vec2(winSize.width, origin.y));
+	pMenuItem1->setAnchorPoint(Vec2(1, 0));
 
 	MenuItemImage* pMenuItem2;
 
 	if (1)
 	{
 		pMenuItem2 = MenuItemImage::create(
-			"Images/Button/scaled-at-50/b_No.png",
-			"Images/Button/scaled-at-50/b_No.png",
+			"Images/Button/b_No.png",
+			"Images/Button/b_No.png",
 			CC_CALLBACK_1(Menus::doClick, this));
 	}
 	else
 	{
 		pMenuItem2 = MenuItemImage::create(
-			"Images/Button/scaled-at-50/b_back.png",
-			"Images/Button/scaled-at-50/b_back.png",
+			"Images/Button/b_back.png",
+			"Images/Button/b_back.png",
 			CC_CALLBACK_1(Menus::doClick, this));
 	}
 	
 
-	pMenuItem2->setPosition(Vec2(0, winSize.height));
-	pMenuItem2->setAnchorPoint(Vec2(0, 1));
+	pMenuItem2->setPosition(Vec2(0, origin.y));
+	pMenuItem2->setAnchorPoint(Vec2(0, 0));
 
 	pMenuItem1->setTag(11);
 	pMenuItem2->setTag(12);
 
 	auto pMenu = Menu::create(pMenuItem1, pMenuItem2, NULL);
-	pMenu->setPosition(Vec2(0, origin.y));
-	this->addChild(pMenu);
+	pMenu->setPosition(Vec2(0, 0));
+	menubar->addChild(pMenu);
 
 	return true;
 }

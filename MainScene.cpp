@@ -20,18 +20,10 @@ bool MainScene::init()
         return false;
     }
 	
-	/*std::string str1 = "MainScene";
-	char str2[20];
-	sprintf(str2, "%s", str1.c_str());
-
-	NotificationCenter::getInstance()->postNotification("SceneStatus", (Ref*)str2);
-*/
 	auto pScene = Menus::createScene();
 	this->addChild(pScene);
 
 	
-	
-
 	/*auto layer1 = LayerGradient::create(Color4B(255, 0, 0, 255), Color4B(255, 0, 255, 255));
 	layer1->setContentSize(Size(80, 80));
 	layer1->setPosition(Vec2(50, 50));
@@ -64,11 +56,6 @@ bool MainScene::init()
 
     return true;
 }
-//void MainScene::onEnter()
-//{
-	//Layer::onEnter();
-	//Director::sharedDirector()->
-//}
 
 void MainScene::doClick(Ref* pSender)
 {

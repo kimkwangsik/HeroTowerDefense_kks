@@ -19,12 +19,12 @@ GameStageScene::GameStageScene(int stagelevel)
 		return;
 	}
 	winSizePixel = Director::getInstance()->getWinSizeInPixels();
-	winSize = Director::getInstance()->getVisibleSize();
-	auto winSize1 = Director::getInstance()->getWinSize();
+	winSize = Director::getInstance()->getWinSize();
+	auto winSize1 = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
 	char str123[50];
-	sprintf(str123, "%f , %f", winSizePixel.width, winSizePixel.height);
+	sprintf(str123, "%f , %f", winSize1.width, winSize1.height);
 
 	auto Label = LabelTTF::create(str123, "Arial", 20);
 	Label->setPosition(Vec2(winSize1.width / 2, winSize1.height / 2));
@@ -39,14 +39,18 @@ GameStageScene::GameStageScene(int stagelevel)
 	sprintf(str, "TileMaps/Level%ld.tmx", stagelevel);
 
 	auto skip = MenuItemImage::create(
-		"Images/box-highres.png",
-		"Images/box-highres.png",
+		"Images/MenuButton/skip_button.png",
+		"Images/MenuButton/skip_button2.png",
 		CC_CALLBACK_1(GameStageScene::doClick, this));
-	skip->setPosition(Vec2(winSize.width, 288));
+	skip->setPosition(Vec2(winSize.width, winSize.height-31 + origin.y));
 	skip->setAnchorPoint(Vec2(1, 1));
-	skip->setScale(0.5);
-	skip->setScaleY(0.2);
 	skip->setTag(550);
+
+	auto skipLabel = LabelTTF::create("skip", "Arial", 15);
+	skipLabel->setPosition(Vec2(skip->getPositionX() - skip->getContentSize().width/2,
+		skip->getPositionY() - skip->getContentSize().height / 2));
+	skipLabel->setAnchorPoint(Vec2(0.5, 0.5));
+	addChild(skipLabel, 500);
 
 	auto skipMenu = Menu::create(skip, NULL);
 	skipMenu->setPosition(Vec2(0, 0));
@@ -56,16 +60,16 @@ GameStageScene::GameStageScene(int stagelevel)
 	sprintf(phase, "%d phase", phaseLevel);
 
 	phaseLabel = LabelTTF::create(phase, "Arial", 20);
-	phaseLabel->setPosition(Vec2(winSize.width - 50, 288));
-	phaseLabel->setAnchorPoint(Vec2(1, 1));
-	phaseLabel->setColor(Color3B::BLACK);
-	addChild(phaseLabel, 2);
+	phaseLabel->setPosition(Vec2(-10, 0));
+	phaseLabel->setAnchorPoint(Vec2(1, 0));
+	phaseLabel->setColor(Color3B::WHITE);
+	skip->addChild(phaseLabel, 2);
 
 
 	timerBase = Sprite::create("Images/bar_base.png");
-	timerBase->setPosition(Vec2(winSize.width, 290 - 20));
+	timerBase->setPosition(Vec2(skip->getContentSize().width, -1));
 	timerBase->setAnchorPoint(Vec2(1, 1));
-	addChild(timerBase,2);
+	skip->addChild(timerBase,2);
 
 	timerGauge = Sprite::create("Images/bar_gauge.png");
 
@@ -121,8 +125,12 @@ GameStageScene::GameStageScene(int stagelevel)
 	this->addChild(tmap, 0, 11);
 
 	_heartCount = 5;
-	heartCreate(_heartCount, Vec2(0, 290));
+
 	
+
+	heartCreate(_heartCount, Vec2(0, winSize.height - 31 + origin.y));
+	
+	_pMonster = &_monster;
 
 	masicMenuCreate();
 	towerMenuCreate();
@@ -139,7 +147,7 @@ Sequence* GameStageScene::SequenceMonsterAdd(int num, int max)
 	}
 
 	auto addAction = Sequence::create(
-		CallFunc::create(CC_CALLBACK_0(GameStageScene::moveMonster, this)),
+		CallFunc::create(CC_CALLBACK_0(GameStageScene::addMonster, this)),
 		DelayTime::create(1),
 		nullptr);
 
@@ -148,23 +156,22 @@ Sequence* GameStageScene::SequenceMonsterAdd(int num, int max)
 	return myAction;
 }
 
-void GameStageScene::moveMonster()
+void GameStageScene::addMonster()
 {
-	Vec2 beforeVec2 = _Vec2Point.at(0);
+	Vec2 startVec2 = _Vec2Point.at(0);
 
-	auto slime = new Monster();
+	auto monster = new Monster();
 
-	//auto slime = Sprite::create("Images/Monster/slime.png");
-	slime->setTexture("Images/Monster/slime.png");
-	slime->setPosition(beforeVec2);
-	slime->runAction(MoveAction(slime));
+	monster->setTexture("Images/Monster/slime.png");
+	monster->setPosition(startVec2);
+	monster->runAction(MoveAction(monster));
 	
-	_monster.pushBack(slime);
+	_monster.pushBack(monster);
 
-	tmap->addChild(slime);
+	tmap->addChild(monster);
 }
 
-Sequence* GameStageScene::MoveAction(Monster* slime)
+Sequence* GameStageScene::MoveAction(Monster* monster)
 {
 	for (int i = 1; i < _Vec2Point.size(); i++)
 	{
@@ -189,13 +196,13 @@ Sequence* GameStageScene::MoveAction(Monster* slime)
 			dis = -1 * dis;
 		}
 
-		auto action = MoveTo::create(dis / 120.0f, Vec2(afterVec2.x, afterVec2.y));
+		auto action = MoveTo::create(dis / 30.0f, Vec2(afterVec2.x, afterVec2.y));
 
 		_Action.pushBack(action);
 
 	}
 
-	auto myAction = Sequence::create(SequenceMoveAction(slime, 0, (_Vec2Point.size() - 2) + 1),
+	auto myAction = Sequence::create(SequenceMoveAction(monster, 0, (_Vec2Point.size() - 2) + 1),
 		nullptr);
 
 	myAction->setTag(999);
@@ -205,7 +212,7 @@ Sequence* GameStageScene::MoveAction(Monster* slime)
 	return myAction;
 }
 
-Sequence* GameStageScene::SequenceMoveAction(Monster* slime,int num , int max)
+Sequence* GameStageScene::SequenceMoveAction(Monster* monster, int num , int max)
 {
 	if (num == max)
 	{	
@@ -214,7 +221,7 @@ Sequence* GameStageScene::SequenceMoveAction(Monster* slime,int num , int max)
 		//DelayTime::create(0)에는 CallFunc를 이용해
 		//몬스터의 제거 또는 행동을 추가
 		auto nullseq = Sequence::create(DelayTime::create(0),
-			CallFunc::create(CC_CALLBACK_0(GameStageScene::remove, this, slime)),
+			CallFunc::create(CC_CALLBACK_0(GameStageScene::removeMonster, this, monster)),
 			nullptr);
 		return nullseq;
 	}
@@ -224,19 +231,20 @@ Sequence* GameStageScene::SequenceMoveAction(Monster* slime,int num , int max)
 
 	//위의 액션을 Sequence 에 추가후 다른_Action을 추가해줄 SequenceMoveAction() 함수를 재귀
 	auto myAction = Sequence::create(
-		actionBefore, SequenceMoveAction(slime, ++num , max), nullptr);
+		actionBefore, SequenceMoveAction(monster, ++num , max), nullptr);
 
 	//재귀 함수 호출이 완료되서 함수의 맨위에 있는 nullseq가 반환되면 재귀가 종료되며
 	//추가되어있는 Sequence 액션을 반환하여 몬스터에게 적용 시키게 된다.
 	return myAction;
 }
 
-void GameStageScene::remove(Monster* slime)
+void GameStageScene::removeMonster(Monster* monster)
 {
 	for (int i = 0; i < _monster.size(); i++)
 	{
+		log("_monster.size() : %d", _monster.size());
 		auto obj = (Monster*)_monster.at(i);
-		if (slime == obj)
+		if (monster == obj)
 		{
 			_monster.at(i)->remove();
 			_monster.eraseObject(obj);
@@ -275,6 +283,7 @@ void GameStageScene::myTick(float f)
 		runAction(SequenceMonsterAdd(0, 10));
 	}
 }
+
 void GameStageScene::SpriteProgressToRadial(float f)
 {
 	gaugeBar->setPercentage(f);
@@ -295,10 +304,12 @@ void GameStageScene::onEnter() {
 	_listenter = listener;
 	//_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
 }
+
 void GameStageScene::onExit() {
 	_eventDispatcher->removeEventListener(_listenter);
 	Layer::onExit();
 }
+
 bool GameStageScene::onTouchBegan(Touch* touch, Event* event) {
 
 	log("onTouchBegan");
@@ -327,6 +338,7 @@ bool GameStageScene::onTouchBegan(Touch* touch, Event* event) {
 		clickTower->setAnchorPoint(Vec2(0.5, 0.5));
 		clickTower->setPosition(tmapConvertPoint);
 		clickTower->setOpacity(100.f);
+		clickTower->setpMonster(_pMonster);
 
 		tmap->addChild(clickTower, 10);
 	}
@@ -572,6 +584,15 @@ void GameStageScene::doClick(Ref* pSender)
 	}
 	else if (i == 350)
 	{
-		
+		for (int i = 0; i < _monster.size(); i++)
+		{
+			auto obj = (Monster*)_monster.at(i);
+			obj->hp = obj->hp - 20;
+			if (obj->hp <= 0)
+			{
+				_monster.eraseObject(obj);
+			}
+		}
 	}
 }
+

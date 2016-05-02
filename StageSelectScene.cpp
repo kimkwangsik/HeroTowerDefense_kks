@@ -20,24 +20,26 @@ bool StageSelectScene::init()
 		return false;
 	}
 
-	/*std::string str1 = "StageSelectScene";
-	char str2[20];
-	sprintf(str2, "%s", str1.c_str());
+	auto visibleSize = Director::getInstance()->getVisibleSize();
 
-	NotificationCenter::getInstance()->postNotification("SceneStatus", (Ref*)str2);*/
-	
+	auto tableViewBackGround = Sprite::create("Images/tableViewBackGround1.png");
+	tableViewBackGround->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2));
+	this->addChild(tableViewBackGround, 2);
 
-	TableView* tableView1 = TableView::create(this, Size(440, 280));
+	TableView* tableView1 = TableView::create(this,
+		Size(tableViewBackGround->getContentSize().width-20,
+			tableViewBackGround->getContentSize().height));
 	tableView1->setDirection(ScrollView::Direction::HORIZONTAL);
-	tableView1->setPosition(Vec2(20, 20));
+	tableView1->setPosition(Vec2(10,0));
 	tableView1->setDelegate(this);
 	tableView1->setTag(100);
-	this->addChild(tableView1);
+	tableViewBackGround->addChild(tableView1,3);
 	tableView1->reloadData();
 
 
+
 	auto pScene = Menus::createScene();
-	this->addChild(pScene);
+	this->addChild(pScene, 2000);
 	return true;
 }
 
@@ -89,7 +91,8 @@ TableViewCell* StageSelectScene::tableCellAtIndex(TableView* table, ssize_t idx)
 		pMenuItem->setTag(150);
 
 		auto label = LabelTTF::create(str, "Helvetica", 20.0);	//폰트 수정 또는 확인 필수
-		label->setPosition(Vec2(pMenuItem->getContentSize().width / 2, 100 + pMenuItem->getContentSize().height / 2));
+		label->setPosition(Vec2(pMenuItem->getContentSize().width / 2,
+			80 + pMenuItem->getContentSize().height / 2));
 		label->setAnchorPoint(Vec2(0.5, 0.5));
 		label->setTag(123);
 		cell->addChild(label,3);
@@ -110,7 +113,7 @@ TableViewCell* StageSelectScene::tableCellAtIndex(TableView* table, ssize_t idx)
 	
 	auto pMenu = Menu::create(pMenuItem, NULL);
 
-	pMenu->setPosition(Vec2(0, 100));
+	pMenu->setPosition(Vec2(0, 80));
 	pMenu->setAnchorPoint(Vec2(0, 0.5));
 	cell->addChild(pMenu,2);
 

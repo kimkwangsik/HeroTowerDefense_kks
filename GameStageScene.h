@@ -36,15 +36,19 @@ public:
 	int viaY[15];
 
 
-	void moveMonster();
-	void remove(Monster* slime);
+	void addMonster();
+	void removeMonster(Monster* slime);
 	//cocos2d::Sequence* abcde;
 
 	cocos2d::Sequence* MoveAction(Monster* slime);
 	cocos2d::Sequence* SequenceMoveAction(Monster* slime, int num, int max);
 	cocos2d::Sequence* SequenceMonsterAdd(int num, int max);
 	cocos2d::Vector<cocos2d::MoveTo*> _Action;
+
 	cocos2d::Vector<Monster*> _monster;
+	cocos2d::Vector<Monster*> *_pMonster;
+	cocos2d::Vector<Monster*> *monsterList();
+
 	std::vector<cocos2d::Vec2> _Vec2Point;
 
 	//cocos2d::Vector<cocos2d::Vec2> objVec2;
@@ -80,6 +84,8 @@ public:
 
 	void masicMenuCreate();
 	void towerMenuCreate();
+
+
 
 };
 
