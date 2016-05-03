@@ -19,10 +19,15 @@ public:
 	void heartCreate(int a, cocos2d::Vec2 position);
 
 	cocos2d::Size winSize;
+	cocos2d::Size VisibleWinSize;
 	cocos2d::Size winSizePixel;
 	cocos2d::Size sizeRate;
+	cocos2d::Vec2 origin;
 
 	cocos2d::Menu* towerMenu;
+	
+
+	void createStage(int level);
 
 	int towerTpye;
 	Tower* clickTower;
@@ -47,7 +52,6 @@ public:
 
 	cocos2d::Vector<Monster*> _monster;
 	cocos2d::Vector<Monster*> *_pMonster;
-	cocos2d::Vector<Monster*> *monsterList();
 
 	std::vector<cocos2d::Vec2> _Vec2Point;
 

@@ -18,23 +18,44 @@ GameStageScene::GameStageScene(int stagelevel)
 	{
 		return;
 	}
+
+
 	winSizePixel = Director::getInstance()->getWinSizeInPixels();
 	winSize = Director::getInstance()->getWinSize();
-	auto winSize1 = Director::getInstance()->getVisibleSize();
-	Vec2 origin = Director::getInstance()->getVisibleOrigin();
+	VisibleWinSize = Director::getInstance()->getVisibleSize();
+	origin = Director::getInstance()->getVisibleOrigin();
 
-	char str123[50];
-	sprintf(str123, "%f , %f", winSize1.width, winSize1.height);
+	/*
+	
+	char winSizeStr[50];
+	sprintf(winSizeStr, "%f , %f", winSize.width, winSize.height);
+	
+	char VisibleWinSizeStr[50];
+	sprintf(VisibleWinSizeStr, "%f , %f", VisibleWinSize.width, VisibleWinSize.height);
 
-	auto Label = LabelTTF::create(str123, "Arial", 20);
-	Label->setPosition(Vec2(winSize1.width / 2, winSize1.height / 2));
+	auto Label = LabelTTF::create(winSizeStr, "Arial", 20);
+	Label->setPosition(Vec2(winSize.width / 2, winSize.height / 2));
 	Label->setAnchorPoint(Vec2(0.5, 0.5));
 	Label->setColor(Color3B::BLACK);
 	addChild(Label, 2);
 
-	auto pScene = Menus::createScene();
-	this->addChild(pScene,2000);
+	auto Label1 = LabelTTF::create(VisibleWinSizeStr, "Arial", 20);
+	Label1->setPosition(Vec2(VisibleWinSize.width / 2, VisibleWinSize.height / 2));
+	Label1->setAnchorPoint(Vec2(0.5, 0.5));
+	Label1->setColor(Color3B::RED);
+	addChild(Label1, 2);*/
 
+	auto pScene = Menus::createScene();
+	this->addChild(pScene, 100);
+
+	createStage(stagelevel);
+	
+	return;
+}
+
+
+void GameStageScene::createStage(int stagelevel)
+{
 	char str[20];
 	sprintf(str, "TileMaps/Level%ld.tmx", stagelevel);
 
@@ -42,12 +63,12 @@ GameStageScene::GameStageScene(int stagelevel)
 		"Images/MenuButton/skip_button.png",
 		"Images/MenuButton/skip_button2.png",
 		CC_CALLBACK_1(GameStageScene::doClick, this));
-	skip->setPosition(Vec2(winSize.width, winSize.height-31 + origin.y));
+	skip->setPosition(Vec2(winSize.width, winSize.height - 31 - origin.y));
 	skip->setAnchorPoint(Vec2(1, 1));
 	skip->setTag(550);
 
 	auto skipLabel = LabelTTF::create("skip", "Arial", 15);
-	skipLabel->setPosition(Vec2(skip->getPositionX() - skip->getContentSize().width/2,
+	skipLabel->setPosition(Vec2(skip->getPositionX() - skip->getContentSize().width / 2,
 		skip->getPositionY() - skip->getContentSize().height / 2));
 	skipLabel->setAnchorPoint(Vec2(0.5, 0.5));
 	addChild(skipLabel, 500);
@@ -65,11 +86,10 @@ GameStageScene::GameStageScene(int stagelevel)
 	phaseLabel->setColor(Color3B::WHITE);
 	skip->addChild(phaseLabel, 2);
 
-
 	timerBase = Sprite::create("Images/bar_base.png");
 	timerBase->setPosition(Vec2(skip->getContentSize().width, -1));
 	timerBase->setAnchorPoint(Vec2(1, 1));
-	skip->addChild(timerBase,2);
+	skip->addChild(timerBase, 2);
 
 	timerGauge = Sprite::create("Images/bar_gauge.png");
 
@@ -83,12 +103,17 @@ GameStageScene::GameStageScene(int stagelevel)
 
 	gaugeBar->setPosition(Vec2(0, 0));
 	gaugeBar->setAnchorPoint(Vec2(0, 0));
-	timerBase->addChild(gaugeBar,3);
+	timerBase->addChild(gaugeBar, 3);
 
 	this->schedule(schedule_selector(GameStageScene::myTick), 0.5f);
 
 	tmap = TMXTiledMap::create(str);
-	tmap->setPosition(Vec2(winSize.width / 2, winSize.height / 2 + origin.y));
+
+	tmap->setPosition(Vec2(
+		(VisibleWinSize.width / 2),
+		(VisibleWinSize.height / 2)
+		));
+
 	tmap->setAnchorPoint(Vec2(0.5, 0.5));
 	metainfo = tmap->getLayer("Options");
 
@@ -99,7 +124,7 @@ GameStageScene::GameStageScene(int stagelevel)
 	int y = viapoint["y"].asInt() + 15;
 	_Vec2Point.push_back(Vec2(x, y));
 
-	for (int n=1;;n++)
+	for (int n = 1;; n++)
 	{
 		char via[10];
 		sprintf(via, "via%d", n);
@@ -122,20 +147,20 @@ GameStageScene::GameStageScene(int stagelevel)
 	_Vec2Point.push_back(Vec2(x, y));
 
 	metainfo->setVisible(false);
+
+
+
 	this->addChild(tmap, 0, 11);
 
 	_heartCount = 5;
 
-	
+	heartCreate(_heartCount, Vec2(0, winSize.height - 31 - origin.y));
 
-	heartCreate(_heartCount, Vec2(0, winSize.height - 31 + origin.y));
-	
 	_pMonster = &_monster;
 
 	masicMenuCreate();
 	towerMenuCreate();
-	
-	return;
+
 }
 
 Sequence* GameStageScene::SequenceMonsterAdd(int num, int max)
@@ -199,7 +224,6 @@ Sequence* GameStageScene::MoveAction(Monster* monster)
 		auto action = MoveTo::create(dis / 30.0f, Vec2(afterVec2.x, afterVec2.y));
 
 		_Action.pushBack(action);
-
 	}
 
 	auto myAction = Sequence::create(SequenceMoveAction(monster, 0, (_Vec2Point.size() - 2) + 1),
@@ -242,7 +266,6 @@ void GameStageScene::removeMonster(Monster* monster)
 {
 	for (int i = 0; i < _monster.size(); i++)
 	{
-		log("_monster.size() : %d", _monster.size());
 		auto obj = (Monster*)_monster.at(i);
 		if (monster == obj)
 		{
@@ -276,7 +299,7 @@ void GameStageScene::myTick(float f)
 	if (gauge < 0)
 	{
 		gauge = 100;
-		log("%dStage",++phaseLevel);
+		++phaseLevel;
 		char phase[20];
 		sprintf(phase, "%d phase", phaseLevel);
 		phaseLabel->setString(phase);
@@ -300,7 +323,8 @@ void GameStageScene::onEnter() {
 	listener->onTouchMoved = CC_CALLBACK_2(GameStageScene::onTouchMoved, this);
 	listener->onTouchEnded = CC_CALLBACK_2(GameStageScene::onTouchEnded, this);
 	
-	_eventDispatcher->addEventListenerWithFixedPriority(listener, 50);
+	//_eventDispatcher->addEventListenerWithFixedPriority(listener, 50);
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
 	_listenter = listener;
 	//_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
 }
@@ -312,35 +336,43 @@ void GameStageScene::onExit() {
 
 bool GameStageScene::onTouchBegan(Touch* touch, Event* event) {
 
-	log("onTouchBegan");
+	log("GameBegan");
 	auto touchPoint = touch->getLocation();
 
 	Vec2 tmapConvertPoint = tmap->convertToNodeSpace(touchPoint);
 
+	for (int i = 0; i != _setupTower.size(); i++)
+	{
+		//타워 설치중이면 바로 리턴
+		auto obj = (Tower*)_setupTower.at(i);
+		auto bol = obj->towerMenuVisible;
+		if (bol)
+		{
+			return false;
+		}
+	}
+
 	if (towerTouch)
 	{
-		if (towerTpye == 1)
+		/*if (towerTpye == 1)
 		{
 			clickTower = new Tower(1);
-			clickTower->setTexture("Images/red.png");
 		}
 		else if (towerTpye == 2)
 		{
 			clickTower = new Tower(2);
-			clickTower->setTexture("Images/blue.png");
 		}
 		else
 		{
 			clickTower = new Tower(3);
-			clickTower->setTexture("Images/yellow.png");
-		}
+		}*/
 
-		clickTower->setAnchorPoint(Vec2(0.5, 0.5));
+		clickTower = new Tower(towerTpye);
 		clickTower->setPosition(tmapConvertPoint);
 		clickTower->setOpacity(100.f);
 		clickTower->setpMonster(_pMonster);
 
-		tmap->addChild(clickTower, 10);
+		tmap->addChild(clickTower, 101);
 	}
 
 	return true;
@@ -359,7 +391,7 @@ void GameStageScene::onTouchMoved(Touch* touch, Event* event)
 void GameStageScene::onTouchEnded(Touch* touch, Event* event)
 {
 
-	log("onTouchEnded");
+	//log("onTouchEnded");
 	auto touchPoint = touch->getLocation();
 
 	if (towerTouch)
@@ -391,7 +423,7 @@ void GameStageScene::onTouchEnded(Touch* touch, Event* event)
 
 			if (obj->getPosition() == Vec2(xPoint * 30 + 15, yPoint * 30 + 15))
 			{
-				log("설치 불가");
+				//log("설치 불가");
 				clickTower->removeFromParent();
 				return;
 			}
@@ -403,13 +435,20 @@ void GameStageScene::onTouchEnded(Touch* touch, Event* event)
 
 		if (tileGid)
 		{
-			log("설치 불가");
+			//log("설치 불가");
 			clickTower->removeFromParent();
 		}
 		else if (1)
 		{
-			clickTower->setAnchorPoint(Vec2(0.5, 0.5));
+			//clickTower->setAnchorPoint(Vec2(0.5, 0.5));
 			clickTower->setPosition(Vec2(xPoint * 30 + 15, yPoint * 30 + 15));
+			if (clickTower->getPositionY() >= 280.f)
+			{
+				clickTower->b_Yes->setPosition(Vec2(clickTower->towerContentSize.width / 2, 0));
+				clickTower->b_Yes->setAnchorPoint(Vec2(0, 1));
+				clickTower->b_No->setPosition(Vec2(clickTower->towerContentSize.width / 2, 0));
+				clickTower->b_No->setAnchorPoint(Vec2(1, 1));
+			}
 
 			_setupTower.pushBack(clickTower);
 			towerTouch = false;
@@ -463,22 +502,20 @@ Vec2 GameStageScene::tileCoordForPosition(Vec2 position)
 void GameStageScene::masicMenuCreate()
 {
 	auto masicMenuItem1 = MenuItemImage::create(
-		"Images/box-highres.png",
-		"Images/box-highres.png",
+		"Images/spell/lighting-sky-2.png",
+		"Images/spell/lighting-sky-2.png",
 		CC_CALLBACK_1(GameStageScene::doClick, this));
 	masicMenuItem1->setPosition(Vec2(0, 0));
 	masicMenuItem1->setAnchorPoint(Vec2(0, 0));
-	masicMenuItem1->setScale(0.5);
 	masicMenuItem1->setTag(350);
 
 	auto masicMenuItem2 = MenuItemImage::create(
-		"Images/box-highres.png",
-		"Images/box-highres.png",
+		"Images/spell/ice-blue-2.png",
+		"Images/spell/ice-blue-2.png",
 		CC_CALLBACK_1(GameStageScene::doClick, this));
 	masicMenuItem2->setPosition(Vec2(0, masicMenuItem1->getPositionY() +
-		masicMenuItem1->getContentSize().height / 2));
+		masicMenuItem1->getContentSize().height));
 	masicMenuItem2->setAnchorPoint(Vec2(0, 0));
-	masicMenuItem2->setScale(0.5);
 	masicMenuItem2->setTag(351);
 
 	auto masicMenu = Menu::create(masicMenuItem1, masicMenuItem2, NULL);
@@ -493,32 +530,32 @@ void GameStageScene::masicMenuCreate()
 void GameStageScene::towerMenuCreate()
 {
 	auto towerMenuItem2 = MenuItemImage::create(
-		"Images/box-highres.png",
-		"Images/box-highres.png",
+		"Images/Tower/Rogue1/Horizontal_3.png",
+		"Images/Tower/Rogue1/Horizontal_1.png",
 		CC_CALLBACK_1(GameStageScene::doClick, this));
 	towerMenuItem2->setPosition(Vec2(winSize.width / 2, 0));
 	towerMenuItem2->setAnchorPoint(Vec2(0.5, 0));
-	towerMenuItem2->setScale(0.5);
+	//towerMenuItem2->setScale(0.5);
 	towerMenuItem2->setTag(451);
 
 	auto towerMenuItem1 = MenuItemImage::create(
-		"Images/box-highres.png",
-		"Images/box-highres.png",
+		"Images/Tower/Knight1/Horizontal_3.png",
+		"Images/Tower/Knight1/Horizontal_1.png",
 		CC_CALLBACK_1(GameStageScene::doClick, this));
 	towerMenuItem1->setPosition(Vec2(towerMenuItem2->getPositionX() -
-			towerMenuItem2->getContentSize().width / 2, 0));
+			towerMenuItem2->getContentSize().width, 0));
 	towerMenuItem1->setAnchorPoint(Vec2(0.5, 0));
-	towerMenuItem1->setScale(0.5);
+	//towerMenuItem1->setScale(0.5);
 	towerMenuItem1->setTag(450);
 
 	auto towerMenuItem3 = MenuItemImage::create(
-		"Images/box-highres.png",
-		"Images/box-highres.png",
+		"Images/Tower/Magician1/Horizontal_3.png",
+		"Images/Tower/Magician1/Horizontal_1.png",
 		CC_CALLBACK_1(GameStageScene::doClick, this));
 	towerMenuItem3->setPosition(Vec2(towerMenuItem2->getPositionX() +
-		towerMenuItem2->getContentSize().width / 2, 0));
+		towerMenuItem2->getContentSize().width, 0));
 	towerMenuItem3->setAnchorPoint(Vec2(0.5, 0));
-	towerMenuItem3->setScale(0.5);
+	//towerMenuItem3->setScale(0.5);
 	towerMenuItem3->setTag(452);
 
 	auto towerMenuOnOff = MenuItemImage::create(
@@ -526,7 +563,7 @@ void GameStageScene::towerMenuCreate()
 		"Images/box-highres.png",
 		CC_CALLBACK_1(GameStageScene::doClick, this));
 	towerMenuOnOff->setPosition(Vec2(winSize.width / 2, towerMenuItem2->getPositionY() + 
-		towerMenuItem2->getContentSize().height / 2));
+		towerMenuItem2->getContentSize().height));
 	towerMenuOnOff->setAnchorPoint(Vec2(0.5, 0));
 	towerMenuOnOff->setScale(0.5);
 	towerMenuOnOff->setScaleY(0.2);
@@ -538,13 +575,24 @@ void GameStageScene::towerMenuCreate()
 
 	towerMenu->setPosition(Vec2(0 + origin.x, 0 + origin.y));
 
-	towerMenuSize = towerMenuItem2->getContentSize().height / 2;
+	towerMenuSize = towerMenuItem2->getContentSize().height;
 
 	addChild(towerMenu, 2);
 }
 
 void GameStageScene::doClick(Ref* pSender)
 {
+	for (int i = 0; i != _setupTower.size(); i++)
+	{
+		//타워 설치중이면 바로 리턴
+		auto obj = (Tower*)_setupTower.at(i);
+		auto bol = obj->towerMenuVisible;
+		if (bol)
+		{
+			return;
+		}
+	}
+
 	auto tItem = (MenuItem *)pSender;
 	int i = tItem->getTag();
 	if (i == 453 && towerMenu->numberOfRunningActions() == 0)
@@ -584,6 +632,7 @@ void GameStageScene::doClick(Ref* pSender)
 	}
 	else if (i == 350)
 	{
+		//번개 마법
 		for (int i = 0; i < _monster.size(); i++)
 		{
 			auto obj = (Monster*)_monster.at(i);
@@ -593,6 +642,10 @@ void GameStageScene::doClick(Ref* pSender)
 				_monster.eraseObject(obj);
 			}
 		}
+	}
+	else if (i == 351)
+	{
+		//얼음
 	}
 }
 

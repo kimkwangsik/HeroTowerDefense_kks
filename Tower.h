@@ -10,6 +10,9 @@ class Tower : public cocos2d::Sprite
 public:
 	Tower(int typenum);
 
+
+	cocos2d::Size towerContentSize;
+
 	void setPriorityWithThis(bool usdNodePriority);
 	void setpMonster(cocos2d::Vector<Monster*> *_repMonster);
 	cocos2d::Sprite* b_Yes;
@@ -18,8 +21,7 @@ public:
 	virtual void onEnter();
 	virtual void onExit();
 
-	void setAttackDelay();
-	void setAttackPower();
+	void setTowerSetting();
 
 	bool towerSetup;
 	bool towerMenuVisible;

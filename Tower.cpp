@@ -15,43 +15,32 @@ Tower::Tower(int typenum)
 	{
 		this->autorelease();
 	}
-
-	//towerSetup(typenum);
 }
 
 
-void Tower::setAttackDelay()
+void Tower::setTowerSetting()
 {
 	if (_towerType == 1)
 	{
 		_attackDelay = 0.5f;
+		_attackPower = 30.0f;
+		setTexture("Images/Tower/Knight1/Horizontal_3.png");
 	}
 	else if (_towerType == 2)
 	{
 		_attackDelay = 1.0f;
+		_attackPower = 20.0f;
+		setTexture("Images/Tower/Rogue1/Horizontal_3.png");	//Rogue 도적.
 	}
 	else if (_towerType == 3)
 	{
 		_attackDelay = 2.0f;
-	}
-}
-
-void Tower::setAttackPower()
-{
-	if (_towerType == 1)
-	{
 		_attackPower = 30.0f;
+		setTexture("Images/Tower/Magician1/Horizontal_3.png");
 	}
-	else if (_towerType == 2)
-	{
-		_attackPower = 20.0f;
-	}
-	else if (_towerType == 3)
-	{
-		_attackPower = 30.0f;
-	}
-}
 
+	setAnchorPoint(Vec2(0.5, 0.3));
+}
 void Tower::setPriorityWithThis(bool useNodePriority)
 {
 	_useNodePriority = useNodePriority;
@@ -65,32 +54,35 @@ void Tower::setpMonster(Vector<Monster*> *_repMonster)
 void Tower::onEnter()
 {
 	Sprite::onEnter();
-	setAttackDelay();
-	setAttackPower();
+	setTowerSetting();
+	
+	towerContentSize = this->getContentSize();
 
 	auto listener = EventListenerTouchOneByOne::create();
 	//listener->setSwallowTouches(true);
 
-	b_Yes = Sprite::create("Images/Button/scaled-at-25/b_Yes.png");
-	b_Yes->setPosition(Vec2(30, 30));
-	b_Yes->setAnchorPoint(Vec2(1, 0));
+	b_Yes = Sprite::create("Images/Button/b_Yes.png");
+	b_Yes->setPosition(Vec2(towerContentSize.width / 2, towerContentSize.height));
+	b_Yes->setAnchorPoint(Vec2(0, 0));
 	addChild(b_Yes, 50);
 
-	b_No = Sprite::create("Images/Button/scaled-at-25/b_No.png");
-	b_No->setPosition(Vec2(0, 30));
-	b_No->setAnchorPoint(Vec2(0, 0));
+	b_No = Sprite::create("Images/Button/b_No.png");
+	b_No->setPosition(Vec2(towerContentSize.width / 2, towerContentSize.height));
+	b_No->setAnchorPoint(Vec2(1, 0));
 	addChild(b_No, 50);
 
 	towerMenuVisible = true;
 
+
 	listener->onTouchBegan = [=](Touch* touch, Event* event)
 	{
+		log("TowerBegan");
 		Vec2 LocationInNode = this->convertToNodeSpace(touch->getLocation());
 
 			bool b_YesTouch = b_Yes->getBoundingBox().containsPoint(LocationInNode);
 			if (b_YesTouch && towerMenuVisible)
 			{
-				log("Yes!");
+				//log("Yes!");
 				towerSetup = true;
 				towerMenuVisible = false;
 				b_No->setVisible(false);
@@ -103,25 +95,19 @@ void Tower::onEnter()
 			bool b_NoTouch = b_No->getBoundingBox().containsPoint(LocationInNode);
 			if (b_NoTouch && towerMenuVisible)
 			{
+				//log("No..");
 				towerSetup = false;
 				towerMenuVisible = false;
 				removeFromParent();
-				log("No..");
 			}
 
-		Size s = this->getContentSize();
-		Rect rect = Rect(0, 0, s.width, s.height);
+		Rect rect = Rect(0, 0, towerContentSize.width, towerContentSize.height);
 		
 		if (rect.containsPoint(LocationInNode))
 		{
-			log("%d번 타워", _towerType);
+			//log("%d번 타워", _towerType);
 			//_attackPower *= 1.2;
-
-			/*auto abc = Sprite::create("Images/bar_base.png");
-			abc->setPosition(Vec2(0, -20));
-			abc->setAnchorPoint(Vec2(0.5, 0));
-			addChild(abc, 50);*/
-
+			
 			return true;
 		}
 
@@ -130,10 +116,11 @@ void Tower::onEnter()
 
 	listener->onTouchEnded = [=](Touch* touch, Event* event)
 	{
-	
+		
 	};
 
-	_eventDispatcher->addEventListenerWithFixedPriority(listener, 30);
+	//_eventDispatcher->addEventListenerWithFixedPriority(listener, 30);
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
 	_listenter = listener;
 };
 
@@ -161,11 +148,16 @@ void Tower::towerTick(float a)
 				{
 					(*_pMonster).eraseObject(obj);
 				}
-				runAction(Sequence::create(
-					FadeOut::create(0.1f), FadeIn::create(0.1f),
-					nullptr));
-				
-				log("검사는 %f 의 피해를 입혔다!", _attackPower);
+
+				auto animation = Animation::create();
+				animation->setDelayPerUnit(0.1f);
+
+				animation->addSpriteFrameWithFile("Images/Tower/Knight1/Horizontal_1.png");
+				animation->addSpriteFrameWithFile("Images/Tower/Knight1/Horizontal_2.png");
+				animation->addSpriteFrameWithFile("Images/Tower/Knight1/Horizontal_3.png");
+				auto animate = Animate::create(animation);
+
+				runAction(animate);
 				return;
 			}
 		}
@@ -177,10 +169,16 @@ void Tower::towerTick(float a)
 				{
 					(*_pMonster).eraseObject(obj);
 				}
-				runAction(Sequence::create(
-					FadeOut::create(0.2f), FadeIn::create(0.2f),
-					nullptr));
-				log("궁수는 %f 의 피해를 입혔다!", _attackPower);
+
+				auto animation = Animation::create();
+				animation->setDelayPerUnit(0.1f);
+
+				animation->addSpriteFrameWithFile("Images/Tower/Rogue1/Horizontal_1.png");
+				animation->addSpriteFrameWithFile("Images/Tower/Rogue1/Horizontal_2.png");
+				animation->addSpriteFrameWithFile("Images/Tower/Rogue1/Horizontal_3.png");
+				auto animate = Animate::create(animation);
+
+				runAction(animate);
 				return;
 			}
 		}
@@ -192,10 +190,16 @@ void Tower::towerTick(float a)
 				{
 					(*_pMonster).eraseObject(obj);
 				}
-				runAction(Sequence::create(
-					FadeOut::create(0.3f), FadeIn::create(0.3f),
-					nullptr));
-				log("마법사는 %f 의 피해를 입혔다!", _attackPower);
+
+				auto animation = Animation::create();
+				animation->setDelayPerUnit(0.2f);
+
+				animation->addSpriteFrameWithFile("Images/Tower/Magician1/Horizontal_1.png");
+				animation->addSpriteFrameWithFile("Images/Tower/Magician1/Horizontal_2.png");
+				animation->addSpriteFrameWithFile("Images/Tower/Magician1/Horizontal_3.png");
+				auto animate = Animate::create(animation);
+
+				runAction(animate);
 				return;
 			}
 		}

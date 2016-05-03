@@ -22,6 +22,11 @@ bool IntroScene::init()
 
 	Size winSize = Director::getInstance()->getVisibleSize();
 
+	auto Back_Castel = Sprite::create("Images/Back_Castel.png");
+	Back_Castel->setAnchorPoint(Vec2(0, 0));
+
+	addChild(Back_Castel, 0);
+
 	auto pLabel = LabelTTF::create("touch to start",
 		"Arial", 34, Size(300, 200), TextHAlignment::CENTER, TextVAlignment::CENTER);
 

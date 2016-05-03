@@ -33,7 +33,7 @@ bool Menus::init()
 		"Images/Button/b_Parameters.png",
 		"Images/Button/b_Parameters.png",
 		CC_CALLBACK_1(Menus::doClick, this));
-	pMenuItem1->setPosition(Vec2(winSize.width, origin.y));
+	pMenuItem1->setPosition(Vec2(winSize.width, 0));
 	pMenuItem1->setAnchorPoint(Vec2(1, 0));
 
 	MenuItemImage* pMenuItem2;
@@ -54,7 +54,7 @@ bool Menus::init()
 	}
 	
 
-	pMenuItem2->setPosition(Vec2(0, origin.y));
+	pMenuItem2->setPosition(Vec2(0, 0));
 	pMenuItem2->setAnchorPoint(Vec2(0, 0));
 
 	pMenuItem1->setTag(11);
