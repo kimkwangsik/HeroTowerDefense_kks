@@ -19,7 +19,6 @@ GameStageScene::GameStageScene(int stagelevel)
 		return;
 	}
 
-
 	winSizePixel = Director::getInstance()->getWinSizeInPixels();
 	winSize = Director::getInstance()->getWinSize();
 	VisibleWinSize = Director::getInstance()->getVisibleSize();
@@ -46,7 +45,9 @@ GameStageScene::GameStageScene(int stagelevel)
 	addChild(Label1, 2);*/
 
 	auto pScene = Menus::createScene();
+	
 	this->addChild(pScene, 100);
+
 
 	createStage(stagelevel);
 	
@@ -147,8 +148,6 @@ void GameStageScene::createStage(int stagelevel)
 	_Vec2Point.push_back(Vec2(x, y));
 
 	metainfo->setVisible(false);
-
-
 
 	this->addChild(tmap, 0, 11);
 
@@ -271,15 +270,14 @@ void GameStageScene::removeMonster(Monster* monster)
 		{
 			_monster.at(i)->remove();
 			_monster.eraseObject(obj);
-			/*auto hrartObj = (Sprite*)_heart.at(_heart.size() - 1);
+			auto hrartObj = (Sprite*)_heart.at(_heart.size() - 1);
 			hrartObj->removeFromParent();
 			_heart.popBack();
 
 			if (_heart.size() == 0)
 			{
-			log("GameOver");
-			}*/
-
+				log("GameOver");
+			}
 			return;
 		}
 	}
@@ -535,7 +533,6 @@ void GameStageScene::towerMenuCreate()
 		CC_CALLBACK_1(GameStageScene::doClick, this));
 	towerMenuItem2->setPosition(Vec2(winSize.width / 2, 0));
 	towerMenuItem2->setAnchorPoint(Vec2(0.5, 0));
-	//towerMenuItem2->setScale(0.5);
 	towerMenuItem2->setTag(451);
 
 	auto towerMenuItem1 = MenuItemImage::create(
@@ -545,7 +542,6 @@ void GameStageScene::towerMenuCreate()
 	towerMenuItem1->setPosition(Vec2(towerMenuItem2->getPositionX() -
 			towerMenuItem2->getContentSize().width, 0));
 	towerMenuItem1->setAnchorPoint(Vec2(0.5, 0));
-	//towerMenuItem1->setScale(0.5);
 	towerMenuItem1->setTag(450);
 
 	auto towerMenuItem3 = MenuItemImage::create(
@@ -555,18 +551,15 @@ void GameStageScene::towerMenuCreate()
 	towerMenuItem3->setPosition(Vec2(towerMenuItem2->getPositionX() +
 		towerMenuItem2->getContentSize().width, 0));
 	towerMenuItem3->setAnchorPoint(Vec2(0.5, 0));
-	//towerMenuItem3->setScale(0.5);
 	towerMenuItem3->setTag(452);
 
-	auto towerMenuOnOff = MenuItemImage::create(
-		"Images/box-highres.png",
-		"Images/box-highres.png",
+	towerMenuOnOff = MenuItemImage::create(
+		"Images/MenuButton/b_menuOn.png",
+		"Images/MenuButton/b_menuOn.png",
 		CC_CALLBACK_1(GameStageScene::doClick, this));
 	towerMenuOnOff->setPosition(Vec2(winSize.width / 2, towerMenuItem2->getPositionY() + 
 		towerMenuItem2->getContentSize().height));
 	towerMenuOnOff->setAnchorPoint(Vec2(0.5, 0));
-	towerMenuOnOff->setScale(0.5);
-	towerMenuOnOff->setScaleY(0.2);
 	towerMenuOnOff->setTag(453);
 
 	towerMenu = Menu::create(towerMenuItem1, towerMenuItem2, towerMenuItem3, towerMenuOnOff, NULL);
@@ -597,17 +590,22 @@ void GameStageScene::doClick(Ref* pSender)
 	int i = tItem->getTag();
 	if (i == 453 && towerMenu->numberOfRunningActions() == 0)
 	{
-		log("OK");
 		if (towerMenustatus)
 		{
+			log("OK");
 			auto myAction = MoveBy::create(1, Vec2(0, -1 * towerMenuSize));
 			towerMenu->runAction(myAction);
+			towerMenuOnOff->setRotation(180.f);
+			towerMenuOnOff->setAnchorPoint(Vec2(0.5, 1));
 			towerMenustatus = false;
 		}
 		else
 		{
+			log("OK1");
 			auto myAction = MoveBy::create(1, Vec2(0, towerMenuSize));
 			towerMenu->runAction(myAction);
+			towerMenuOnOff->setRotation(0.f);
+			towerMenuOnOff->setAnchorPoint(Vec2(0.5, 0));
 			towerMenustatus = true;
 		}
 	}

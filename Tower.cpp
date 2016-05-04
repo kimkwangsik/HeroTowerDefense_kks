@@ -23,20 +23,23 @@ void Tower::setTowerSetting()
 	if (_towerType == 1)
 	{
 		_attackDelay = 0.5f;
-		_attackPower = 30.0f;
+		_attackPower = 25.0f;
 		setTexture("Images/Tower/Knight1/Horizontal_3.png");
+		sprintf(name, "Knight");
 	}
 	else if (_towerType == 2)
 	{
 		_attackDelay = 1.0f;
 		_attackPower = 20.0f;
 		setTexture("Images/Tower/Rogue1/Horizontal_3.png");	//Rogue 도적.
+		sprintf(name, "Rogue");
 	}
 	else if (_towerType == 3)
 	{
 		_attackDelay = 2.0f;
-		_attackPower = 30.0f;
+		_attackPower = 45.0f;
 		setTexture("Images/Tower/Magician1/Horizontal_3.png");
+		sprintf(name, "Magician");
 	}
 
 	setAnchorPoint(Vec2(0.5, 0.3));
@@ -57,9 +60,17 @@ void Tower::onEnter()
 	setTowerSetting();
 	
 	towerContentSize = this->getContentSize();
+	towerUpgradeLevel = 1;
 
 	auto listener = EventListenerTouchOneByOne::create();
 	//listener->setSwallowTouches(true);
+
+	char levelViewstr[10];
+	sprintf(levelViewstr, "%d", towerUpgradeLevel);
+
+	auto levelView = Label::create(levelViewstr,"Arial",20);
+	levelView->setPosition(Vec2(towerContentSize.width / 2, towerContentSize.height / 2));
+	addChild(levelView, 50);
 
 	b_Yes = Sprite::create("Images/Button/b_Yes.png");
 	b_Yes->setPosition(Vec2(towerContentSize.width / 2, towerContentSize.height));
@@ -73,43 +84,71 @@ void Tower::onEnter()
 
 	towerMenuVisible = true;
 
+	b_Upgrade = Sprite::create("Images/Button/b_Background.png");
+	b_Upgrade->setPosition(Vec2(towerContentSize.width / 2, 0));
+	b_Upgrade->setAnchorPoint(Vec2(0.5, 1));
+	b_Upgrade->setVisible(false);
+	addChild(b_Upgrade, 50);
+
+	towerUpgradeVisible = false;
 
 	listener->onTouchBegan = [=](Touch* touch, Event* event)
 	{
-		log("TowerBegan");
 		Vec2 LocationInNode = this->convertToNodeSpace(touch->getLocation());
 
-			bool b_YesTouch = b_Yes->getBoundingBox().containsPoint(LocationInNode);
-			if (b_YesTouch && towerMenuVisible)
-			{
-				//log("Yes!");
-				towerSetup = true;
-				towerMenuVisible = false;
-				b_No->setVisible(false);
-				b_Yes->setVisible(false);
-				this->setOpacity(255.f);
-				schedule(schedule_selector(Tower::towerTick), _attackDelay);
-				return true;
-			}
+		bool b_YesTouch = b_Yes->getBoundingBox().containsPoint(LocationInNode);
+		if (b_YesTouch && towerMenuVisible)
+		{
+			towerSetup = true;
+			towerMenuVisible = false;
+			b_No->setVisible(false);
+			b_Yes->setVisible(false);
+			this->setOpacity(255.f);
+			schedule(schedule_selector(Tower::towerTick), _attackDelay);
+			return true;
+		}
 
-			bool b_NoTouch = b_No->getBoundingBox().containsPoint(LocationInNode);
-			if (b_NoTouch && towerMenuVisible)
-			{
-				//log("No..");
-				towerSetup = false;
-				towerMenuVisible = false;
-				removeFromParent();
-			}
+		bool b_NoTouch = b_No->getBoundingBox().containsPoint(LocationInNode);
+		if (b_NoTouch && towerMenuVisible)
+		{
+			towerSetup = false;
+			towerMenuVisible = false;
+			removeFromParent();
+		}
+
+
+		bool b_UpgradeTouch = b_Upgrade->getBoundingBox().containsPoint(LocationInNode);
+		if (b_UpgradeTouch && towerUpgradeVisible)
+		{
+			towerUpgradeLevel++;
+			char str[50];
+			sprintf(str, "Images/Tower/%s%d/Horizontal_3.png", name, towerUpgradeLevel);
+
+			char levelViewstr[10];
+			sprintf(levelViewstr, "%d", towerUpgradeLevel);
+			levelView->setString(levelViewstr);
+			setTexture(str);
+
+			_attackPower *= 1.5;
+			towerUpgradeVisible = false;
+			b_Upgrade->setVisible(false);
+			return true;
+		}
 
 		Rect rect = Rect(0, 0, towerContentSize.width, towerContentSize.height);
 		
-		if (rect.containsPoint(LocationInNode))
+		if (rect.containsPoint(LocationInNode) && towerUpgradeVisible == false && towerUpgradeLevel < 3)
 		{
-			//log("%d번 타워", _towerType);
-			//_attackPower *= 1.2;
+			b_Upgrade->setVisible(true);
+			towerUpgradeVisible = true;
+
 			
 			return true;
 		}
+
+
+		towerUpgradeVisible = false;
+		b_Upgrade->setVisible(false);
 
 		return true;
 	};
@@ -149,12 +188,19 @@ void Tower::towerTick(float a)
 					(*_pMonster).eraseObject(obj);
 				}
 
+				char animationStr1[50];
+				sprintf(animationStr1, "Images/Tower/%s%d/Horizontal_%d.png", name, towerUpgradeLevel, 1);
+				char animationStr2[50];
+				sprintf(animationStr2, "Images/Tower/%s%d/Horizontal_%d.png", name, towerUpgradeLevel, 2);
+				char animationStr3[50];
+				sprintf(animationStr3, "Images/Tower/%s%d/Horizontal_%d.png", name, towerUpgradeLevel, 3);
+
 				auto animation = Animation::create();
 				animation->setDelayPerUnit(0.1f);
 
-				animation->addSpriteFrameWithFile("Images/Tower/Knight1/Horizontal_1.png");
-				animation->addSpriteFrameWithFile("Images/Tower/Knight1/Horizontal_2.png");
-				animation->addSpriteFrameWithFile("Images/Tower/Knight1/Horizontal_3.png");
+				animation->addSpriteFrameWithFile(animationStr1);
+				animation->addSpriteFrameWithFile(animationStr2);
+				animation->addSpriteFrameWithFile(animationStr3);
 				auto animate = Animate::create(animation);
 
 				runAction(animate);
@@ -170,12 +216,19 @@ void Tower::towerTick(float a)
 					(*_pMonster).eraseObject(obj);
 				}
 
+				char animationStr1[50];
+				sprintf(animationStr1, "Images/Tower/%s%d/Horizontal_%d.png", name, towerUpgradeLevel, 1);
+				char animationStr2[50];
+				sprintf(animationStr2, "Images/Tower/%s%d/Horizontal_%d.png", name, towerUpgradeLevel, 2);
+				char animationStr3[50];
+				sprintf(animationStr3, "Images/Tower/%s%d/Horizontal_%d.png", name, towerUpgradeLevel, 3);
+
 				auto animation = Animation::create();
 				animation->setDelayPerUnit(0.1f);
 
-				animation->addSpriteFrameWithFile("Images/Tower/Rogue1/Horizontal_1.png");
-				animation->addSpriteFrameWithFile("Images/Tower/Rogue1/Horizontal_2.png");
-				animation->addSpriteFrameWithFile("Images/Tower/Rogue1/Horizontal_3.png");
+				animation->addSpriteFrameWithFile(animationStr1);
+				animation->addSpriteFrameWithFile(animationStr2);
+				animation->addSpriteFrameWithFile(animationStr3);
 				auto animate = Animate::create(animation);
 
 				runAction(animate);
@@ -191,12 +244,19 @@ void Tower::towerTick(float a)
 					(*_pMonster).eraseObject(obj);
 				}
 
+				char animationStr1[50];
+				sprintf(animationStr1, "Images/Tower/%s%d/Horizontal_%d.png", name, towerUpgradeLevel, 1);
+				char animationStr2[50];
+				sprintf(animationStr2, "Images/Tower/%s%d/Horizontal_%d.png", name, towerUpgradeLevel, 2);
+				char animationStr3[50];
+				sprintf(animationStr3, "Images/Tower/%s%d/Horizontal_%d.png", name, towerUpgradeLevel, 3);
+
 				auto animation = Animation::create();
 				animation->setDelayPerUnit(0.2f);
 
-				animation->addSpriteFrameWithFile("Images/Tower/Magician1/Horizontal_1.png");
-				animation->addSpriteFrameWithFile("Images/Tower/Magician1/Horizontal_2.png");
-				animation->addSpriteFrameWithFile("Images/Tower/Magician1/Horizontal_3.png");
+				animation->addSpriteFrameWithFile(animationStr1);
+				animation->addSpriteFrameWithFile(animationStr2);
+				animation->addSpriteFrameWithFile(animationStr3);
 				auto animate = Animate::create(animation);
 
 				runAction(animate);

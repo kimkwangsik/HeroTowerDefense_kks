@@ -26,6 +26,7 @@ public:
 
 	cocos2d::Menu* towerMenu;
 	
+	cocos2d::MenuItemImage* towerMenuOnOff;
 
 	void createStage(int level);
 

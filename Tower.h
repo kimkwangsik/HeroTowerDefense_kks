@@ -17,6 +17,10 @@ public:
 	void setpMonster(cocos2d::Vector<Monster*> *_repMonster);
 	cocos2d::Sprite* b_Yes;
 	cocos2d::Sprite* b_No;
+	cocos2d::Sprite* b_Upgrade;
+
+	int towerUpgradeLevel;
+	char name[10];
 
 	virtual void onEnter();
 	virtual void onExit();
@@ -25,6 +29,7 @@ public:
 
 	bool towerSetup;
 	bool towerMenuVisible;
+	bool towerUpgradeVisible;
 	void towerTick(float a);
 	cocos2d::Vector<Monster*> *_pMonster;
 

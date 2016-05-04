@@ -16,9 +16,13 @@ public:
 
 	cocos2d::Layer* layer1;
 
+	cocos2d::Sprite* introSprite;
+
 	virtual void onEnter();
 	virtual void onExit();
 	virtual bool onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event);
+
+	void createKnight(float a);
 };
 
 #endif // __HELLOWORLD_SCENE_H__

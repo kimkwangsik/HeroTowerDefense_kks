@@ -28,14 +28,46 @@ bool IntroScene::init()
 	addChild(Back_Castel, 0);
 
 	auto pLabel = LabelTTF::create("touch to start",
-		"Arial", 34, Size(300, 200), TextHAlignment::CENTER, TextVAlignment::CENTER);
+		"Arial", 34);
 
-	pLabel->setPosition(Vec2(winSize.width / 2, winSize.height / 2));
+	pLabel->setPosition(Vec2(winSize.width - 20, winSize.height / 2));
 	pLabel->setColor(Color3B::BLACK);
+	pLabel->setAnchorPoint(Vec2(1, 0.5));
 	pLabel->setOpacity(255.0);
 	this->addChild(pLabel);
 
+	createKnight(1);
+
 	return true;
+}
+
+void IntroScene::createKnight(float a)
+{
+	introSprite = Sprite::create("Images/Tower/Knight1/Walking_Horizontal_1.png");
+	
+	introSprite->setPosition(Vec2(270 + introSprite->getContentSize().width / 2,
+		28 + introSprite->getContentSize().height / 2));
+	//introSprite->setAnchorPoint(Vec2::ZERO);
+	addChild(introSprite);
+
+	auto animation = Animation::create();
+	animation->setDelayPerUnit(0.2f);
+
+	animation->addSpriteFrameWithFile("Images/Tower/Knight1/Walking_Horizontal_1.png");
+	animation->addSpriteFrameWithFile("Images/Tower/Knight1/Walking_Horizontal_2.png");
+	animation->addSpriteFrameWithFile("Images/Tower/Knight1/Walking_Horizontal_3.png");
+	animation->addSpriteFrameWithFile("Images/Tower/Knight1/Walking_Horizontal_4.png");
+	auto animate = Animate::create(animation);
+	auto repAnimate = RepeatForever::create(animate);
+
+	auto replace = Place::create(Vec2(270 + introSprite->getContentSize().width / 2,
+		28 + introSprite->getContentSize().height / 2));
+
+	auto seqMove = Sequence::create(replace, MoveBy::create(5, Vec2(250, 0)), nullptr);
+	auto repMove = RepeatForever::create(seqMove);
+
+	introSprite->runAction(repAnimate);
+	introSprite->runAction(repMove);
 }
 
 void IntroScene::onEnter() {
@@ -54,6 +86,21 @@ void IntroScene::onExit() {
 	Layer::onExit();
 }
 bool IntroScene::onTouchBegan(Touch* touch, Event* event) {
+
+	auto touchPoint = touch->getLocation();
+	log("touch : %f , %f", touchPoint.x, touchPoint.y);
+
+	if (introSprite->getBoundingBox().containsPoint(touchPoint))
+	{
+		introSprite->setRotation(0.f);
+		auto Action = MoveBy::create(1, Vec2(-300, 300));
+		auto roAction = RotateBy::create(1, -720.f);
+
+		auto throw_action = Spawn::create(Action, roAction, nullptr);
+
+		introSprite->runAction(throw_action);
+		return true;
+	}
 
 	auto pScene = MainScene::createScene();
 	Director::getInstance()->replaceScene(pScene);

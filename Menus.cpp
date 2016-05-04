@@ -12,12 +12,16 @@ Scene* Menus::createScene()
 	return scene;
 }
 
+
 bool Menus::init()
 {
 	if (!Layer::init())
 	{
 		return false;
 	}
+
+	pauseNow = false;
+
 	winSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
@@ -57,10 +61,27 @@ bool Menus::init()
 	pMenuItem2->setPosition(Vec2(0, 0));
 	pMenuItem2->setAnchorPoint(Vec2(0, 0));
 
+
+	auto pMenuItem3 = MenuItemImage::create(
+		"Images/Button/b_Pause1.png",
+		"Images/Button/b_Pause1.png",
+		CC_CALLBACK_1(Menus::doClick, this));
+	pMenuItem3->setPosition(Vec2(winSize.width - pMenuItem1->getContentSize().width, 0));
+	pMenuItem3->setAnchorPoint(Vec2(1, 0));
+	if (0)
+	{
+		pMenuItem3->setVisible(true);
+	}
+	else
+	{
+		pMenuItem3->setVisible(false);
+	}
+
 	pMenuItem1->setTag(11);
 	pMenuItem2->setTag(12);
+	pMenuItem3->setTag(13);
 
-	auto pMenu = Menu::create(pMenuItem1, pMenuItem2, NULL);
+	auto pMenu = Menu::create(pMenuItem1, pMenuItem2, pMenuItem3, NULL);
 	pMenu->setPosition(Vec2(0, 0));
 	menubar->addChild(pMenu);
 
@@ -75,24 +96,25 @@ void Menus::doClick(Ref* pSender)
 	{
 		log("메뉴가 선택되었습니다.");
 		auto pScene = Options::createScene();
-		this->addChild(pScene,3000);
+		this->addChild(pScene, 3000);
 	}
 	else if (i == 12)
 	{
 		log("X를 클릭 하셧습니다.");
 		Director::getInstance()->popScene();
 	}
-	
-}
-
-void Menus::doMsgReceived(Ref* obj)
-{
-	
-
-	/*char *inputStr = (char*)obj;
-	
-	sprintf(sceneText, "%s", inputStr);
-
-	log("[%s] 메시지 도착", sceneText);*/
+	else if (i == 13 && 0)
+	{
+		if (pauseNow)
+		{
+			Director::getInstance()->resume();
+			pauseNow = false;
+		}
+		else
+		{
+			Director::getInstance()->pause();
+			pauseNow = true;
+		}
+	}
 	
 }

@@ -35,12 +35,12 @@ bool MainScene::init()
 	pMenuItem1->setColor(Color3B(0, 0, 0));
 
 	auto pMenuItem2 = MenuItemFont::create(
-		" 무한모드 ",
+		" 무한모드(미구현) ",
 		CC_CALLBACK_1(MainScene::doClick, this));
 	pMenuItem2->setColor(Color3B(0, 0, 0));
 
 	auto pMenuItem3 = MenuItemFont::create(
-		" 영웅 관리 ",
+		" 영웅 관리(미구현) ",
 		CC_CALLBACK_1(MainScene::doClick, this));
 	pMenuItem3->setColor(Color3B(0, 0, 0));
 

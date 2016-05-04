@@ -41,7 +41,7 @@ bool Options::init()
 }
 void Options::onEnter() {
 	Layer::onEnter();
-
+	Director::getInstance()->pause();
 	auto listener = EventListenerTouchOneByOne::create();
 
 	listener->setSwallowTouches(true);
@@ -52,6 +52,7 @@ void Options::onEnter() {
 }
 void Options::onExit() {
 	//_eventDispatcher->removeEventListenersForType(EventListener::Type::TOUCH_ONE_BY_ONE);
+	Director::getInstance()->resume();
 	Layer::onExit();
 }
 bool Options::onTouchBegan(Touch* touch, Event* event) {

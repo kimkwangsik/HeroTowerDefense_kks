@@ -122,5 +122,5 @@ TableViewCell* StageSelectScene::tableCellAtIndex(TableView* table, ssize_t idx)
 
 ssize_t StageSelectScene::numberOfCellsInTableView(TableView* table)
 {
-	return 20;
+	return 2;
 }
