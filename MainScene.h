@@ -15,6 +15,12 @@ public:
 	void doClick(Ref* pSender);
 	void doNoClick(Ref* pSender);
 
+
+	cocos2d::Size VisibleWinSize;
+
+	cocos2d::TMXTiledMap* tmap;
+	cocos2d::TMXObjectGroup* objects;
+
 	//virtual void onEnter();
 };
 

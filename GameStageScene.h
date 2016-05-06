@@ -9,6 +9,9 @@ class GameStageScene : public cocos2d::LayerColor
 {
 public:
 	static cocos2d::Scene* createScene();
+	GameStageScene(int stagelevel);
+
+	int nowStageLevel;
 
 	cocos2d::TMXTiledMap* tmap;
 	cocos2d::TMXLayer* metainfo;
@@ -17,6 +20,8 @@ public:
 	cocos2d::Vector<cocos2d::Sprite*> _heart;
 	int _heartCount;
 	void heartCreate(int a, cocos2d::Vec2 position);
+	bool gameOver;
+	bool towerStop;
 
 	cocos2d::Size winSize;
 	cocos2d::Size VisibleWinSize;
@@ -69,6 +74,7 @@ public:
 	bool towerTouch = false;
 
 	void myTick(float f);
+	void bossTick(float f);
 	void SpriteProgressToRadial(float f);
 
 	//cocos2d::Vector<cocos2d::Sprite*> _monster;
@@ -82,7 +88,6 @@ public:
 
 	cocos2d::Vec2 tileCoordForPosition(cocos2d::Vec2 position);
 	cocos2d::Vec2 positionForTileCoord(cocos2d::Vec2 position);
-	GameStageScene(int stagelevel);
 
 	bool towerMenustatus = true;
 	float towerMenuSize;

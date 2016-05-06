@@ -1,5 +1,6 @@
 #include "GameStageScene.h"
 #include "Menus.h"
+#include "GameEnd.h"
 
 USING_NS_CC;
 
@@ -18,6 +19,11 @@ GameStageScene::GameStageScene(int stagelevel)
 	{
 		return;
 	}
+
+	nowStageLevel = stagelevel;
+
+	gameOver = false;
+	towerStop = true;
 
 	winSizePixel = Director::getInstance()->getWinSizeInPixels();
 	winSize = Director::getInstance()->getWinSize();
@@ -177,6 +183,7 @@ Sequence* GameStageScene::SequenceMonsterAdd(int num, int max)
 
 	auto myAction = Sequence::create(
 		addAction, SequenceMonsterAdd(++num, max), nullptr);
+
 	return myAction;
 }
 
@@ -220,7 +227,7 @@ Sequence* GameStageScene::MoveAction(Monster* monster)
 			dis = -1 * dis;
 		}
 
-		auto action = MoveTo::create(dis / 30.0f, Vec2(afterVec2.x, afterVec2.y));
+		auto action = MoveTo::create(dis / 120.0f, Vec2(afterVec2.x, afterVec2.y));
 
 		_Action.pushBack(action);
 	}
@@ -263,23 +270,61 @@ Sequence* GameStageScene::SequenceMoveAction(Monster* monster, int num , int max
 
 void GameStageScene::removeMonster(Monster* monster)
 {
-	for (int i = 0; i < _monster.size(); i++)
+	for (int i = 0; i < _monster.size(); )
 	{
-		auto obj = (Monster*)_monster.at(i);
-		if (monster == obj)
-		{
-			_monster.at(i)->remove();
-			_monster.eraseObject(obj);
-			auto hrartObj = (Sprite*)_heart.at(_heart.size() - 1);
-			hrartObj->removeFromParent();
-			_heart.popBack();
+		auto monsterObj = (Monster*)_monster.at(i);
 
-			if (_heart.size() == 0)
+		
+
+		if (gameOver)
+		{
+			monsterObj->stopAllActions();
+			if (towerStop)
 			{
-				log("GameOver");
+				
+				stopAllActions();
+
+				for (int j = 0; j < _setupTower.size(); j++)
+				{
+					auto towerObj = (Tower*)_setupTower.at(j);
+					towerObj->unscheduleAllSelectors();
+				}
+				towerStop = false;
 			}
-			return;
 		}
+		
+		if (monster == monsterObj)
+		{
+			
+			if (_heart.size() > 0)
+			{
+				_monster.at(i)->remove();
+				_monster.eraseObject(monsterObj);
+				auto hrartObj = (Sprite*)_heart.at(_heart.size() - 1);
+				hrartObj->removeFromParent();
+				_heart.popBack();
+
+			}
+			if (_heart.size() == 0 && !gameOver)
+			{
+				i--;
+				gameOver = true;
+				log("GameOver");
+				
+				unscheduleAllSelectors();
+
+				auto pScene = GameEnd::createScene();
+				auto stageResult = new GameEnd(nowStageLevel, _heart.size());
+				stageResult->autorelease();
+				pScene->addChild(stageResult);
+
+				this->addChild(pScene, 3000);
+			}
+			
+			
+			//return;
+		}
+		i++;
 	}
 }
 
@@ -289,12 +334,12 @@ void GameStageScene::myTick(float f)
 	{
 		gauge = gauge - 4;
 	}
-	else
+	else if (phaseLevel <= 5)
 	{
 		gauge = gauge - 2;
 	}
 	this->SpriteProgressToRadial(gauge);
-	if (gauge < 0)
+	if (gauge < 0 && phaseLevel < 5)
 	{
 		gauge = 100;
 		++phaseLevel;
@@ -303,6 +348,37 @@ void GameStageScene::myTick(float f)
 		phaseLabel->setString(phase);
 		runAction(SequenceMonsterAdd(0, 10));
 	}
+	if (gauge == 0 && 5 == phaseLevel)
+	{
+		//phaseLevel++;
+		/*gauge = 100;
+		++phaseLevel;
+		char phase[20];
+		sprintf(phase, "BOSS phase");*/
+		phaseLabel->setString("BOSS phase");
+		runAction(SequenceMonsterAdd(0, 1));
+		this->unschedule(schedule_selector(GameStageScene::myTick));
+		this->schedule(schedule_selector(GameStageScene::bossTick));
+
+	}
+}
+
+void GameStageScene::bossTick(float f)
+{
+	if (_monster.size() == 0)
+	{
+		log("clear!!");
+
+		auto pScene = GameEnd::createScene();
+		auto stageResult = new GameEnd(nowStageLevel, _heart.size());
+		stageResult->autorelease();
+		pScene->addChild(stageResult);
+
+		this->addChild(pScene, 3000);
+
+		this->unschedule(schedule_selector(GameStageScene::bossTick));
+	}
+
 }
 
 void GameStageScene::SpriteProgressToRadial(float f)
