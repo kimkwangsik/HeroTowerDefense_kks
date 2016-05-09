@@ -63,12 +63,13 @@ void Tower::onEnter()
 	towerUpgradeLevel = 1;
 
 	auto listener = EventListenerTouchOneByOne::create();
-	//listener->setSwallowTouches(true);
+
+	listener->setSwallowTouches(true);
 
 	char levelViewstr[10];
 	sprintf(levelViewstr, "%d", towerUpgradeLevel);
 
-	auto levelView = Label::create(levelViewstr,"Arial",20);
+	levelView = Label::create(levelViewstr,"Arial",20);
 	levelView->setPosition(Vec2(towerContentSize.width / 2, towerContentSize.height / 2));
 	addChild(levelView, 50);
 
@@ -84,11 +85,11 @@ void Tower::onEnter()
 
 	towerMenuVisible = true;
 
-	b_Upgrade = Sprite::create("Images/Button/b_Background.png");
+	/*b_Upgrade = Sprite::create("Images/Button/b_Background.png");
 	b_Upgrade->setPosition(Vec2(towerContentSize.width / 2, 0));
 	b_Upgrade->setAnchorPoint(Vec2(0.5, 1));
 	b_Upgrade->setVisible(false);
-	addChild(b_Upgrade, 50);
+	addChild(b_Upgrade, 50);*/
 
 	towerUpgradeVisible = false;
 
@@ -105,6 +106,7 @@ void Tower::onEnter()
 			b_Yes->setVisible(false);
 			this->setOpacity(255.f);
 			schedule(schedule_selector(Tower::towerTick), _attackDelay);
+			_eventDispatcher->removeEventListener(_listenter);
 			return true;
 		}
 
@@ -117,7 +119,7 @@ void Tower::onEnter()
 		}
 
 
-		bool b_UpgradeTouch = b_Upgrade->getBoundingBox().containsPoint(LocationInNode);
+		/*bool b_UpgradeTouch = b_Upgrade->getBoundingBox().containsPoint(LocationInNode);
 		if (b_UpgradeTouch && towerUpgradeVisible)
 		{
 			towerUpgradeLevel++;
@@ -148,9 +150,9 @@ void Tower::onEnter()
 
 
 		towerUpgradeVisible = false;
-		b_Upgrade->setVisible(false);
+		b_Upgrade->setVisible(false);*/
 
-		return true;
+		return false;
 	};
 
 	listener->onTouchEnded = [=](Touch* touch, Event* event)
@@ -158,8 +160,8 @@ void Tower::onEnter()
 		
 	};
 
-	//_eventDispatcher->addEventListenerWithFixedPriority(listener, 30);
-	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
+	_eventDispatcher->addEventListenerWithFixedPriority(listener, 30);
+	//_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
 	_listenter = listener;
 };
 

@@ -15,6 +15,7 @@ public:
 
 	void setPriorityWithThis(bool usdNodePriority);
 	void setpMonster(cocos2d::Vector<Monster*> *_repMonster);
+
 	cocos2d::Sprite* b_Yes;
 	cocos2d::Sprite* b_No;
 	cocos2d::Sprite* b_Upgrade;
@@ -32,15 +33,16 @@ public:
 	bool towerUpgradeVisible;
 	void towerTick(float a);
 	cocos2d::Vector<Monster*> *_pMonster;
+	cocos2d::EventListener* _listenter;
+	float _attackPower;
+	cocos2d::Label* levelView;
 
 private:
-	cocos2d::EventListener* _listenter;
 	int _fixedPriority;
 	bool _useNodePriority;
 	int _towerType;
 	bool _setupBegan;
 	float _attackDelay;
-	float _attackPower;
 };
 
 #endif //defined(__SpriteExtendEx__Monster__)//

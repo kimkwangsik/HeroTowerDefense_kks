@@ -40,7 +40,7 @@ bool IntroScene::init()
 
 	return true;
 }
-
+  
 void IntroScene::createKnight(float a)
 {
 	introSprite = Sprite::create("Images/Tower/Knight1/Walking_Horizontal_1.png");

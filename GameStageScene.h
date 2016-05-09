@@ -32,20 +32,21 @@ public:
 	cocos2d::Menu* towerMenu;
 	
 	cocos2d::MenuItemImage* towerMenuOnOff;
+	cocos2d::Sprite* b_Upgrade;
 
 	void createStage(int level);
 
 	int towerTpye;
 	Tower* clickTower;
+	int upgradeTowerNum;
 	cocos2d::Sprite* moveSprtie;
 	cocos2d::Vector<Tower*> _setupTower;
-	void setupTower(Tower* tower);
 
 	cocos2d::EventListener* _listenter;
 
 	int viaX[15];
 	int viaY[15];
-
+	bool towerUpgradeVisible;
 
 	void addMonster();
 	void removeMonster(Monster* slime);
@@ -61,9 +62,6 @@ public:
 
 	std::vector<cocos2d::Vec2> _Vec2Point;
 
-	//cocos2d::Vector<cocos2d::Vec2> objVec2;
-
-
 	cocos2d::Sprite* timerBase;
 	cocos2d::Sprite* timerGauge;
 	int gauge;
@@ -75,9 +73,6 @@ public:
 
 	void myTick(float f);
 	void bossTick(float f);
-	void SpriteProgressToRadial(float f);
-
-	//cocos2d::Vector<cocos2d::Sprite*> _monster;
 
 	virtual void onEnter();
 	virtual void onExit();
@@ -94,9 +89,6 @@ public:
 
 	void masicMenuCreate();
 	void towerMenuCreate();
-
-
-
 };
 
 #endif // __HELLOWORLD_SCENE_H__

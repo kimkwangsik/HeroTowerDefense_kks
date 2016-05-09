@@ -24,14 +24,15 @@ GameStageScene::GameStageScene(int stagelevel)
 
 	gameOver = false;
 	towerStop = true;
+	towerUpgradeVisible = false;
 
 	winSizePixel = Director::getInstance()->getWinSizeInPixels();
 	winSize = Director::getInstance()->getWinSize();
 	VisibleWinSize = Director::getInstance()->getVisibleSize();
 	origin = Director::getInstance()->getVisibleOrigin();
 
+
 	/*
-	
 	char winSizeStr[50];
 	sprintf(winSizeStr, "%f , %f", winSize.width, winSize.height);
 	
@@ -56,10 +57,15 @@ GameStageScene::GameStageScene(int stagelevel)
 
 
 	createStage(stagelevel);
+
+	b_Upgrade = Sprite::create("Images/Button/b_Background.png");
+	b_Upgrade->setPosition(Vec2(100, 100));
+	b_Upgrade->setAnchorPoint(Vec2(0.5, 1));
+	b_Upgrade->setVisible(false);
+	tmap->addChild(b_Upgrade, 102);
 	
 	return;
 }
-
 
 void GameStageScene::createStage(int stagelevel)
 {
@@ -227,7 +233,7 @@ Sequence* GameStageScene::MoveAction(Monster* monster)
 			dis = -1 * dis;
 		}
 
-		auto action = MoveTo::create(dis / 120.0f, Vec2(afterVec2.x, afterVec2.y));
+		auto action = MoveTo::create(dis / 30.0f, Vec2(afterVec2.x, afterVec2.y));
 
 		_Action.pushBack(action);
 	}
@@ -338,7 +344,8 @@ void GameStageScene::myTick(float f)
 	{
 		gauge = gauge - 2;
 	}
-	this->SpriteProgressToRadial(gauge);
+	gaugeBar->setPercentage(f);
+	//this->SpriteProgressToRadial(gauge);
 	if (gauge < 0 && phaseLevel < 5)
 	{
 		gauge = 100;
@@ -350,16 +357,10 @@ void GameStageScene::myTick(float f)
 	}
 	if (gauge == 0 && 5 == phaseLevel)
 	{
-		//phaseLevel++;
-		/*gauge = 100;
-		++phaseLevel;
-		char phase[20];
-		sprintf(phase, "BOSS phase");*/
 		phaseLabel->setString("BOSS phase");
 		runAction(SequenceMonsterAdd(0, 1));
 		this->unschedule(schedule_selector(GameStageScene::myTick));
 		this->schedule(schedule_selector(GameStageScene::bossTick));
-
 	}
 }
 
@@ -381,11 +382,6 @@ void GameStageScene::bossTick(float f)
 
 }
 
-void GameStageScene::SpriteProgressToRadial(float f)
-{
-	gaugeBar->setPercentage(f);
-}
-
 void GameStageScene::onEnter() {
 	Layer::onEnter();
 
@@ -397,8 +393,8 @@ void GameStageScene::onEnter() {
 	listener->onTouchMoved = CC_CALLBACK_2(GameStageScene::onTouchMoved, this);
 	listener->onTouchEnded = CC_CALLBACK_2(GameStageScene::onTouchEnded, this);
 	
-	//_eventDispatcher->addEventListenerWithFixedPriority(listener, 50);
-	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
+	_eventDispatcher->addEventListenerWithFixedPriority(listener, 1);
+	//_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
 	_listenter = listener;
 	//_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
 }
@@ -409,8 +405,6 @@ void GameStageScene::onExit() {
 }
 
 bool GameStageScene::onTouchBegan(Touch* touch, Event* event) {
-
-	log("GameBegan");
 	auto touchPoint = touch->getLocation();
 
 	Vec2 tmapConvertPoint = tmap->convertToNodeSpace(touchPoint);
@@ -428,27 +422,14 @@ bool GameStageScene::onTouchBegan(Touch* touch, Event* event) {
 
 	if (towerTouch)
 	{
-		/*if (towerTpye == 1)
-		{
-			clickTower = new Tower(1);
-		}
-		else if (towerTpye == 2)
-		{
-			clickTower = new Tower(2);
-		}
-		else
-		{
-			clickTower = new Tower(3);
-		}*/
-
 		clickTower = new Tower(towerTpye);
 		clickTower->setPosition(tmapConvertPoint);
 		clickTower->setOpacity(100.f);
 		clickTower->setpMonster(_pMonster);
 
 		tmap->addChild(clickTower, 101);
+		return true;
 	}
-
 	return true;
 }
 
@@ -464,13 +445,12 @@ void GameStageScene::onTouchMoved(Touch* touch, Event* event)
 
 void GameStageScene::onTouchEnded(Touch* touch, Event* event)
 {
-
-	//log("onTouchEnded");
 	auto touchPoint = touch->getLocation();
+	Vec2 tmapConvertPoint = tmap->convertToNodeSpace(touchPoint);
 
 	if (towerTouch)
 	{
-		Vec2 tmapConvertPoint = tmap->convertToNodeSpace(touchPoint);
+		//Vec2 tmapConvertPoint = tmap->convertToNodeSpace(touchPoint);
 
 		int xPoint = tmapConvertPoint.x / 30;
 		int yPoint = tmapConvertPoint.y / 30;
@@ -528,11 +508,52 @@ void GameStageScene::onTouchEnded(Touch* touch, Event* event)
 			towerTouch = false;
 		}
 	}
-}
+	else
+	{
+		if (towerUpgradeVisible)
+		{
+			towerUpgradeVisible = false;
+			b_Upgrade->setVisible(false);
+			auto obj = (Tower*)_setupTower.at(upgradeTowerNum);
+			bool b_UpgradeTouch = b_Upgrade->getBoundingBox().containsPoint(tmapConvertPoint);
+			if (b_UpgradeTouch)
+			{
+				obj->towerUpgradeLevel++;
+				char str[50];
+				sprintf(str, "Images/Tower/%s%d/Horizontal_3.png", obj->name, obj->towerUpgradeLevel);
 
-void GameStageScene::setupTower(Tower* clickTower)
-{
+				char levelViewstr[10];
+				sprintf(levelViewstr, "%d", obj->towerUpgradeLevel);
+				obj->levelView->setString(levelViewstr);
+				obj->setTexture(str);
 
+				obj->_attackPower *= 1.5;
+			}
+		}
+
+		for (int i = 0; i != _setupTower.size(); i++)
+		{
+			auto obj = (Tower*)_setupTower.at(i);
+			Rect rect = Rect(obj->getPositionX() - 15,
+				obj->getPositionY() - 15,
+				30,	30);
+			//Vec2 LocationInNode = this->convertToNodeSpace(touchPoint);
+			obj->setOpacity(255.f);
+
+			if (rect.containsPoint(tmapConvertPoint) && obj->towerUpgradeLevel < 3)
+			{
+				int xPoint = obj->getPositionX() / 30;
+				int yPoint = obj->getPositionY() / 30;
+
+				b_Upgrade->setPosition(Vec2(xPoint * 30 + 15, yPoint * 30));
+
+				upgradeTowerNum = i;
+				towerUpgradeVisible = true;
+				b_Upgrade->setVisible(true);
+				obj->setOpacity(150.f);
+			}
+		}
+	}	
 }
 
 void GameStageScene::heartCreate(int num,Vec2 position)
@@ -651,9 +672,19 @@ void GameStageScene::towerMenuCreate()
 
 void GameStageScene::doClick(Ref* pSender)
 {
+
+	//메뉴 클릭시 타워 업그레이드 중지
+	towerUpgradeVisible = false;
+	b_Upgrade->setVisible(false);
 	for (int i = 0; i != _setupTower.size(); i++)
 	{
-		//타워 설치중이면 바로 리턴
+		auto obj = (Tower*)_setupTower.at(i);
+		obj->setOpacity(255.f);
+	}
+
+	//타워 설치중이면 메뉴 클릭 불가능
+	for (int i = 0; i != _setupTower.size(); i++)
+	{
 		auto obj = (Tower*)_setupTower.at(i);
 		auto bol = obj->towerMenuVisible;
 		if (bol)
