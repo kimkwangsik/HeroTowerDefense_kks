@@ -1,5 +1,8 @@
 #include "Menus.h"
 #include "Options.h"
+#include "GameStageScene.h"
+#include "StageSelectScene.h"
+#include "MainScene.h"
 
 USING_NS_CC;
 
@@ -12,14 +15,14 @@ Scene* Menus::createScene()
 	return scene;
 }
 
-
-bool Menus::init()
+void Menus::setpGold(int *_pnowStageGold)
 {
-	if (!Layer::init())
-	{
-		return false;
-	}
+	nowStageGold = _pnowStageGold;
+}
 
+Menus::Menus(std::string SceneName)
+{
+	nowSceneName = SceneName;
 	pauseNow = false;
 
 	winSize = Director::getInstance()->getVisibleSize();
@@ -30,6 +33,24 @@ bool Menus::init()
 	menubar->setAnchorPoint(Vec2(0.5, 1));
 	menubar->setTag(300);
 	addChild(menubar);
+
+	auto nowSceneNameLabel = LabelTTF::create(SceneName, "Arial", 20);
+	nowSceneNameLabel->setPosition(Vec2(winSize.width / 2, 0));
+	nowSceneNameLabel->setColor(Color3B::BLACK);
+	nowSceneNameLabel->setAnchorPoint(Vec2(0.5, 1));
+	menubar->addChild(nowSceneNameLabel);
+
+	if (nowSceneName == "GameStageScene")
+	{
+		char nowgold[10];
+		sprintf(nowgold, "%d", 0);
+
+		stageGold = LabelTTF::create(nowgold, "Arial", 20);
+		stageGold->setPosition(Vec2(winSize.width / 2 + 50, 0));
+		stageGold->setColor(Color3B::BLACK);
+		stageGold->setAnchorPoint(Vec2(0.5, 0));
+		menubar->addChild(stageGold);
+	}
 
 	log("%f", menubar->getContentSize().height);
 
@@ -56,7 +77,7 @@ bool Menus::init()
 			"Images/Button/b_back.png",
 			CC_CALLBACK_1(Menus::doClick, this));
 	}
-	
+
 
 	pMenuItem2->setPosition(Vec2(0, 0));
 	pMenuItem2->setAnchorPoint(Vec2(0, 0));
@@ -85,8 +106,34 @@ bool Menus::init()
 	pMenu->setPosition(Vec2(0, 0));
 	menubar->addChild(pMenu);
 
+	int i = UserDefault::getInstance()->getIntegerForKey("have_gold");
+	log("have_gold is %d", i);
 
-	return true;
+	char gold[10];
+	sprintf(gold, "%d", i);
+
+	goldLabel = LabelTTF::create(gold, "Arial", 20);
+
+	goldLabel->setPosition(Vec2(winSize.width / 2, 0));
+	goldLabel->setColor(Color3B::BLACK);
+	goldLabel->setAnchorPoint(Vec2(0.5, 0));
+	menubar->addChild(goldLabel);
+
+
+	this->schedule(schedule_selector(Menus::nowGold));
+
+
+	/*auto gold = Sprite3D::create("gold.obj");
+	gold->setScale(2.0f);
+	gold->setPosition(Vec2(winSize.width/2, 5));
+	gold->setPositionZ(10.f);
+	gold->setColor(Color3B::YELLOW);
+	gold->setGlobalZOrder(10);
+	gold->setRotation3D(Vec3(-45, 0, -45));
+	menubar->addChild(gold);*/
+
+
+	return;
 }
 
 void Menus::doClick(Ref* pSender)
@@ -102,7 +149,20 @@ void Menus::doClick(Ref* pSender)
 	else if (i == 12)
 	{
 		log("X를 클릭 하셧습니다.");
-		Director::getInstance()->popScene();
+		//Director::getInstance()->popScene();
+
+		if (nowSceneName == "GameStageScene")
+		{
+			auto pScene = StageSelectScene::createScene();
+			Director::getInstance()->replaceScene(pScene);
+		}
+		else if (nowSceneName == "StageSelectScene")
+		{
+			auto pScene = MainScene::createScene();
+			Director::getInstance()->replaceScene(pScene);
+		}
+
+		
 	}
 	else if (i == 13 && 0)
 	{
@@ -118,4 +178,20 @@ void Menus::doClick(Ref* pSender)
 		}
 	}
 	
+}
+
+void Menus::nowGold(float dt)
+{
+	int i = UserDefault::getInstance()->getIntegerForKey("have_gold");
+	char gold[10];
+	sprintf(gold, "%d", i);
+	goldLabel->setString(gold);
+
+	if (nowSceneName == "GameStageScene")
+	{
+		char nowgold[10];
+		sprintf(nowgold, "%d", *nowStageGold);
+
+		stageGold->setString(nowgold);
+	}
 }

@@ -3,7 +3,7 @@
 
 #include "cocos2d.h"
 
-class MainScene : public cocos2d::LayerColor
+class MainScene : public cocos2d::Layer
 {
 public:
     static cocos2d::Scene* createScene();

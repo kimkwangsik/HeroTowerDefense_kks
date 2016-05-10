@@ -9,6 +9,7 @@ Tower::Tower(int typenum)
 	, _towerType(typenum)
 	, _attackDelay(1.0f)
 	, _attackPower(10.0f)
+	, cost(0)
 {
 	bool b0k = initWithTexture(nullptr, Rect::ZERO);
 	if (b0k)
@@ -24,6 +25,7 @@ void Tower::setTowerSetting()
 	{
 		_attackDelay = 0.5f;
 		_attackPower = 25.0f;
+		cost = 10;
 		setTexture("Images/Tower/Knight1/Horizontal_3.png");
 		sprintf(name, "Knight");
 	}
@@ -31,6 +33,7 @@ void Tower::setTowerSetting()
 	{
 		_attackDelay = 1.0f;
 		_attackPower = 20.0f;
+		cost = 20;
 		setTexture("Images/Tower/Rogue1/Horizontal_3.png");	//Rogue µµÀû.
 		sprintf(name, "Rogue");
 	}
@@ -38,6 +41,7 @@ void Tower::setTowerSetting()
 	{
 		_attackDelay = 2.0f;
 		_attackPower = 45.0f;
+		cost = 30;
 		setTexture("Images/Tower/Magician1/Horizontal_3.png");
 		sprintf(name, "Magician");
 	}
@@ -52,6 +56,11 @@ void Tower::setPriorityWithThis(bool useNodePriority)
 void Tower::setpMonster(Vector<Monster*> *_repMonster)
 {
 	_pMonster = _repMonster;
+}
+
+void Tower::setpGold(int * _pnowStageGold)
+{
+	nowStageGold = _pnowStageGold;
 }
 
 void Tower::onEnter()
@@ -85,12 +94,6 @@ void Tower::onEnter()
 
 	towerMenuVisible = true;
 
-	/*b_Upgrade = Sprite::create("Images/Button/b_Background.png");
-	b_Upgrade->setPosition(Vec2(towerContentSize.width / 2, 0));
-	b_Upgrade->setAnchorPoint(Vec2(0.5, 1));
-	b_Upgrade->setVisible(false);
-	addChild(b_Upgrade, 50);*/
-
 	towerUpgradeVisible = false;
 
 	listener->onTouchBegan = [=](Touch* touch, Event* event)
@@ -106,6 +109,7 @@ void Tower::onEnter()
 			b_Yes->setVisible(false);
 			this->setOpacity(255.f);
 			schedule(schedule_selector(Tower::towerTick), _attackDelay);
+			(*nowStageGold) = (*nowStageGold) - cost;
 			_eventDispatcher->removeEventListener(_listenter);
 			return true;
 		}
@@ -118,39 +122,6 @@ void Tower::onEnter()
 			removeFromParent();
 		}
 
-
-		/*bool b_UpgradeTouch = b_Upgrade->getBoundingBox().containsPoint(LocationInNode);
-		if (b_UpgradeTouch && towerUpgradeVisible)
-		{
-			towerUpgradeLevel++;
-			char str[50];
-			sprintf(str, "Images/Tower/%s%d/Horizontal_3.png", name, towerUpgradeLevel);
-
-			char levelViewstr[10];
-			sprintf(levelViewstr, "%d", towerUpgradeLevel);
-			levelView->setString(levelViewstr);
-			setTexture(str);
-
-			_attackPower *= 1.5;
-			towerUpgradeVisible = false;
-			b_Upgrade->setVisible(false);
-			return true;
-		}
-
-		Rect rect = Rect(0, 0, towerContentSize.width, towerContentSize.height);
-		
-		if (rect.containsPoint(LocationInNode) && towerUpgradeVisible == false && towerUpgradeLevel < 3)
-		{
-			b_Upgrade->setVisible(true);
-			towerUpgradeVisible = true;
-
-			
-			return true;
-		}
-
-
-		towerUpgradeVisible = false;
-		b_Upgrade->setVisible(false);*/
 
 		return false;
 	};
@@ -188,6 +159,7 @@ void Tower::towerTick(float a)
 				if ((*_pMonster).at(i)->hp <= 0)
 				{
 					(*_pMonster).eraseObject(obj);
+					(*nowStageGold)++;
 				}
 
 				char animationStr1[50];
@@ -216,6 +188,7 @@ void Tower::towerTick(float a)
 				if ((*_pMonster).at(i)->hp <= 0)
 				{
 					(*_pMonster).eraseObject(obj);
+					(*nowStageGold)++;
 				}
 
 				char animationStr1[50];
@@ -244,6 +217,7 @@ void Tower::towerTick(float a)
 				if ((*_pMonster).at(i)->hp <= 0)
 				{
 					(*_pMonster).eraseObject(obj);
+					(*nowStageGold)++;
 				}
 
 				char animationStr1[50];

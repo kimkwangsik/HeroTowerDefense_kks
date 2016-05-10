@@ -19,6 +19,9 @@ public:
 	cocos2d::Sprite* b_Yes;
 	cocos2d::Sprite* b_No;
 	cocos2d::Sprite* b_Upgrade;
+	int *nowStageGold;
+	void setpGold(int* _pnowStageGold);
+	int	cost;
 
 	int towerUpgradeLevel;
 	char name[10];

@@ -22,6 +22,10 @@ GameStageScene::GameStageScene(int stagelevel)
 
 	nowStageLevel = stagelevel;
 
+	nowStageGold = 20;
+
+	_pnowStageGold = &nowStageGold;
+
 	gameOver = false;
 	towerStop = true;
 	towerUpgradeVisible = false;
@@ -52,9 +56,11 @@ GameStageScene::GameStageScene(int stagelevel)
 	addChild(Label1, 2);*/
 
 	auto pScene = Menus::createScene();
-	
+	auto scenestr = new Menus("GameStageScene");
+	scenestr->setpGold(_pnowStageGold);
+	scenestr->autorelease();
+	pScene->addChild(scenestr);
 	this->addChild(pScene, 100);
-
 
 	createStage(stagelevel);
 
@@ -280,8 +286,6 @@ void GameStageScene::removeMonster(Monster* monster)
 	{
 		auto monsterObj = (Monster*)_monster.at(i);
 
-		
-
 		if (gameOver)
 		{
 			monsterObj->stopAllActions();
@@ -344,7 +348,7 @@ void GameStageScene::myTick(float f)
 	{
 		gauge = gauge - 2;
 	}
-	gaugeBar->setPercentage(f);
+	gaugeBar->setPercentage(gauge);
 	//this->SpriteProgressToRadial(gauge);
 	if (gauge < 0 && phaseLevel < 5)
 	{
@@ -355,7 +359,7 @@ void GameStageScene::myTick(float f)
 		phaseLabel->setString(phase);
 		runAction(SequenceMonsterAdd(0, 10));
 	}
-	if (gauge == 0 && 5 == phaseLevel)
+	if (gauge <= 0 && 5 == phaseLevel)
 	{
 		phaseLabel->setString("BOSS phase");
 		runAction(SequenceMonsterAdd(0, 1));
@@ -426,6 +430,7 @@ bool GameStageScene::onTouchBegan(Touch* touch, Event* event) {
 		clickTower->setPosition(tmapConvertPoint);
 		clickTower->setOpacity(100.f);
 		clickTower->setpMonster(_pMonster);
+		clickTower->setpGold(_pnowStageGold);
 
 		tmap->addChild(clickTower, 101);
 		return true;
@@ -516,8 +521,9 @@ void GameStageScene::onTouchEnded(Touch* touch, Event* event)
 			b_Upgrade->setVisible(false);
 			auto obj = (Tower*)_setupTower.at(upgradeTowerNum);
 			bool b_UpgradeTouch = b_Upgrade->getBoundingBox().containsPoint(tmapConvertPoint);
-			if (b_UpgradeTouch)
+			if (b_UpgradeTouch && nowStageGold >= obj->cost)
 			{
+				nowStageGold = nowStageGold - obj->cost;
 				obj->towerUpgradeLevel++;
 				char str[50];
 				sprintf(str, "Images/Tower/%s%d/Horizontal_3.png", obj->name, obj->towerUpgradeLevel);
@@ -720,17 +726,17 @@ void GameStageScene::doClick(Ref* pSender)
 	{
 		gauge = 0;
 	}
-	else if(i == 450)
+	else if(i == 450 && (*_pnowStageGold) >= 10)
 	{
 		towerTpye = 1;
 		towerTouch = true;
 	}
-	else if(i == 451)
+	else if(i == 451 && (*_pnowStageGold) >= 20)
 	{
 		towerTpye = 2;
 		towerTouch = true;
 	}
-	else if (i == 452)
+	else if (i == 452 && (*_pnowStageGold) >= 30)
 	{
 		towerTpye = 3;
 		towerTouch = true;
@@ -750,6 +756,7 @@ void GameStageScene::doClick(Ref* pSender)
 	}
 	else if (i == 351)
 	{
+		nowStageGold = nowStageGold + 50;
 		//¾óÀ½
 	}
 }

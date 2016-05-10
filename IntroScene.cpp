@@ -15,7 +15,7 @@ Scene* IntroScene::createScene()
 
 bool IntroScene::init()
 {
-	if (!LayerColor::initWithColor(Color4B(255, 255, 255, 255)))
+	if (!Layer::init())
 	{
 		return false;
 	}
@@ -37,6 +37,20 @@ bool IntroScene::init()
 	this->addChild(pLabel);
 
 	createKnight(1);
+
+	bool start_First = UserDefault::getInstance()->getBoolForKey("Start_First");
+	if (start_First)
+	{
+
+	}
+	else
+	{
+		UserDefault::getInstance()->setBoolForKey("Start_First", true);
+		UserDefault::getInstance()->setIntegerForKey("have_gold", 100);
+	}
+
+	
+
 
 	return true;
 }

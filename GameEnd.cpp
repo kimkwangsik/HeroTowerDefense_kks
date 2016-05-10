@@ -1,5 +1,7 @@
 #include "GameEnd.h"
 #include "GameStageScene.h"
+#include "MainScene.h"
+#include "StageSelectScene.h"
 
 USING_NS_CC;
 
@@ -86,23 +88,37 @@ GameEnd::GameEnd(int stagelevel, int heartCount)
 
 	if (nowHeartCount > 0)
 	{
+		int getGold = 10;
 		star1 = Sprite::create("Images/GameEnd/Stars.png");
 		star1->setPosition(Vec2(clearPanel->getContentSize().width / 4, clearPanel->getContentSize().height - 20));
 		star1->setAnchorPoint(Vec2(0.5, 1));
 		//star1->setVisible(false);
 		clearPanel->addChild(star1, 3);
+		
+		if (nowHeartCount > 3)
+		{
+			getGold = getGold + 20;
+			star2 = Sprite::create("Images/GameEnd/Stars.png");
+			star2->setPosition(Vec2(clearPanel->getContentSize().width / 2, clearPanel->getContentSize().height - 20));
+			star2->setAnchorPoint(Vec2(0.5, 1));
+			//star2->setVisible(false);
+			clearPanel->addChild(star2, 3);
+		}
 
-		star2 = Sprite::create("Images/GameEnd/Stars.png");
-		star2->setPosition(Vec2(clearPanel->getContentSize().width / 2, clearPanel->getContentSize().height - 20));
-		star2->setAnchorPoint(Vec2(0.5, 1));
-		//star2->setVisible(false);
-		clearPanel->addChild(star2, 3);
+		if (nowHeartCount == 5)
+		{
+			getGold = getGold + 20;
+			star3 = Sprite::create("Images/GameEnd/Stars.png");
+			star3->setPosition(Vec2(clearPanel->getContentSize().width / 4 * 3, clearPanel->getContentSize().height - 20));
+			star3->setAnchorPoint(Vec2(0.5, 1));
+			//star3->setVisible(false);
+			clearPanel->addChild(star3, 3);
+			
+		}
 
-		star3 = Sprite::create("Images/GameEnd/Stars.png");
-		star3->setPosition(Vec2(clearPanel->getContentSize().width / 4 * 3, clearPanel->getContentSize().height - 20));
-		star3->setAnchorPoint(Vec2(0.5, 1));
-		//star3->setVisible(false);
-		clearPanel->addChild(star3, 3);
+		int i = UserDefault::getInstance()->getIntegerForKey("have_gold");
+		i = i + getGold;
+		UserDefault::getInstance()->setIntegerForKey("have_gold", i);
 	}
 	else if(nowHeartCount == 0)
 	{
@@ -142,8 +158,11 @@ void GameEnd::doClick(Ref* pSender)
 	if (i == 21)
 	{
 		//메인화면
-		Director::getInstance()->popScene();
-		Director::getInstance()->popScene();
+		//Director::getInstance()->popScene();
+		//Director::getInstance()->popScene();
+
+		auto pScene = MainScene::createScene();
+		Director::getInstance()->replaceScene(pScene);
 	}
 	else if (i == 22)
 	{
@@ -157,7 +176,9 @@ void GameEnd::doClick(Ref* pSender)
 	else if (i == 23)
 	{
 		//스테이지 선택화면
-		Director::getInstance()->popScene();
+		//Director::getInstance()->popScene();
+		auto pScene = StageSelectScene::createScene();
+		Director::getInstance()->replaceScene(pScene);
 	}
 	//this->removeFromParentAndCleanup(true);
 }

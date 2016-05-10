@@ -8,16 +8,23 @@ class Menus : public cocos2d::Layer
 public:
 	static cocos2d::Scene* createScene();
 
-	virtual bool init();
+	void setpGold(int* _pnowStageGold);
+	int *nowStageGold;
+	//virtual bool init();
 
-	CREATE_FUNC(Menus);
+	Menus(std::string SceneName);
+
+	std::string nowSceneName;
+
+	//CREATE_FUNC(Menus);
 	cocos2d::Size winSize;
-
+	cocos2d::LabelTTF* goldLabel;
+	cocos2d::LabelTTF* stageGold;
 
 	bool pauseNow;
 	char sceneText[20] = {0};
 	void doClick(Ref* pSender);
-	void doMsgReceived(Ref* obj);
+	void nowGold(float dt);
 	//void abc();
 };
 

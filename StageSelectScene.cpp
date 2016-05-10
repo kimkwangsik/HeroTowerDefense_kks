@@ -39,7 +39,11 @@ bool StageSelectScene::init()
 
 
 	auto pScene = Menus::createScene();
+	auto scenestr = new Menus("StageSelectScene");
+	scenestr->autorelease();
+	pScene->addChild(scenestr);
 	this->addChild(pScene, 2000);
+
 	return true;
 }
 
@@ -66,7 +70,7 @@ void StageSelectScene::doClick(Ref* pSender, int a)
 	auto stagenum = new GameStageScene(a);
 	stagenum->autorelease();
 	pScene->addChild(stagenum);
-	Director::getInstance()->pushScene(pScene);
+	Director::getInstance()->replaceScene(pScene);
 }
 TableViewCell* StageSelectScene::tableCellAtIndex(TableView* table, ssize_t idx)
 {

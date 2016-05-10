@@ -12,6 +12,8 @@ public:
 	GameStageScene(int stagelevel);
 
 	int nowStageLevel;
+	int nowStageGold;
+	int *_pnowStageGold;
 
 	cocos2d::TMXTiledMap* tmap;
 	cocos2d::TMXLayer* metainfo;

@@ -15,12 +15,15 @@ Scene* MainScene::createScene()
 
 bool MainScene::init()
 {
-	if (!LayerColor::initWithColor(Color4B(255, 255, 255, 255)))
+	if (!Layer::init())
     {
         return false;
     }
-	
+
 	auto pScene = Menus::createScene();
+	auto scenestr = new Menus("MainScene");
+	scenestr->autorelease();
+	pScene->addChild(scenestr);
 	this->addChild(pScene,1);
 
 
@@ -96,34 +99,8 @@ bool MainScene::init()
 
 	auto pMenu = Menu::create(fortress, magic_stones, statue, NULL);
 	pMenu->setPosition(Vec2::ZERO);
-	//pMenu->alignItemsVertically();
 
 	addChild(pMenu, 3);
-
-	/*auto pMenuItem1 = MenuItemFont::create(
-		" 스테이지 모드 ",
-		CC_CALLBACK_1(MainScene::doClick, this));
-	pMenuItem1->setColor(Color3B(0, 0, 0));
-
-	auto pMenuItem2 = MenuItemFont::create(
-		" 무한모드(미구현) ",
-		CC_CALLBACK_1(MainScene::doClick, this));
-	pMenuItem2->setColor(Color3B(0, 0, 0));
-
-	auto pMenuItem3 = MenuItemFont::create(
-		" 영웅 관리(미구현) ",
-		CC_CALLBACK_1(MainScene::doClick, this));
-	pMenuItem3->setColor(Color3B(0, 0, 0));
-
-	pMenuItem1->setTag(1);
-	pMenuItem2->setTag(2);
-	pMenuItem3->setTag(3);
-
-	auto pMenu = Menu::create(pMenuItem1, pMenuItem2, pMenuItem3, NULL);
-
-	pMenu->alignItemsVertically();
-
-	tmap->addChild(pMenu,3);*/
 
     return true;
 }
@@ -136,7 +113,13 @@ void MainScene::doClick(Ref* pSender)
 	if (i == 1)
 	{
 		auto pScene = StageSelectScene::createScene();
-		Director::getInstance()->pushScene(pScene);
+		Director::getInstance()->replaceScene(pScene);
+	}
+	if (i == 2)
+	{
+		int i = UserDefault::getInstance()->getIntegerForKey("have_gold");
+		i = i - 10;
+		UserDefault::getInstance()->setIntegerForKey("have_gold", i);
 	}
 
 }
