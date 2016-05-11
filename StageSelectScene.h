@@ -19,6 +19,7 @@ public:
 
 	CREATE_FUNC(StageSelectScene);
 
+	int maxStage;
 	virtual void scrollViewDidScroll(ScrollView* view) {};
 	virtual void scrollViewDidZoom(ScrollView* view) {}
 	virtual void tableCellTouched(TableView* table, TableViewCell* cell);
@@ -27,7 +28,8 @@ public:
 	virtual ssize_t numberOfCellsInTableView(TableView *table);
 
 	//cocos2d::MenuItemImage* pMenuItem1;
-	TableViewCell *cell;
+	//TableViewCell *cell;
+	Menu *pMenu;
 
 	void doClick(Ref* pSender, int a);
 };

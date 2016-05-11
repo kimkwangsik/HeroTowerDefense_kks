@@ -19,7 +19,7 @@ bool Options::init()
 	}
 	winSize = Director::getInstance()->getVisibleSize();
 
-	auto optionbar = Sprite::create("Images/CyanSquare32.png");
+	auto optionbar = Sprite::create("Images/CyanSquare.png");
 	optionbar->setScale(5.0f);
 	optionbar->setPosition(Vec2(winSize.width / 2, winSize.height /2));
 	addChild(optionbar);

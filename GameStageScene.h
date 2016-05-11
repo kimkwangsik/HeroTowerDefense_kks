@@ -24,6 +24,7 @@ public:
 	void heartCreate(int a, cocos2d::Vec2 position);
 	bool gameOver;
 	bool towerStop;
+	cocos2d::LabelTTF* upgradeCost;
 
 	cocos2d::Size winSize;
 	cocos2d::Size VisibleWinSize;

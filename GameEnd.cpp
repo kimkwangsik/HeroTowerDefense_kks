@@ -89,29 +89,27 @@ GameEnd::GameEnd(int stagelevel, int heartCount)
 	if (nowHeartCount > 0)
 	{
 		int getGold = 10;
-		star1 = Sprite::create("Images/GameEnd/Stars.png");
-		star1->setPosition(Vec2(clearPanel->getContentSize().width / 4, clearPanel->getContentSize().height - 20));
-		star1->setAnchorPoint(Vec2(0.5, 1));
-		//star1->setVisible(false);
-		clearPanel->addChild(star1, 3);
+		star2 = Sprite::create("Images/GameEnd/Stars.png");
+		star2->setPosition(Vec2(clearPanel->getContentSize().width / 2, clearPanel->getContentSize().height - 10));
+		star2->setAnchorPoint(Vec2(0.5, 1));
+		clearPanel->addChild(star2, 3);
 		
-		if (nowHeartCount > 3)
+		
+		if (nowHeartCount > 2)
 		{
 			getGold = getGold + 20;
-			star2 = Sprite::create("Images/GameEnd/Stars.png");
-			star2->setPosition(Vec2(clearPanel->getContentSize().width / 2, clearPanel->getContentSize().height - 20));
-			star2->setAnchorPoint(Vec2(0.5, 1));
-			//star2->setVisible(false);
-			clearPanel->addChild(star2, 3);
+			star1 = Sprite::create("Images/GameEnd/Stars.png");
+			star1->setPosition(Vec2(clearPanel->getContentSize().width / 4, clearPanel->getContentSize().height - 10));
+			star1->setAnchorPoint(Vec2(0.5, 1));
+			clearPanel->addChild(star1, 3);
 		}
 
 		if (nowHeartCount == 5)
 		{
 			getGold = getGold + 20;
 			star3 = Sprite::create("Images/GameEnd/Stars.png");
-			star3->setPosition(Vec2(clearPanel->getContentSize().width / 4 * 3, clearPanel->getContentSize().height - 20));
+			star3->setPosition(Vec2(clearPanel->getContentSize().width / 4 * 3, clearPanel->getContentSize().height - 10));
 			star3->setAnchorPoint(Vec2(0.5, 1));
-			//star3->setVisible(false);
 			clearPanel->addChild(star3, 3);
 			
 		}
@@ -119,6 +117,30 @@ GameEnd::GameEnd(int stagelevel, int heartCount)
 		int i = UserDefault::getInstance()->getIntegerForKey("have_gold");
 		i = i + getGold;
 		UserDefault::getInstance()->setIntegerForKey("have_gold", i);
+
+		int maxStage = UserDefault::getInstance()->getIntegerForKey("clear_stage");
+		if (maxStage < stagelevel)
+		{
+			UserDefault::getInstance()->setIntegerForKey("clear_stage", stagelevel);
+		}
+
+		auto reward = LabelTTF::create("º¸»ó", "Arial", 20);
+		reward->setPosition(Vec2(star2->getContentSize().width / 2, 0));
+		reward->setAnchorPoint(Vec2(0.5, 1));
+		star2->addChild(reward);
+
+		auto gold_crystal = Sprite::create("Images/Treasure/gold_crystal.png");
+		gold_crystal->setPosition(Vec2(reward->getContentSize().width / 2, 0));
+		gold_crystal->setAnchorPoint(Vec2(1, 1));
+		reward->addChild(gold_crystal);
+
+		char gold[10];
+		sprintf(gold, "%d", getGold);
+
+		auto goldLabel = LabelTTF::create(gold, "Arial", 20);
+		goldLabel->setPosition(Vec2(reward->getContentSize().width / 2, -gold_crystal->getContentSize().height / 2));
+		goldLabel->setAnchorPoint(Vec2(0, 0.5));
+		reward->addChild(goldLabel);
 	}
 	else if(nowHeartCount == 0)
 	{

@@ -2,10 +2,11 @@
 
 USING_NS_CC;
 
-Monster::Monster()
+Monster::Monster(std::string monsterName)
 	: _fixedPriority(0)
 	, _useNodePriority(false)
 	, hp(100)
+	, myMonsterName(monsterName)
 {
 	bool b0k = initWithTexture(nullptr, Rect::ZERO);
 	if (b0k)
@@ -35,10 +36,13 @@ void Monster::onEnter()
 {
 	Sprite::onEnter();
 
-	runAction(RepeatForever::create(JumpBy::create(0.5, Vec2::ZERO , 5.0f, 1)));
+	if (myMonsterName == "slime")
+	{
+		runAction(RepeatForever::create(JumpBy::create(0.5, Vec2::ZERO, 5.0f, 1)));
+	}
 
 	hpBar = Sprite::create("Images/bar_base.png");
-	hpBar->setPosition(Vec2(15, 25));
+	hpBar->setPosition(Vec2(getContentSize().width/2, getContentSize().height));
 	hpBar->setAnchorPoint(Vec2(0.5, 0));
 	hpBar->setScaleX(0.2f);
 	addChild(hpBar, 2);
@@ -70,5 +74,6 @@ void Monster::monsterTick(float a)
 	}
 }
 void Monster::onExit() {
+	
 	Sprite::onExit();
 };

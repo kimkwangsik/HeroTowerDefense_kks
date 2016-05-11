@@ -24,7 +24,7 @@ bool MainScene::init()
 	auto scenestr = new Menus("MainScene");
 	scenestr->autorelease();
 	pScene->addChild(scenestr);
-	this->addChild(pScene,1);
+	this->addChild(pScene,10);
 
 
 	VisibleWinSize = Director::getInstance()->getVisibleSize();
@@ -117,9 +117,13 @@ void MainScene::doClick(Ref* pSender)
 	}
 	if (i == 2)
 	{
-		int i = UserDefault::getInstance()->getIntegerForKey("have_gold");
-		i = i - 10;
-		UserDefault::getInstance()->setIntegerForKey("have_gold", i);
+		int have_gold = UserDefault::getInstance()->getIntegerForKey("have_gold");
+		have_gold = have_gold - 10;
+		if (have_gold < 0)
+		{
+			have_gold = 150;
+		}
+		UserDefault::getInstance()->setIntegerForKey("have_gold", have_gold);
 	}
 
 }

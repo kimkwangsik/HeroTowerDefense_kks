@@ -47,6 +47,7 @@ bool IntroScene::init()
 	{
 		UserDefault::getInstance()->setBoolForKey("Start_First", true);
 		UserDefault::getInstance()->setIntegerForKey("have_gold", 100);
+		UserDefault::getInstance()->setIntegerForKey("clear_stage", 0);
 	}
 
 	

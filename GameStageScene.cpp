@@ -64,11 +64,27 @@ GameStageScene::GameStageScene(int stagelevel)
 
 	createStage(stagelevel);
 
-	b_Upgrade = Sprite::create("Images/Button/b_Background.png");
-	b_Upgrade->setPosition(Vec2(100, 100));
+	b_Upgrade = Sprite::create("Images/Button/grey_box1.png");
+	b_Upgrade->setPosition(Vec2::ZERO);
 	b_Upgrade->setAnchorPoint(Vec2(0.5, 1));
 	b_Upgrade->setVisible(false);
 	tmap->addChild(b_Upgrade, 102);
+
+	auto upgradeCoin = Sprite::create("Images/Treasure/coin.png");
+	upgradeCoin->setPosition(Vec2(b_Upgrade->getContentSize().width / 2,
+		b_Upgrade->getContentSize().height / 2));
+	upgradeCoin->setScale(0.7f);
+	upgradeCoin->setAnchorPoint(Vec2(0.5, 0));
+	b_Upgrade->addChild(upgradeCoin);
+
+	upgradeCost = LabelTTF::create("1000", "Arial", 16);
+	upgradeCost->setPosition(Vec2(b_Upgrade->getContentSize().width / 2,
+		b_Upgrade->getContentSize().height / 2));
+	upgradeCost->setAnchorPoint(Vec2(0.5, 1));
+	upgradeCost->setColor(Color3B::BLACK);
+	b_Upgrade->addChild(upgradeCost);
+
+	
 	
 	return;
 }
@@ -202,10 +218,27 @@ Sequence* GameStageScene::SequenceMonsterAdd(int num, int max)
 void GameStageScene::addMonster()
 {
 	Vec2 startVec2 = _Vec2Point.at(0);
+	Monster* monster;
 
-	auto monster = new Monster();
+	if (phaseLevel == 1)
+	{
+		monster = new Monster("slime");
+		monster->setTexture("Images/Monster/slime.png");
+	}
+	else if(phaseLevel < 6)
+	{
+		monster = new Monster("CyanSquare");
+		monster->setTexture("Images/CyanSquare.png");
+	}
+	else if (phaseLevel == 6)
+	{
+		monster = new Monster("slime");
+		monster->setTexture("Images/Monster/slime.png");
+		monster->setScale(2.f);
+	}
 
-	monster->setTexture("Images/Monster/slime.png");
+	//monster->setTexture("Images/CyanSquare.png");
+	
 	monster->setPosition(startVec2);
 	monster->runAction(MoveAction(monster));
 	
@@ -224,20 +257,7 @@ Sequence* GameStageScene::MoveAction(Monster* monster)
 		float disX = (beforeVec2.x - afterVec2.x);
 		float disY = (beforeVec2.y - afterVec2.y);
 
-		float dis;
-		if (disX == 0)
-		{
-			dis = disY;
-		}
-		else
-		{
-			dis = disX;
-		}
-
-		if (dis < 0)
-		{
-			dis = -1 * dis;
-		}
+		float dis = sqrt((disX*disX) + (disY*disY));
 
 		auto action = MoveTo::create(dis / 30.0f, Vec2(afterVec2.x, afterVec2.y));
 
@@ -357,10 +377,11 @@ void GameStageScene::myTick(float f)
 		char phase[20];
 		sprintf(phase, "%d phase", phaseLevel);
 		phaseLabel->setString(phase);
-		runAction(SequenceMonsterAdd(0, 10));
+		runAction(SequenceMonsterAdd(0, 1));
 	}
 	if (gauge <= 0 && 5 == phaseLevel)
 	{
+		phaseLevel++;
 		phaseLabel->setString("BOSS phase");
 		runAction(SequenceMonsterAdd(0, 1));
 		this->unschedule(schedule_selector(GameStageScene::myTick));
@@ -557,6 +578,18 @@ void GameStageScene::onTouchEnded(Touch* touch, Event* event)
 				towerUpgradeVisible = true;
 				b_Upgrade->setVisible(true);
 				obj->setOpacity(150.f);
+
+				char upgradeCoststr[50];
+				sprintf(upgradeCoststr, "%d", obj->cost);
+				upgradeCost->setString(upgradeCoststr);
+				if (nowStageGold >= obj->cost)
+				{
+					upgradeCost->setColor(Color3B::BLACK);
+				}
+				else
+				{
+					upgradeCost->setColor(Color3B::RED);
+				}
 			}
 		}
 	}	
@@ -678,16 +711,6 @@ void GameStageScene::towerMenuCreate()
 
 void GameStageScene::doClick(Ref* pSender)
 {
-
-	//메뉴 클릭시 타워 업그레이드 중지
-	towerUpgradeVisible = false;
-	b_Upgrade->setVisible(false);
-	for (int i = 0; i != _setupTower.size(); i++)
-	{
-		auto obj = (Tower*)_setupTower.at(i);
-		obj->setOpacity(255.f);
-	}
-
 	//타워 설치중이면 메뉴 클릭 불가능
 	for (int i = 0; i != _setupTower.size(); i++)
 	{
@@ -698,6 +721,17 @@ void GameStageScene::doClick(Ref* pSender)
 			return;
 		}
 	}
+
+	//메뉴 클릭시 타워 업그레이드 중지
+	towerUpgradeVisible = false;
+	b_Upgrade->setVisible(false);
+	for (int i = 0; i != _setupTower.size(); i++)
+	{
+		auto obj = (Tower*)_setupTower.at(i);
+		obj->setOpacity(255.f);
+	}
+
+	
 
 	auto tItem = (MenuItem *)pSender;
 	int i = tItem->getTag();

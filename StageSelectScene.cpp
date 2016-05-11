@@ -19,10 +19,10 @@ bool StageSelectScene::init()
 	{
 		return false;
 	}
-
+	maxStage = UserDefault::getInstance()->getIntegerForKey("clear_stage");
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 
-	auto tableViewBackGround = Sprite::create("Images/tableViewBackGround1.png");
+	auto tableViewBackGround = Sprite::create("Images/tableViewBackGround.png");
 	tableViewBackGround->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2));
 	this->addChild(tableViewBackGround, 2);
 
@@ -36,7 +36,13 @@ bool StageSelectScene::init()
 	tableViewBackGround->addChild(tableView1,3);
 	tableView1->reloadData();
 
+	char maxStagestr[30];
+	sprintf(maxStagestr, "최종 클리어 스테이지\nLevel%ld", maxStage);
 
+	auto maxStageLabel = LabelTTF::create(maxStagestr, "Helvetica", 20.0);	//폰트 수정 또는 확인 필수
+	maxStageLabel->setPosition(Vec2(tableViewBackGround->getContentSize().width/2,10));
+	maxStageLabel->setAnchorPoint(Vec2(0.5, 0));
+	tableViewBackGround->addChild(maxStageLabel, 3);
 
 	auto pScene = Menus::createScene();
 	auto scenestr = new Menus("StageSelectScene");
@@ -62,23 +68,32 @@ Size StageSelectScene::tableCellSizeForIndex(TableView* table, ssize_t idx)
 	return Size(200, 200);
 }
 
-void StageSelectScene::doClick(Ref* pSender, int a)
+void StageSelectScene::doClick(Ref* pSender, int selectStage)
 {
-	log("%d번째 스테이지가 선택되었습니다.", a);
+	log("%d번째 스테이지가 선택되었습니다.", selectStage);
+
+	
+	if (maxStage+1 < selectStage)
+	{
+		log("이전 스테이지를 클리어 해주세요");
+		return;
+	}
 
 	auto pScene = GameStageScene::createScene();
-	auto stagenum = new GameStageScene(a);
+	auto stagenum = new GameStageScene(selectStage);
 	stagenum->autorelease();
 	pScene->addChild(stagenum);
 	Director::getInstance()->replaceScene(pScene);
 }
 TableViewCell* StageSelectScene::tableCellAtIndex(TableView* table, ssize_t idx)
 {
-	auto string = String::createWithFormat("%ld", idx);
-	char str[20];
-	sprintf(str, "Level\n%ld", idx+1);
 	int idxint = idx + 1;
-	cell = table->dequeueCell();
+	char str[20];
+	sprintf(str, "Level\n%ld", idxint);
+	auto cell = table->dequeueCell();
+
+	
+
 	MenuItemImage* pMenuItem;
 
 	if (!cell)
@@ -100,6 +115,8 @@ TableViewCell* StageSelectScene::tableCellAtIndex(TableView* table, ssize_t idx)
 		label->setAnchorPoint(Vec2(0.5, 0.5));
 		label->setTag(123);
 		cell->addChild(label,3);
+
+		
 	}
 	else
 	{
@@ -113,12 +130,13 @@ TableViewCell* StageSelectScene::tableCellAtIndex(TableView* table, ssize_t idx)
 			CC_CALLBACK_1(StageSelectScene::doClick, this, idxint));
 		pMenuItem->setPosition(Vec2(0, 0));
 		pMenuItem->setAnchorPoint(Vec2(0, 0));
+		
 	}
 	
-	auto pMenu = Menu::create(pMenuItem, NULL);
-
+	pMenu = Menu::create(pMenuItem, NULL);
 	pMenu->setPosition(Vec2(0, 80));
 	pMenu->setAnchorPoint(Vec2(0, 0.5));
+
 	cell->addChild(pMenu,2);
 
 	return cell;
@@ -126,5 +144,5 @@ TableViewCell* StageSelectScene::tableCellAtIndex(TableView* table, ssize_t idx)
 
 ssize_t StageSelectScene::numberOfCellsInTableView(TableView* table)
 {
-	return 2;
+	return 20;
 }

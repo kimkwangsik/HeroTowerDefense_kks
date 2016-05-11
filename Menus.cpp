@@ -45,14 +45,17 @@ Menus::Menus(std::string SceneName)
 		char nowgold[10];
 		sprintf(nowgold, "%d", 0);
 
-		stageGold = LabelTTF::create(nowgold, "Arial", 20);
-		stageGold->setPosition(Vec2(winSize.width / 2 + 50, 0));
-		stageGold->setColor(Color3B::BLACK);
-		stageGold->setAnchorPoint(Vec2(0.5, 0));
-		menubar->addChild(stageGold);
-	}
+		auto coin = Sprite::create("Images/Treasure/coin.png");
+		coin->setPosition(Vec2(winSize.width / 1.5, menubar->getContentSize().height / 2));
+		coin->setAnchorPoint(Vec2(1, 0.5));
+		menubar->addChild(coin);
 
-	log("%f", menubar->getContentSize().height);
+		stageGold = LabelTTF::create(nowgold, "Arial", 20);
+		stageGold->setPosition(Vec2(coin->getContentSize().width, coin->getContentSize().height / 2));
+		stageGold->setColor(Color3B::BLACK);
+		stageGold->setAnchorPoint(Vec2(0, 0.5));
+		coin->addChild(stageGold);
+	}
 
 	auto pMenuItem1 = MenuItemImage::create(
 		"Images/Button/b_Parameters.png",
@@ -63,7 +66,7 @@ Menus::Menus(std::string SceneName)
 
 	MenuItemImage* pMenuItem2;
 
-	if (1)
+	if (nowSceneName == "GameStageScene" || nowSceneName == "MainScene")
 	{
 		pMenuItem2 = MenuItemImage::create(
 			"Images/Button/b_No.png",
@@ -106,6 +109,12 @@ Menus::Menus(std::string SceneName)
 	pMenu->setPosition(Vec2(0, 0));
 	menubar->addChild(pMenu);
 
+	auto gold_crystal = Sprite::create("Images/Treasure/gold_crystal.png");
+	gold_crystal->setPosition(Vec2(winSize.width / 2.5, menubar->getContentSize().height/2));
+	gold_crystal->setAnchorPoint(Vec2(1, 0.5));
+	menubar->addChild(gold_crystal);
+
+
 	int i = UserDefault::getInstance()->getIntegerForKey("have_gold");
 	log("have_gold is %d", i);
 
@@ -114,14 +123,15 @@ Menus::Menus(std::string SceneName)
 
 	goldLabel = LabelTTF::create(gold, "Arial", 20);
 
-	goldLabel->setPosition(Vec2(winSize.width / 2, 0));
+	goldLabel->setPosition(Vec2(gold_crystal->getContentSize().width, gold_crystal->getContentSize().height/2));
 	goldLabel->setColor(Color3B::BLACK);
-	goldLabel->setAnchorPoint(Vec2(0.5, 0));
-	menubar->addChild(goldLabel);
+	goldLabel->setAnchorPoint(Vec2(0, 0.5));
+	gold_crystal->addChild(goldLabel);
 
 
 	this->schedule(schedule_selector(Menus::nowGold));
 
+	
 
 	/*auto gold = Sprite3D::create("gold.obj");
 	gold->setScale(2.0f);

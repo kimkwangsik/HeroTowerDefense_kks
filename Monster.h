@@ -6,8 +6,8 @@
 class Monster : public cocos2d::Sprite
 {
 public:
-	Monster();
-
+	Monster(std::string monsterName);
+	std::string myMonsterName;
 	int hp;
 
 	void setPriority(int fixwdPriority);
