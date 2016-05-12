@@ -67,9 +67,13 @@ void Tower::onEnter()
 {
 	Sprite::onEnter();
 	setTowerSetting();
-	
+
 	towerContentSize = this->getContentSize();
 	towerUpgradeLevel = 1;
+
+	sprintf(animationStr1, "Images/Tower/%s%d/Horizontal_%d.png", name, towerUpgradeLevel, 1);
+	sprintf(animationStr2, "Images/Tower/%s%d/Horizontal_%d.png", name, towerUpgradeLevel, 2);
+	sprintf(animationStr3, "Images/Tower/%s%d/Horizontal_%d.png", name, towerUpgradeLevel, 3);
 
 	auto listener = EventListenerTouchOneByOne::create();
 
@@ -150,24 +154,17 @@ void Tower::towerTick(float a)
 		Vec2 objVec2 = obj->getPosition();
 		Vec2 dis = myPos - objVec2;
 		
-		Vec2 absdis = Vec2(fabs(dis.x), fabs(dis.y));
+		Vec2 absDis = Vec2(fabs(dis.x), fabs(dis.y));
 		if (_towerType == 1)
 		{
-			if (absdis.x <= 45 && absdis.y <= 45)
+			if (absDis.x <= 45 && absDis.y <= 45)
 			{
 				(*_pMonster).at(i)->hp -= _attackPower;
 				if ((*_pMonster).at(i)->hp <= 0)
 				{
+					(*nowStageGold) = (*nowStageGold) + obj->dropGold;
 					(*_pMonster).eraseObject(obj);
-					(*nowStageGold)++;
 				}
-
-				char animationStr1[50];
-				sprintf(animationStr1, "Images/Tower/%s%d/Horizontal_%d.png", name, towerUpgradeLevel, 1);
-				char animationStr2[50];
-				sprintf(animationStr2, "Images/Tower/%s%d/Horizontal_%d.png", name, towerUpgradeLevel, 2);
-				char animationStr3[50];
-				sprintf(animationStr3, "Images/Tower/%s%d/Horizontal_%d.png", name, towerUpgradeLevel, 3);
 
 				auto animation = Animation::create();
 				animation->setDelayPerUnit(0.1f);
@@ -182,21 +179,14 @@ void Tower::towerTick(float a)
 			}
 		}
 		else if (_towerType == 2) {
-			if (absdis.x <= 75 && absdis.y <= 75)
+			if (absDis.x <= 75 && absDis.y <= 75)
 			{
 				(*_pMonster).at(i)->hp -= _attackPower;
 				if ((*_pMonster).at(i)->hp <= 0)
 				{
+					(*nowStageGold) = (*nowStageGold) + obj->dropGold;
 					(*_pMonster).eraseObject(obj);
-					(*nowStageGold)++;
 				}
-
-				char animationStr1[50];
-				sprintf(animationStr1, "Images/Tower/%s%d/Horizontal_%d.png", name, towerUpgradeLevel, 1);
-				char animationStr2[50];
-				sprintf(animationStr2, "Images/Tower/%s%d/Horizontal_%d.png", name, towerUpgradeLevel, 2);
-				char animationStr3[50];
-				sprintf(animationStr3, "Images/Tower/%s%d/Horizontal_%d.png", name, towerUpgradeLevel, 3);
 
 				auto animation = Animation::create();
 				animation->setDelayPerUnit(0.1f);
@@ -211,22 +201,14 @@ void Tower::towerTick(float a)
 			}
 		}
 		else if (_towerType == 3) {
-			if (absdis.x <= 75 && absdis.y <= 75)
+			if (absDis.x <= 75 && absDis.y <= 75)
 			{
 				(*_pMonster).at(i)->hp -= _attackPower;
 				if ((*_pMonster).at(i)->hp <= 0)
 				{
+					(*nowStageGold) = (*nowStageGold) + obj->dropGold;
 					(*_pMonster).eraseObject(obj);
-					(*nowStageGold)++;
 				}
-
-				char animationStr1[50];
-				sprintf(animationStr1, "Images/Tower/%s%d/Horizontal_%d.png", name, towerUpgradeLevel, 1);
-				char animationStr2[50];
-				sprintf(animationStr2, "Images/Tower/%s%d/Horizontal_%d.png", name, towerUpgradeLevel, 2);
-				char animationStr3[50];
-				sprintf(animationStr3, "Images/Tower/%s%d/Horizontal_%d.png", name, towerUpgradeLevel, 3);
-
 				auto animation = Animation::create();
 				animation->setDelayPerUnit(0.2f);
 
@@ -241,4 +223,11 @@ void Tower::towerTick(float a)
 		}
 	}
 
+}
+
+void Tower::animationRename()
+{
+	sprintf(animationStr1, "Images/Tower/%s%d/Horizontal_%d.png", name, towerUpgradeLevel, 1);
+	sprintf(animationStr2, "Images/Tower/%s%d/Horizontal_%d.png", name, towerUpgradeLevel, 2);
+	sprintf(animationStr3, "Images/Tower/%s%d/Horizontal_%d.png", name, towerUpgradeLevel, 3);
 }

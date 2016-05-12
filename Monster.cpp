@@ -5,8 +5,9 @@ USING_NS_CC;
 Monster::Monster(std::string monsterName)
 	: _fixedPriority(0)
 	, _useNodePriority(false)
-	, hp(100)
+	, maxHp(100.0f)
 	, myMonsterName(monsterName)
+	, dropGold(1)
 {
 	bool b0k = initWithTexture(nullptr, Rect::ZERO);
 	if (b0k)
@@ -21,21 +22,10 @@ void Monster::remove()
 	//onExit();
 }
 
-void Monster::setPriority(int fixedPriority)
-{
-	_fixedPriority = fixedPriority;
-	_useNodePriority = false;
-}
-
-void Monster::setPriorityWithThis(bool useNodePriority)
-{
-	_useNodePriority = useNodePriority;
-}
-
 void Monster::onEnter()
 {
 	Sprite::onEnter();
-
+	hp = maxHp;
 	if (myMonsterName == "slime")
 	{
 		runAction(RepeatForever::create(JumpBy::create(0.5, Vec2::ZERO, 5.0f, 1)));
@@ -66,7 +56,7 @@ void Monster::onEnter()
 
 void Monster::monsterTick(float a)
 {
-	gauge = hp;
+	gauge = (hp / maxHp)*100;
 	gaugeBar->setPercentage(gauge);
 	if (hp <= 0)
 	{

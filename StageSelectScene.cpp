@@ -1,4 +1,4 @@
-#include "StageSelectScene.h"
+ï»¿#include "StageSelectScene.h"
 #include "GameStageScene.h"
 #include "Menus.h"
 
@@ -32,14 +32,14 @@ bool StageSelectScene::init()
 	tableView1->setDirection(ScrollView::Direction::HORIZONTAL);
 	tableView1->setPosition(Vec2(10,0));
 	tableView1->setDelegate(this);
-	tableView1->setTag(100);
+	tableView1->setTag(201);
 	tableViewBackGround->addChild(tableView1,3);
 	tableView1->reloadData();
 
 	char maxStagestr[30];
-	sprintf(maxStagestr, "ÃÖÁ¾ Å¬¸®¾î ½ºÅ×ÀÌÁö\nLevel%ld", maxStage);
+	sprintf(maxStagestr, "ìµœì¢… í´ë¦¬ì–´ ìŠ¤í…Œì´ì§€\nLevel%ld", maxStage);
 
-	auto maxStageLabel = LabelTTF::create(maxStagestr, "Helvetica", 20.0);	//ÆùÆ® ¼öÁ¤ ¶Ç´Â È®ÀÎ ÇÊ¼ö
+	auto maxStageLabel = LabelTTF::create(maxStagestr, "Helvetica", 20.0);	//í°íŠ¸ ìˆ˜ì • ë˜ëŠ” í™•ì¸ í•„ìˆ˜
 	maxStageLabel->setPosition(Vec2(tableViewBackGround->getContentSize().width/2,10));
 	maxStageLabel->setAnchorPoint(Vec2(0.5, 0));
 	tableViewBackGround->addChild(maxStageLabel, 3);
@@ -70,12 +70,12 @@ Size StageSelectScene::tableCellSizeForIndex(TableView* table, ssize_t idx)
 
 void StageSelectScene::doClick(Ref* pSender, int selectStage)
 {
-	log("%d¹øÂ° ½ºÅ×ÀÌÁö°¡ ¼±ÅÃµÇ¾ú½À´Ï´Ù.", selectStage);
+	log("%dë²ˆì§¸ ìŠ¤í…Œì´ì§€ê°€ ì„ íƒë˜ì—ˆìŠµë‹ˆë‹¤.", selectStage);
 
 	
 	if (maxStage+1 < selectStage)
 	{
-		log("ÀÌÀü ½ºÅ×ÀÌÁö¸¦ Å¬¸®¾î ÇØÁÖ¼¼¿ä");
+		log("ì´ì „ ìŠ¤í…Œì´ì§€ë¥¼ í´ë¦¬ì–´ í•´ì£¼ì„¸ìš”");
 		return;
 	}
 
@@ -107,23 +107,23 @@ TableViewCell* StageSelectScene::tableCellAtIndex(TableView* table, ssize_t idx)
 			CC_CALLBACK_1(StageSelectScene::doClick, this , idxint));
 		pMenuItem->setPosition(Vec2(0, 0));
 		pMenuItem->setAnchorPoint(Vec2(0, 0));
-		pMenuItem->setTag(150);
+		pMenuItem->setTag(211);
 
-		auto label = LabelTTF::create(str, "Helvetica", 20.0);	//ÆùÆ® ¼öÁ¤ ¶Ç´Â È®ÀÎ ÇÊ¼ö
+		auto label = LabelTTF::create(str, "Helvetica", 20.0);	//í°íŠ¸ ìˆ˜ì • ë˜ëŠ” í™•ì¸ í•„ìˆ˜
 		label->setPosition(Vec2(pMenuItem->getContentSize().width / 2,
 			80 + pMenuItem->getContentSize().height / 2));
 		label->setAnchorPoint(Vec2(0.5, 0.5));
-		label->setTag(123);
+		label->setTag(212);
 		cell->addChild(label,3);
 
 		
 	}
 	else
 	{
-		auto label = (LabelTTF*)cell->getChildByTag(123);
+		auto label = (LabelTTF*)cell->getChildByTag(212);
 		label->setString(str);
 		 
-		pMenuItem = (MenuItemImage*)cell->getChildByTag(150);
+		pMenuItem = (MenuItemImage*)cell->getChildByTag(211);
 		pMenuItem = MenuItemImage::create(
 			"Images/box-highres.png",
 			"Images/box-highres.png",

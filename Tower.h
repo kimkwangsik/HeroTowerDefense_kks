@@ -25,6 +25,9 @@ public:
 
 	int towerUpgradeLevel;
 	char name[10];
+	char animationStr1[50];
+	char animationStr2[50];
+	char animationStr3[50];
 
 	virtual void onEnter();
 	virtual void onExit();
@@ -35,6 +38,7 @@ public:
 	bool towerMenuVisible;
 	bool towerUpgradeVisible;
 	void towerTick(float a);
+	void animationRename();
 	cocos2d::Vector<Monster*> *_pMonster;
 	cocos2d::EventListener* _listenter;
 	float _attackPower;

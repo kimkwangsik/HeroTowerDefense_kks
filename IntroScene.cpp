@@ -66,7 +66,7 @@ void IntroScene::createKnight(float a)
 	addChild(introSprite);
 
 	auto animation = Animation::create();
-	animation->setDelayPerUnit(0.2f);
+	animation->setDelayPerUnit(0.125f);
 
 	animation->addSpriteFrameWithFile("Images/Tower/Knight1/Walking_Horizontal_1.png");
 	animation->addSpriteFrameWithFile("Images/Tower/Knight1/Walking_Horizontal_2.png");

@@ -78,9 +78,9 @@ GameEnd::GameEnd(int stagelevel, int heartCount)
 
 	//pMenuItem1->setScale(0.2f);
 
-	pMenuItem1->setTag(21);
-	pMenuItem2->setTag(22);
-	pMenuItem3->setTag(23);
+	pMenuItem1->setTag(631);
+	pMenuItem2->setTag(632);
+	pMenuItem3->setTag(633);
 
 	auto pMenu = Menu::create(pMenuItem1, pMenuItem2, pMenuItem3, NULL);
 	pMenu->setPosition(Vec2::ZERO);
@@ -177,7 +177,7 @@ void GameEnd::doClick(Ref* pSender)
 {
 	auto tItem = (MenuItem *)pSender;
 	int i = tItem->getTag();
-	if (i == 21)
+	if (i == 631)
 	{
 		//메인화면
 		//Director::getInstance()->popScene();
@@ -186,7 +186,7 @@ void GameEnd::doClick(Ref* pSender)
 		auto pScene = MainScene::createScene();
 		Director::getInstance()->replaceScene(pScene);
 	}
-	else if (i == 22)
+	else if (i == 632)
 	{
 		//재도전
 		auto pScene = GameStageScene::createScene();
@@ -195,7 +195,7 @@ void GameEnd::doClick(Ref* pSender)
 		pScene->addChild(stagenum);
 		Director::getInstance()->replaceScene(pScene);
 	}
-	else if (i == 23)
+	else if (i == 633)
 	{
 		//스테이지 선택화면
 		//Director::getInstance()->popScene();

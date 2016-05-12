@@ -22,9 +22,10 @@ GameStageScene::GameStageScene(int stagelevel)
 
 	nowStageLevel = stagelevel;
 
-	nowStageGold = 20;
-
+	nowStageGold = 50;
 	_pnowStageGold = &nowStageGold;
+
+	firstHero = false;
 
 	gameOver = false;
 	towerStop = true;
@@ -100,7 +101,7 @@ void GameStageScene::createStage(int stagelevel)
 		CC_CALLBACK_1(GameStageScene::doClick, this));
 	skip->setPosition(Vec2(winSize.width, winSize.height - 31 - origin.y));
 	skip->setAnchorPoint(Vec2(1, 1));
-	skip->setTag(550);
+	skip->setTag(502);
 
 	auto skipLabel = LabelTTF::create("skip", "Arial", 15);
 	skipLabel->setPosition(Vec2(skip->getPositionX() - skip->getContentSize().width / 2,
@@ -183,7 +184,7 @@ void GameStageScene::createStage(int stagelevel)
 
 	metainfo->setVisible(false);
 
-	this->addChild(tmap, 0, 11);
+	this->addChild(tmap, 0, 501);
 
 	_heartCount = 5;
 
@@ -193,6 +194,7 @@ void GameStageScene::createStage(int stagelevel)
 
 	masicMenuCreate();
 	towerMenuCreate();
+	heroMenuCreate();
 
 }
 
@@ -220,21 +222,27 @@ void GameStageScene::addMonster()
 	Vec2 startVec2 = _Vec2Point.at(0);
 	Monster* monster;
 
-	if (phaseLevel == 1)
+	if (phaseLevel <= 3)
 	{
 		monster = new Monster("slime");
 		monster->setTexture("Images/Monster/slime.png");
+		monster->maxHp = 100.f;
+		monster->dropGold = 1;
 	}
 	else if(phaseLevel < 6)
 	{
 		monster = new Monster("CyanSquare");
 		monster->setTexture("Images/CyanSquare.png");
+		monster->maxHp = 200.f;
+		monster->dropGold = 2;
 	}
 	else if (phaseLevel == 6)
 	{
 		monster = new Monster("slime");
 		monster->setTexture("Images/Monster/slime.png");
 		monster->setScale(2.f);
+		monster->maxHp = 500.f;
+		monster->dropGold = 1000;
 	}
 
 	//monster->setTexture("Images/CyanSquare.png");
@@ -266,8 +274,6 @@ Sequence* GameStageScene::MoveAction(Monster* monster)
 
 	auto myAction = Sequence::create(SequenceMoveAction(monster, 0, (_Vec2Point.size() - 2) + 1),
 		nullptr);
-
-	myAction->setTag(999);
 
 	_Action.clear();	// 액션 적용 하기 전에 _Action에 저장된 액션들을 지운다.
 
@@ -377,7 +383,7 @@ void GameStageScene::myTick(float f)
 		char phase[20];
 		sprintf(phase, "%d phase", phaseLevel);
 		phaseLabel->setString(phase);
-		runAction(SequenceMonsterAdd(0, 1));
+		runAction(SequenceMonsterAdd(0, 10));
 	}
 	if (gauge <= 0 && 5 == phaseLevel)
 	{
@@ -549,12 +555,19 @@ void GameStageScene::onTouchEnded(Touch* touch, Event* event)
 				char str[50];
 				sprintf(str, "Images/Tower/%s%d/Horizontal_3.png", obj->name, obj->towerUpgradeLevel);
 
+				obj->animationRename();
+
 				char levelViewstr[10];
 				sprintf(levelViewstr, "%d", obj->towerUpgradeLevel);
 				obj->levelView->setString(levelViewstr);
 				obj->setTexture(str);
 
 				obj->_attackPower *= 1.5;
+			}
+			if (b_UpgradeTouch)
+			{
+				obj->setOpacity(255.f);
+				return;
 			}
 		}
 
@@ -639,18 +652,18 @@ void GameStageScene::masicMenuCreate()
 		"Images/spell/lighting-sky-2.png",
 		"Images/spell/lighting-sky-2.png",
 		CC_CALLBACK_1(GameStageScene::doClick, this));
-	masicMenuItem1->setPosition(Vec2(0, 0));
-	masicMenuItem1->setAnchorPoint(Vec2(0, 0));
-	masicMenuItem1->setTag(350);
+	masicMenuItem1->setPosition(Vec2(winSize.width, 0));
+	masicMenuItem1->setAnchorPoint(Vec2(1, 0));
+	masicMenuItem1->setTag(521);
 
 	auto masicMenuItem2 = MenuItemImage::create(
 		"Images/spell/ice-blue-2.png",
 		"Images/spell/ice-blue-2.png",
 		CC_CALLBACK_1(GameStageScene::doClick, this));
-	masicMenuItem2->setPosition(Vec2(0, masicMenuItem1->getPositionY() +
+	masicMenuItem2->setPosition(Vec2(winSize.width, masicMenuItem1->getPositionY() +
 		masicMenuItem1->getContentSize().height));
-	masicMenuItem2->setAnchorPoint(Vec2(0, 0));
-	masicMenuItem2->setTag(351);
+	masicMenuItem2->setAnchorPoint(Vec2(1, 0));
+	masicMenuItem2->setTag(522);
 
 	auto masicMenu = Menu::create(masicMenuItem1, masicMenuItem2, NULL);
 	
@@ -669,7 +682,7 @@ void GameStageScene::towerMenuCreate()
 		CC_CALLBACK_1(GameStageScene::doClick, this));
 	towerMenuItem2->setPosition(Vec2(winSize.width / 2, 0));
 	towerMenuItem2->setAnchorPoint(Vec2(0.5, 0));
-	towerMenuItem2->setTag(451);
+	towerMenuItem2->setTag(512);
 
 	auto towerMenuItem1 = MenuItemImage::create(
 		"Images/Tower/Knight1/Horizontal_3.png",
@@ -678,7 +691,7 @@ void GameStageScene::towerMenuCreate()
 	towerMenuItem1->setPosition(Vec2(towerMenuItem2->getPositionX() -
 			towerMenuItem2->getContentSize().width, 0));
 	towerMenuItem1->setAnchorPoint(Vec2(0.5, 0));
-	towerMenuItem1->setTag(450);
+	towerMenuItem1->setTag(511);
 
 	auto towerMenuItem3 = MenuItemImage::create(
 		"Images/Tower/Magician1/Horizontal_3.png",
@@ -687,7 +700,7 @@ void GameStageScene::towerMenuCreate()
 	towerMenuItem3->setPosition(Vec2(towerMenuItem2->getPositionX() +
 		towerMenuItem2->getContentSize().width, 0));
 	towerMenuItem3->setAnchorPoint(Vec2(0.5, 0));
-	towerMenuItem3->setTag(452);
+	towerMenuItem3->setTag(513);
 
 	towerMenuOnOff = MenuItemImage::create(
 		"Images/MenuButton/b_menuOn.png",
@@ -696,7 +709,7 @@ void GameStageScene::towerMenuCreate()
 	towerMenuOnOff->setPosition(Vec2(winSize.width / 2, towerMenuItem2->getPositionY() + 
 		towerMenuItem2->getContentSize().height));
 	towerMenuOnOff->setAnchorPoint(Vec2(0.5, 0));
-	towerMenuOnOff->setTag(453);
+	towerMenuOnOff->setTag(510);
 
 	towerMenu = Menu::create(towerMenuItem1, towerMenuItem2, towerMenuItem3, towerMenuOnOff, NULL);
 
@@ -707,6 +720,47 @@ void GameStageScene::towerMenuCreate()
 	towerMenuSize = towerMenuItem2->getContentSize().height;
 
 	addChild(towerMenu, 2);
+}
+
+void GameStageScene::heroMenuCreate()
+{
+
+	heroMenuItem1 = MenuItemImage::create(
+		"Images/Hero/hero1.png",
+		"Images/Hero/hero1.png",
+		CC_CALLBACK_1(GameStageScene::doClick, this));
+	heroMenuItem1->setPosition(Vec2(0, 0));
+	heroMenuItem1->setAnchorPoint(Vec2(0, 0));
+	heroMenuItem1->setTag(531);
+
+
+	auto heroMenuItem2 = MenuItemImage::create(
+		"Images/Hero/hero2.png",
+		"Images/Hero/hero2.png",
+		CC_CALLBACK_1(GameStageScene::doClick, this));
+	heroMenuItem2->setPosition(Vec2(heroMenuItem1->getContentSize().width, 0));
+	heroMenuItem2->setAnchorPoint(Vec2(0, 0));
+	heroMenuItem2->setTag(532);
+
+	
+
+	auto heroMenuItem3 = MenuItemImage::create(
+		"Images/Hero/hero3.png",
+		"Images/Hero/hero3.png",
+		CC_CALLBACK_1(GameStageScene::doClick, this));
+	heroMenuItem3->setPosition(Vec2(heroMenuItem1->getContentSize().width + heroMenuItem2->getContentSize().width, 0));
+	heroMenuItem3->setAnchorPoint(Vec2(0, 0));
+	heroMenuItem3->setTag(533);
+
+	auto heroMenu = Menu::create(heroMenuItem1, heroMenuItem2, heroMenuItem3, NULL);
+
+	Vec2 origin = Director::getInstance()->getVisibleOrigin();
+
+	heroMenu->setPosition(Vec2(0 + origin.x, 0 + origin.y));
+
+//	auto heroMenuItem3 = heroMenuItem3->getContentSize().height;
+
+	addChild(heroMenu, 2);
 }
 
 void GameStageScene::doClick(Ref* pSender)
@@ -731,11 +785,9 @@ void GameStageScene::doClick(Ref* pSender)
 		obj->setOpacity(255.f);
 	}
 
-	
-
 	auto tItem = (MenuItem *)pSender;
 	int i = tItem->getTag();
-	if (i == 453 && towerMenu->numberOfRunningActions() == 0)
+	if (i == 510 && towerMenu->numberOfRunningActions() == 0)
 	{
 		if (towerMenustatus)
 		{
@@ -756,26 +808,26 @@ void GameStageScene::doClick(Ref* pSender)
 			towerMenustatus = true;
 		}
 	}
-	else if (i == 550)
+	else if (i == 502)
 	{
 		gauge = 0;
 	}
-	else if(i == 450 && (*_pnowStageGold) >= 10)
+	else if(i == 511 && (*_pnowStageGold) >= 10)
 	{
 		towerTpye = 1;
 		towerTouch = true;
 	}
-	else if(i == 451 && (*_pnowStageGold) >= 20)
+	else if(i == 512 && (*_pnowStageGold) >= 20)
 	{
 		towerTpye = 2;
 		towerTouch = true;
 	}
-	else if (i == 452 && (*_pnowStageGold) >= 30)
+	else if (i == 513 && (*_pnowStageGold) >= 30)
 	{
 		towerTpye = 3;
 		towerTouch = true;
 	}
-	else if (i == 350)
+	else if (i == 521)
 	{
 		//번개 마법
 		for (int i = 0; i < _monster.size(); i++)
@@ -788,10 +840,33 @@ void GameStageScene::doClick(Ref* pSender)
 			}
 		}
 	}
-	else if (i == 351)
+	else if (i == 522)
 	{
 		nowStageGold = nowStageGold + 50;
 		//얼음
+	}
+	else if (i == 531 && !firstHero)
+	{
+		log("Hero1");
+		hero1 = new Hero(1);
+		hero1->setPosition(_Vec2Point.at(_Vec2Point.size() - 1));
+		hero1->setOpacity(240.f);
+		hero1->setpMonster(_pMonster);
+		hero1->setpGold(_pnowStageGold);
+
+		tmap->addChild(hero1, 200);
+		firstHero = true;
+		heroMenuItem1->setOpacity(100.f);
+		//heroMenuItem1->setNormalImage(Sprite::create("Images/Hero/hero3.png"));
+		//heroMenuItem1->setSelectedImage(Sprite::create("Images/Hero/hero2.png"));
+	}
+	else if (i == 532)
+	{
+		log("Hero2");
+	}
+	else if (i == 533)
+	{
+		log("Hero3");
 	}
 }
 

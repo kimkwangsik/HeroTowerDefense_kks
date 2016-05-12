@@ -4,12 +4,30 @@
 #include "cocos2d.h"
 #include "Tower.h"
 #include "Monster.h"
+#include "Hero.h"
 
 class GameStageScene : public cocos2d::LayerColor
 {
 public:
 	static cocos2d::Scene* createScene();
 	GameStageScene(int stagelevel);
+
+	void createStage(int level);
+
+	virtual void onEnter();
+	virtual void onExit();
+	virtual bool onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event);
+	virtual void onTouchMoved(cocos2d::Touch* touch, cocos2d::Event* event);
+	virtual void onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event);
+	void doClick(Ref* pSender);
+
+	cocos2d::EventListener* _listenter;
+
+	cocos2d::Size winSize;
+	cocos2d::Size VisibleWinSize;
+	cocos2d::Size winSizePixel;
+	cocos2d::Size sizeRate;
+	cocos2d::Vec2 origin;
 
 	int nowStageLevel;
 	int nowStageGold;
@@ -19,25 +37,27 @@ public:
 	cocos2d::TMXLayer* metainfo;
 	cocos2d::TMXObjectGroup* objects;
 
+	cocos2d::Menu* towerMenu;
+	cocos2d::MenuItemImage* towerMenuOnOff;
+
+	void masicMenuCreate();
+	void towerMenuCreate();
+	void heroMenuCreate();
+
+	void heartCreate(int a, cocos2d::Vec2 position);
 	cocos2d::Vector<cocos2d::Sprite*> _heart;
 	int _heartCount;
-	void heartCreate(int a, cocos2d::Vec2 position);
-	bool gameOver;
-	bool towerStop;
-	cocos2d::LabelTTF* upgradeCost;
 
-	cocos2d::Size winSize;
-	cocos2d::Size VisibleWinSize;
-	cocos2d::Size winSizePixel;
-	cocos2d::Size sizeRate;
-	cocos2d::Vec2 origin;
+	cocos2d::Sprite* timerBase;
+	cocos2d::Sprite* timerGauge;
+	int gauge;
+	cocos2d::ProgressTimer *gaugeBar;
+	int phaseLevel = 0;
+	cocos2d::LabelTTF* phaseLabel;
 
-	cocos2d::Menu* towerMenu;
-	
-	cocos2d::MenuItemImage* towerMenuOnOff;
-	cocos2d::Sprite* b_Upgrade;
-
-	void createStage(int level);
+	bool towerTouch = false;
+	bool towerMenustatus = true;
+	float towerMenuSize;
 
 	int towerTpye;
 	Tower* clickTower;
@@ -45,11 +65,24 @@ public:
 	cocos2d::Sprite* moveSprtie;
 	cocos2d::Vector<Tower*> _setupTower;
 
-	cocos2d::EventListener* _listenter;
+	cocos2d::Sprite* b_Upgrade;
+	cocos2d::LabelTTF* upgradeCost;
 
 	int viaX[15];
 	int viaY[15];
 	bool towerUpgradeVisible;
+
+	Hero* hero1;
+	bool firstHero;
+
+	cocos2d::MenuItemImage* heroMenuItem1;
+
+
+
+
+
+
+
 
 	void addMonster();
 	void removeMonster(Monster* slime);
@@ -65,33 +98,14 @@ public:
 
 	std::vector<cocos2d::Vec2> _Vec2Point;
 
-	cocos2d::Sprite* timerBase;
-	cocos2d::Sprite* timerGauge;
-	int gauge;
-	cocos2d::ProgressTimer *gaugeBar;
-	int phaseLevel = 0;
-	cocos2d::LabelTTF* phaseLabel;
-
-	bool towerTouch = false;
-
 	void myTick(float f);
 	void bossTick(float f);
 
-	virtual void onEnter();
-	virtual void onExit();
-	virtual bool onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event);
-	virtual void onTouchMoved(cocos2d::Touch* touch, cocos2d::Event* event);
-	virtual void onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event);
-	void doClick(Ref* pSender);
+	bool gameOver;
+	bool towerStop;
 
 	cocos2d::Vec2 tileCoordForPosition(cocos2d::Vec2 position);
 	cocos2d::Vec2 positionForTileCoord(cocos2d::Vec2 position);
-
-	bool towerMenustatus = true;
-	float towerMenuSize;
-
-	void masicMenuCreate();
-	void towerMenuCreate();
 };
 
 #endif // __HELLOWORLD_SCENE_H__

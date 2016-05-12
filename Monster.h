@@ -8,10 +8,9 @@ class Monster : public cocos2d::Sprite
 public:
 	Monster(std::string monsterName);
 	std::string myMonsterName;
-	int hp;
-
-	void setPriority(int fixwdPriority);
-	void setPriorityWithThis(bool usdNodePriority);
+	float hp;
+	float maxHp;
+	int dropGold;
 
 	virtual void onEnter();
 	virtual void onExit();

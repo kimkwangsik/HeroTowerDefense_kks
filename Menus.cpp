@@ -31,7 +31,7 @@ Menus::Menus(std::string SceneName)
 	auto menubar = Sprite::create("Images/MenuButton/menubar.png");// 1024 x 66 사이즈 그림
 	menubar->setPosition(Vec2(winSize.width / 2, winSize.height + origin.y));
 	menubar->setAnchorPoint(Vec2(0.5, 1));
-	menubar->setTag(300);
+	menubar->setTag(610);
 	addChild(menubar);
 
 	auto nowSceneNameLabel = LabelTTF::create(SceneName, "Arial", 20);
@@ -101,9 +101,9 @@ Menus::Menus(std::string SceneName)
 		pMenuItem3->setVisible(false);
 	}
 
-	pMenuItem1->setTag(11);
-	pMenuItem2->setTag(12);
-	pMenuItem3->setTag(13);
+	pMenuItem1->setTag(611);
+	pMenuItem2->setTag(612);
+	pMenuItem3->setTag(613);
 
 	auto pMenu = Menu::create(pMenuItem1, pMenuItem2, pMenuItem3, NULL);
 	pMenu->setPosition(Vec2(0, 0));
@@ -150,13 +150,13 @@ void Menus::doClick(Ref* pSender)
 {
 	auto tItem = (MenuItem *)pSender;
 	int i = tItem->getTag();
-	if (i == 11)
+	if (i == 611)
 	{
 		log("메뉴가 선택되었습니다.");
 		auto pScene = Options::createScene();
 		this->addChild(pScene, 3000);
 	}
-	else if (i == 12)
+	else if (i == 612)
 	{
 		log("X를 클릭 하셧습니다.");
 		//Director::getInstance()->popScene();
@@ -174,7 +174,7 @@ void Menus::doClick(Ref* pSender)
 
 		
 	}
-	else if (i == 13 && 0)
+	else if (i == 613 && 0)
 	{
 		if (pauseNow)
 		{

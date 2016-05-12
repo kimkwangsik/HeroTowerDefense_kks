@@ -1,4 +1,4 @@
-#ifndef __Options_H__
+﻿#ifndef __Options_H__
 #define __Options_H__
 
 #include "cocos2d.h"

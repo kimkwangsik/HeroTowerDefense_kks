@@ -70,7 +70,7 @@ bool MainScene::init()
 	statue->setScale(2.f);
 	tmap->addChild(statue);*/
 
-	this->addChild(tmap, 0, 11);
+	this->addChild(tmap, 0, 191);
 
 	auto fortress = MenuItemImage::create(
 		"Images/Main/fortress.png",
@@ -93,9 +93,9 @@ bool MainScene::init()
 	statue->setScale(2.f);
 	statue->setPosition(Vec2(HeroX, HeroY));
 
-	fortress->setTag(1);
-	magic_stones->setTag(2);
-	statue->setTag(3);
+	fortress->setTag(101);
+	magic_stones->setTag(102);
+	statue->setTag(103);
 
 	auto pMenu = Menu::create(fortress, magic_stones, statue, NULL);
 	pMenu->setPosition(Vec2::ZERO);
@@ -110,12 +110,12 @@ void MainScene::doClick(Ref* pSender)
 	auto tItem = (MenuItem *)pSender;
 	int i = tItem->getTag();
 	log("%d번째 메뉴가 선택되었습니다.", i);
-	if (i == 1)
+	if (i == 101)
 	{
 		auto pScene = StageSelectScene::createScene();
 		Director::getInstance()->replaceScene(pScene);
 	}
-	if (i == 2)
+	if (i == 102)
 	{
 		int have_gold = UserDefault::getInstance()->getIntegerForKey("have_gold");
 		have_gold = have_gold - 10;

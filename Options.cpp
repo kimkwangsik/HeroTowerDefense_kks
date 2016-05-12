@@ -1,4 +1,4 @@
-#include "Options.h"
+﻿#include "Options.h"
 
 USING_NS_CC;
 
@@ -25,13 +25,13 @@ bool Options::init()
 	addChild(optionbar);
 
 	auto pMenuItem1 = MenuItemFont::create(
-		" â �ݱ� ",
+		" 창 닫기 ",
 		CC_CALLBACK_1(Options::doClick, this));
 	pMenuItem1->setPosition(Vec2(optionbar->getContentSize().width/2, 0));
 	pMenuItem1->setAnchorPoint(Vec2(0.5, 0));
 	pMenuItem1->setScale(0.2f);
 
-	pMenuItem1->setTag(21);
+	pMenuItem1->setTag(621);
 
 	auto pMenu = Menu::create(pMenuItem1, NULL);
 	pMenu->setPosition(Vec2::ZERO);
