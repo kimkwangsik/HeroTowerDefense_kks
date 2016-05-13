@@ -63,6 +63,8 @@ void Tower::setpGold(int * _pnowStageGold)
 	nowStageGold = _pnowStageGold;
 }
 
+
+
 void Tower::onEnter()
 {
 	Sprite::onEnter();
@@ -152,7 +154,7 @@ void Tower::towerTick(float a)
 	{
 		auto obj = (Monster*)(*_pMonster).at(i);
 		Vec2 objVec2 = obj->getPosition();
-		Vec2 dis = myPos - objVec2;
+		Vec2 dis = objVec2 - myPos;
 		
 		Vec2 absDis = Vec2(fabs(dis.x), fabs(dis.y));
 		if (_towerType == 1)
@@ -165,6 +167,9 @@ void Tower::towerTick(float a)
 					(*nowStageGold) = (*nowStageGold) + obj->dropGold;
 					(*_pMonster).eraseObject(obj);
 				}
+
+				setFlippedX(false);
+				setAnimation(absDis, dis);
 
 				auto animation = Animation::create();
 				animation->setDelayPerUnit(0.1f);
@@ -187,6 +192,8 @@ void Tower::towerTick(float a)
 					(*nowStageGold) = (*nowStageGold) + obj->dropGold;
 					(*_pMonster).eraseObject(obj);
 				}
+				setFlippedX(false);
+				setAnimation(absDis, dis);
 
 				auto animation = Animation::create();
 				animation->setDelayPerUnit(0.1f);
@@ -209,6 +216,13 @@ void Tower::towerTick(float a)
 					(*nowStageGold) = (*nowStageGold) + obj->dropGold;
 					(*_pMonster).eraseObject(obj);
 				}
+
+				obj->speed->setSpeed(0.5f);
+				obj->setColor(Color3B::BLUE);
+
+				setFlippedX(false);
+				setAnimation(absDis, dis);
+
 				auto animation = Animation::create();
 				animation->setDelayPerUnit(0.2f);
 
@@ -225,9 +239,44 @@ void Tower::towerTick(float a)
 
 }
 
-void Tower::animationRename()
+//void Tower::animationRename()
+//{
+//	sprintf(animationStr1, "Images/Tower/%s%d/Horizontal_%d.png", name, towerUpgradeLevel, 1);
+//	sprintf(animationStr2, "Images/Tower/%s%d/Horizontal_%d.png", name, towerUpgradeLevel, 2);
+//	sprintf(animationStr3, "Images/Tower/%s%d/Horizontal_%d.png", name, towerUpgradeLevel, 3);
+//}
+
+void Tower::setAnimation(cocos2d::Vec2 absDis, cocos2d::Vec2 dis)
 {
-	sprintf(animationStr1, "Images/Tower/%s%d/Horizontal_%d.png", name, towerUpgradeLevel, 1);
-	sprintf(animationStr2, "Images/Tower/%s%d/Horizontal_%d.png", name, towerUpgradeLevel, 2);
-	sprintf(animationStr3, "Images/Tower/%s%d/Horizontal_%d.png", name, towerUpgradeLevel, 3);
+	if (absDis.x > absDis.y)
+	{
+		if (dis.x > 0)
+		{
+			sprintf(animationStr1, "Images/Tower/%s%d/Horizontal_%d.png", name, towerUpgradeLevel, 1);
+			sprintf(animationStr2, "Images/Tower/%s%d/Horizontal_%d.png", name, towerUpgradeLevel, 2);
+			sprintf(animationStr3, "Images/Tower/%s%d/Horizontal_%d.png", name, towerUpgradeLevel, 3);
+		}
+		else
+		{
+			sprintf(animationStr1, "Images/Tower/%s%d/Horizontal_%d.png", name, towerUpgradeLevel, 1);
+			sprintf(animationStr2, "Images/Tower/%s%d/Horizontal_%d.png", name, towerUpgradeLevel, 2);
+			sprintf(animationStr3, "Images/Tower/%s%d/Horizontal_%d.png", name, towerUpgradeLevel, 3);
+			setFlippedX(true);
+		}
+	}
+	else
+	{
+		if (dis.y > 0)
+		{
+			sprintf(animationStr1, "Images/Tower/%s%d/Up_%d.png", name, towerUpgradeLevel, 1);
+			sprintf(animationStr2, "Images/Tower/%s%d/Up_%d.png", name, towerUpgradeLevel, 2);
+			sprintf(animationStr3, "Images/Tower/%s%d/Up_%d.png", name, towerUpgradeLevel, 1);
+		}
+		else
+		{
+			sprintf(animationStr1, "Images/Tower/%s%d/Down_%d.png", name, towerUpgradeLevel, 1);
+			sprintf(animationStr2, "Images/Tower/%s%d/Down_%d.png", name, towerUpgradeLevel, 2);
+			sprintf(animationStr3, "Images/Tower/%s%d/Down_%d.png", name, towerUpgradeLevel, 1);
+		}
+	}
 }

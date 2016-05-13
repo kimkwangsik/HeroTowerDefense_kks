@@ -42,6 +42,7 @@ bool StageSelectScene::init()
 	auto maxStageLabel = LabelTTF::create(maxStagestr, "Helvetica", 20.0);	//폰트 수정 또는 확인 필수
 	maxStageLabel->setPosition(Vec2(tableViewBackGround->getContentSize().width/2,10));
 	maxStageLabel->setAnchorPoint(Vec2(0.5, 0));
+	maxStageLabel->setColor(Color3B::BLACK);
 	tableViewBackGround->addChild(maxStageLabel, 3);
 
 	auto pScene = Menus::createScene();

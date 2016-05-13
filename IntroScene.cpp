@@ -50,9 +50,6 @@ bool IntroScene::init()
 		UserDefault::getInstance()->setIntegerForKey("clear_stage", 0);
 	}
 
-	
-
-
 	return true;
 }
   

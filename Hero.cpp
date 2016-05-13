@@ -147,7 +147,7 @@ void Hero::heroTick(float a)
 				}
 
 				auto animation = Animation::create();
-				animation->setDelayPerUnit(0.1f);
+				animation->setDelayPerUnit(0.16f);
 
 				animation->addSpriteFrameWithFile(animationStr1);
 				animation->addSpriteFrameWithFile(animationStr2);

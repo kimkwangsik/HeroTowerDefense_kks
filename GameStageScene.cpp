@@ -22,9 +22,10 @@ GameStageScene::GameStageScene(int stagelevel)
 
 	nowStageLevel = stagelevel;
 
-	nowStageGold = 50;
+	nowStageGold = 60;
 	_pnowStageGold = &nowStageGold;
 
+	skipTrue = true;
 	firstHero = false;
 
 	gameOver = false;
@@ -207,7 +208,7 @@ Sequence* GameStageScene::SequenceMonsterAdd(int num, int max)
 	}
 
 	auto addAction = Sequence::create(
-		CallFunc::create(CC_CALLBACK_0(GameStageScene::addMonster, this)),
+		CallFunc::create(CC_CALLBACK_0(GameStageScene::addMonster, this, phaseLevel)),
 		DelayTime::create(1),
 		nullptr);
 
@@ -217,30 +218,31 @@ Sequence* GameStageScene::SequenceMonsterAdd(int num, int max)
 	return myAction;
 }
 
-void GameStageScene::addMonster()
+void GameStageScene::addMonster(int monNum)
 {
 	Vec2 startVec2 = _Vec2Point.at(0);
 	Monster* monster;
 
-	if (phaseLevel <= 3)
+	if (monNum <= 3)
 	{
 		monster = new Monster("slime");
 		monster->setTexture("Images/Monster/slime.png");
 		monster->maxHp = 100.f;
 		monster->dropGold = 1;
 	}
-	else if(phaseLevel < 6)
+	else if(monNum < 6)
 	{
 		monster = new Monster("CyanSquare");
 		monster->setTexture("Images/CyanSquare.png");
 		monster->maxHp = 200.f;
 		monster->dropGold = 2;
 	}
-	else if (phaseLevel == 6)
+	else
 	{
-		monster = new Monster("slime");
-		monster->setTexture("Images/Monster/slime.png");
+		monster = new Monster("minotaur");
+		monster->setTexture("Images/Monster/minotaur_1.png");
 		monster->setScale(2.f);
+		monster->setAnchorPoint(Vec2(0.5, 0));
 		monster->maxHp = 500.f;
 		monster->dropGold = 1000;
 	}
@@ -248,8 +250,10 @@ void GameStageScene::addMonster()
 	//monster->setTexture("Images/CyanSquare.png");
 	
 	monster->setPosition(startVec2);
-	monster->runAction(MoveAction(monster));
-	
+	auto speed = Speed::create(MoveAction(monster), 1.0f);
+	monster->sendSpeed(speed);
+	monster->runAction(speed);
+
 	_monster.pushBack(monster);
 
 	tmap->addChild(monster);
@@ -315,9 +319,13 @@ void GameStageScene::removeMonster(Monster* monster)
 		if (gameOver)
 		{
 			monsterObj->stopAllActions();
+			if (firstHero)
+			{
+				hero1->stopAllActions();
+				hero1->unscheduleAllSelectors();
+			}
 			if (towerStop)
 			{
-				
 				stopAllActions();
 
 				for (int j = 0; j < _setupTower.size(); j++)
@@ -331,7 +339,6 @@ void GameStageScene::removeMonster(Monster* monster)
 		
 		if (monster == monsterObj)
 		{
-			
 			if (_heart.size() > 0)
 			{
 				_monster.at(i)->remove();
@@ -385,7 +392,7 @@ void GameStageScene::myTick(float f)
 		phaseLabel->setString(phase);
 		runAction(SequenceMonsterAdd(0, 10));
 	}
-	if (gauge <= 0 && 5 == phaseLevel)
+	if (gauge < 0 && 5 == phaseLevel)
 	{
 		phaseLevel++;
 		phaseLabel->setString("BOSS phase");
@@ -555,7 +562,7 @@ void GameStageScene::onTouchEnded(Touch* touch, Event* event)
 				char str[50];
 				sprintf(str, "Images/Tower/%s%d/Horizontal_3.png", obj->name, obj->towerUpgradeLevel);
 
-				obj->animationRename();
+				//obj->animationRename();
 
 				char levelViewstr[10];
 				sprintf(levelViewstr, "%d", obj->towerUpgradeLevel);
@@ -637,6 +644,7 @@ Vec2 GameStageScene::positionForTileCoord(Vec2 position)
 
 	return Vec2(x, y);
 }
+
 
 Vec2 GameStageScene::tileCoordForPosition(Vec2 position)
 {
@@ -808,9 +816,11 @@ void GameStageScene::doClick(Ref* pSender)
 			towerMenustatus = true;
 		}
 	}
-	else if (i == 502)
+	else if (i == 502 && skipTrue)
 	{
 		gauge = 0;
+		skipTrue = false;
+		scheduleOnce(schedule_selector(GameStageScene::trueFalse), 5.0f);
 	}
 	else if(i == 511 && (*_pnowStageGold) >= 10)
 	{
@@ -870,3 +880,18 @@ void GameStageScene::doClick(Ref* pSender)
 	}
 }
 
+
+void GameStageScene::trueFalse(float f)
+{
+	if (skipTrue == true)
+	{
+		log("false");
+		skipTrue = false;
+	}
+	else if (skipTrue == false)
+	{
+		log("true");
+		skipTrue = true;
+	}
+	log("O");
+}

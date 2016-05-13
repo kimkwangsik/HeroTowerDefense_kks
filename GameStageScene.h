@@ -84,7 +84,7 @@ public:
 
 
 
-	void addMonster();
+	void addMonster(int monNum);
 	void removeMonster(Monster* slime);
 	//cocos2d::Sequence* abcde;
 
@@ -106,6 +106,9 @@ public:
 
 	cocos2d::Vec2 tileCoordForPosition(cocos2d::Vec2 position);
 	cocos2d::Vec2 positionForTileCoord(cocos2d::Vec2 position);
+
+	void trueFalse(float f);
+	bool skipTrue;
 };
 
 #endif // __HELLOWORLD_SCENE_H__

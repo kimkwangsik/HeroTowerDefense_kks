@@ -8,6 +8,7 @@ Monster::Monster(std::string monsterName)
 	, maxHp(100.0f)
 	, myMonsterName(monsterName)
 	, dropGold(1)
+	, _fly(false)
 {
 	bool b0k = initWithTexture(nullptr, Rect::ZERO);
 	if (b0k)
@@ -30,7 +31,30 @@ void Monster::onEnter()
 	{
 		runAction(RepeatForever::create(JumpBy::create(0.5, Vec2::ZERO, 5.0f, 1)));
 	}
+	else if (myMonsterName == "minotaur")
+	{
+		auto sprite = Sprite::create("Images/Monster/minotaur.png");
+		auto texture1 = sprite->getTexture();
 
+		auto animation = Animation::create();
+		animation->setDelayPerUnit(0.15f);
+
+		for (int i = 20; i < 30; i++)
+		{
+			log("%d", i);
+			int column = i % 10;
+			int row = i / 10;
+
+			animation->addSpriteFrameWithTexture(
+				texture1,
+				Rect(column * 30, row * 30, 30, 30));
+		}
+
+		auto animate = Animate::create(animation);
+		auto rep = RepeatForever::create(animate);
+		runAction(rep);
+	}
+	
 	hpBar = Sprite::create("Images/bar_base.png");
 	hpBar->setPosition(Vec2(getContentSize().width/2, getContentSize().height));
 	hpBar->setAnchorPoint(Vec2(0.5, 0));
@@ -62,6 +86,10 @@ void Monster::monsterTick(float a)
 	{
 		remove();
 	}
+}
+void Monster::sendSpeed(Speed* resspeed)
+{
+	speed = resspeed;
 }
 void Monster::onExit() {
 	

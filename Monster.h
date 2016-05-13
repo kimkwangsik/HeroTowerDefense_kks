@@ -17,10 +17,14 @@ public:
 	void remove();
 	void monsterTick(float a);
 
+	void sendSpeed(cocos2d::Speed* resspeed);
+	cocos2d::Speed* speed;
+
 	cocos2d::Sprite* hpBar;
 	cocos2d::Sprite* hpGauge;
 	int gauge;
 	cocos2d::ProgressTimer *gaugeBar;
+	bool _fly;
 
 private:
 	cocos2d::EventListener* _listenter;

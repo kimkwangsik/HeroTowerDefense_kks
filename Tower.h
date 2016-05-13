@@ -23,6 +23,8 @@ public:
 	void setpGold(int* _pnowStageGold);
 	int	cost;
 
+	void setAnimation(cocos2d::Vec2 absDis, cocos2d::Vec2 dis);
+
 	int towerUpgradeLevel;
 	char name[10];
 	char animationStr1[50];
@@ -38,7 +40,7 @@ public:
 	bool towerMenuVisible;
 	bool towerUpgradeVisible;
 	void towerTick(float a);
-	void animationRename();
+	//void animationRename();
 	cocos2d::Vector<Monster*> *_pMonster;
 	cocos2d::EventListener* _listenter;
 	float _attackPower;
