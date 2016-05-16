@@ -9,6 +9,7 @@ Monster::Monster(std::string monsterName)
 	, myMonsterName(monsterName)
 	, dropGold(1)
 	, _fly(false)
+	, boss(false)
 {
 	bool b0k = initWithTexture(nullptr, Rect::ZERO);
 	if (b0k)
@@ -27,34 +28,26 @@ void Monster::onEnter()
 {
 	Sprite::onEnter();
 	hp = maxHp;
-	if (myMonsterName == "slime")
+	speedDown = true;
+
+	//기본 자세와 걷는 모션
+	char monsterFileName[50];
+	sprintf(monsterFileName, "Images/Monster/%s_walk/%d.png", myMonsterName.c_str(), 0);
+	setTexture(monsterFileName);
+
+	auto animation = Animation::create();
+	animation->setDelayPerUnit(0.15f);
+	for (int i = 0; i < 10; i++)
 	{
-		runAction(RepeatForever::create(JumpBy::create(0.5, Vec2::ZERO, 5.0f, 1)));
+		char monsterFileName[50];
+		sprintf(monsterFileName, "Images/Monster/%s_walk/%d.png", myMonsterName.c_str(), i);
+		animation->addSpriteFrameWithFile(monsterFileName);
 	}
-	else if (myMonsterName == "minotaur")
-	{
-		auto sprite = Sprite::create("Images/Monster/minotaur.png");
-		auto texture1 = sprite->getTexture();
+	auto animate = Animate::create(animation);
+	auto rep = RepeatForever::create(animate);
+	runAction(rep);
 
-		auto animation = Animation::create();
-		animation->setDelayPerUnit(0.15f);
 
-		for (int i = 20; i < 30; i++)
-		{
-			log("%d", i);
-			int column = i % 10;
-			int row = i / 10;
-
-			animation->addSpriteFrameWithTexture(
-				texture1,
-				Rect(column * 30, row * 30, 30, 30));
-		}
-
-		auto animate = Animate::create(animation);
-		auto rep = RepeatForever::create(animate);
-		runAction(rep);
-	}
-	
 	hpBar = Sprite::create("Images/bar_base.png");
 	hpBar->setPosition(Vec2(getContentSize().width/2, getContentSize().height));
 	hpBar->setAnchorPoint(Vec2(0.5, 0));
@@ -80,12 +73,28 @@ void Monster::onEnter()
 
 void Monster::monsterTick(float a)
 {
+	if (speed->getSpeed() == 0.5f && speedDown)
+	{
+		unschedule(schedule_selector(Monster::resetSpeed));
+		scheduleOnce(schedule_selector(Monster::resetSpeed), 2.5f);
+		speedDown = false;
+	}
+
 	gauge = (hp / maxHp)*100;
 	gaugeBar->setPercentage(gauge);
 	if (hp <= 0)
 	{
 		remove();
 	}
+	
+
+	//log("%f",speed->getSpeed());
+}
+void Monster::resetSpeed(float a)
+{
+	speed->setSpeed(1.0f);
+	setColor(Color3B::WHITE);
+	speedDown = true;
 }
 void Monster::sendSpeed(Speed* resspeed)
 {

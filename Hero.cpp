@@ -283,7 +283,4 @@ void Hero::heroTick(float a)
 	}
 	auto moveb = MoveBy::create(disVec/60.f, minDis);
 	runAction(moveb);
-
-
-
 }

@@ -78,6 +78,11 @@ public:
 	cocos2d::MenuItemImage* heroMenuItem1;
 
 
+	cocos2d::Sprite* masicSprite;
+	bool masicTouch = false;
+	int masicTpye;
+	bool masicVisible;
+	cocos2d::Vector<Monster*> _masicMonster;
 
 
 

@@ -1,5 +1,6 @@
 ﻿#include "StageSelectScene.h"
-#include "GameStageScene.h"
+//#include "GameStageScene.h"
+#include "SelectStageInfo.h"
 #include "Menus.h"
 
 USING_NS_CC;
@@ -49,7 +50,7 @@ bool StageSelectScene::init()
 	auto scenestr = new Menus("StageSelectScene");
 	scenestr->autorelease();
 	pScene->addChild(scenestr);
-	this->addChild(pScene, 2000);
+	this->addChild(pScene, 3);
 
 	return true;
 }
@@ -80,11 +81,12 @@ void StageSelectScene::doClick(Ref* pSender, int selectStage)
 		return;
 	}
 
-	auto pScene = GameStageScene::createScene();
-	auto stagenum = new GameStageScene(selectStage);
+	auto pScene = SelectStageInfo::createScene();
+	auto stagenum = new SelectStageInfo(selectStage);
 	stagenum->autorelease();
 	pScene->addChild(stagenum);
-	Director::getInstance()->replaceScene(pScene);
+	addChild(pScene, 4);
+	//Director::getInstance()->replaceScene(pScene);
 }
 TableViewCell* StageSelectScene::tableCellAtIndex(TableView* table, ssize_t idx)
 {

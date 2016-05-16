@@ -1,6 +1,8 @@
 ﻿#include "MainScene.h"
 #include "StageSelectScene.h"
+#include "SelectStageInfo.h"
 #include "Menus.h"
+#include "HeroStatu.h"
 
 USING_NS_CC;
 
@@ -117,13 +119,24 @@ void MainScene::doClick(Ref* pSender)
 	}
 	if (i == 102)
 	{
-		int have_gold = UserDefault::getInstance()->getIntegerForKey("have_gold");
+		auto pScene = SelectStageInfo::createScene();
+		auto stagenum = new SelectStageInfo(0);
+		stagenum->autorelease();
+		pScene->addChild(stagenum);
+		addChild(pScene, 4);
+
+		/*int have_gold = UserDefault::getInstance()->getIntegerForKey("have_gold");
 		have_gold = have_gold - 10;
 		if (have_gold < 0)
 		{
 			have_gold = 150;
 		}
-		UserDefault::getInstance()->setIntegerForKey("have_gold", have_gold);
+		UserDefault::getInstance()->setIntegerForKey("have_gold", have_gold);*/
+	}
+	if (i == 103)
+	{
+		auto pScene = HeroStatu::createScene();
+		Director::getInstance()->replaceScene(pScene);
 	}
 
 }

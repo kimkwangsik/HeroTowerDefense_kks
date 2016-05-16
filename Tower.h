@@ -35,7 +35,8 @@ public:
 	virtual void onExit();
 
 	void setTowerSetting();
-
+	//void resetSpeed(float a, Monster* speedDownMonster);
+	void resetSpeed(float a);
 	bool towerSetup;
 	bool towerMenuVisible;
 	bool towerUpgradeVisible;
@@ -52,6 +53,7 @@ private:
 	int _towerType;
 	bool _setupBegan;
 	float _attackDelay;
+	float _attackArea;
 };
 
 #endif //defined(__SpriteExtendEx__Monster__)//

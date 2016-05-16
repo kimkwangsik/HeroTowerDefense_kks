@@ -22,7 +22,7 @@ GameStageScene::GameStageScene(int stagelevel)
 
 	nowStageLevel = stagelevel;
 
-	nowStageGold = 60;
+	nowStageGold = 30;
 	_pnowStageGold = &nowStageGold;
 
 	skipTrue = true;
@@ -58,11 +58,24 @@ GameStageScene::GameStageScene(int stagelevel)
 	addChild(Label1, 2);*/
 
 	auto pScene = Menus::createScene();
-	auto scenestr = new Menus("GameStageScene");
-	scenestr->setpGold(_pnowStageGold);
-	scenestr->autorelease();
-	pScene->addChild(scenestr);
-	this->addChild(pScene, 100);
+	
+	if (stagelevel == 0)
+	{
+		auto scenestr = new Menus("InfinityStage");
+		scenestr->setpGold(_pnowStageGold);
+		scenestr->autorelease();
+		pScene->addChild(scenestr);
+		this->addChild(pScene, 100);
+	}
+	else
+	{
+		auto scenestr = new Menus("GameStageScene");
+		scenestr->setpGold(_pnowStageGold);
+		scenestr->autorelease();
+		pScene->addChild(scenestr);
+		this->addChild(pScene, 100);
+	}
+	
 
 	createStage(stagelevel);
 
@@ -79,14 +92,23 @@ GameStageScene::GameStageScene(int stagelevel)
 	upgradeCoin->setAnchorPoint(Vec2(0.5, 0));
 	b_Upgrade->addChild(upgradeCoin);
 
-	upgradeCost = LabelTTF::create("1000", "Arial", 16);
+	upgradeCost = LabelTTF::create("0", "Arial", 16);
 	upgradeCost->setPosition(Vec2(b_Upgrade->getContentSize().width / 2,
 		b_Upgrade->getContentSize().height / 2));
 	upgradeCost->setAnchorPoint(Vec2(0.5, 1));
 	upgradeCost->setColor(Color3B::BLACK);
 	b_Upgrade->addChild(upgradeCost);
 
-	
+	masicSprite = Sprite::create("Images/spell/lighting-sky-3.png");
+	masicSprite->setPosition(Vec2::ZERO);
+	masicSprite->setVisible(false);
+	masicVisible = false;
+	tmap->addChild(masicSprite);
+
+	auto draw_node = DrawNode::create();
+	draw_node->setPosition(Vec2(masicSprite->getContentSize().width/2, masicSprite->getContentSize().height / 2));
+	masicSprite->addChild(draw_node);
+	draw_node->drawCircle(Vec2(0, 0), 45, CC_DEGREES_TO_RADIANS(90), 50, false, Color4F(0, 1, 1, 1));
 	
 	return;
 }
@@ -95,6 +117,11 @@ void GameStageScene::createStage(int stagelevel)
 {
 	char str[20];
 	sprintf(str, "TileMaps/Level%ld.tmx", stagelevel);
+
+	if (stagelevel == 0)
+	{
+		sprintf(str, "TileMaps/Level%ld.tmx", 1);
+	}
 
 	auto skip = MenuItemImage::create(
 		"Images/MenuButton/skip_button.png",
@@ -223,32 +250,47 @@ void GameStageScene::addMonster(int monNum)
 	Vec2 startVec2 = _Vec2Point.at(0);
 	Monster* monster;
 
-	if (monNum <= 3)
+	
+	if (monNum == 1)
 	{
-		monster = new Monster("slime");
-		monster->setTexture("Images/Monster/slime.png");
+		monster = new Monster("greenslime");
 		monster->maxHp = 100.f;
 		monster->dropGold = 1;
 	}
-	else if(monNum < 6)
+	else if (monNum == 2)
 	{
-		monster = new Monster("CyanSquare");
-		monster->setTexture("Images/CyanSquare.png");
+		monster = new Monster("blueslime");
+		monster->maxHp = 120.f;
+		monster->dropGold = 1;
+	}
+	else if (monNum == 3)
+	{
+		monster = new Monster("yellowslime");
+		monster->maxHp = 150.f;
+		monster->dropGold = 1;
+	}
+	else if (monNum == 4)
+	{
+		monster = new Monster("redslime");
+		monster->maxHp = 180.f;
+		monster->dropGold = 2;
+	}
+	else if (monNum == 5)
+	{
+		monster = new Monster("minotaur");
 		monster->maxHp = 200.f;
 		monster->dropGold = 2;
 	}
 	else
 	{
 		monster = new Monster("minotaur");
-		monster->setTexture("Images/Monster/minotaur_1.png");
 		monster->setScale(2.f);
-		monster->setAnchorPoint(Vec2(0.5, 0));
-		monster->maxHp = 500.f;
-		monster->dropGold = 1000;
+		monster->maxHp = 1000.f;
+		monster->boss = true;
+		monster->dropGold = 0;
 	}
 
-	//monster->setTexture("Images/CyanSquare.png");
-	
+	monster->setAnchorPoint(Vec2(0.5, 0));
 	monster->setPosition(startVec2);
 	auto speed = Speed::create(MoveAction(monster), 1.0f);
 	monster->sendSpeed(speed);
@@ -469,6 +511,23 @@ bool GameStageScene::onTouchBegan(Touch* touch, Event* event) {
 		tmap->addChild(clickTower, 101);
 		return true;
 	}
+
+	if (masicTouch)
+	{
+		if (masicTpye == 1)
+		{
+			masicSprite->setTexture("Images/spell/lighting-sky-3.png");
+		}
+		else if (masicTpye == 2)
+		{
+			masicSprite->setTexture("Images/spell/ice-blue-3.png");
+		}
+		masicSprite->setPosition(tmapConvertPoint);
+		masicSprite->setOpacity(100.f);
+		masicSprite->setVisible(true);
+		masicVisible = true;
+	}
+
 	return true;
 }
 
@@ -480,12 +539,82 @@ void GameStageScene::onTouchMoved(Touch* touch, Event* event)
 		Vec2 tmapConvertPoint = tmap->convertToNodeSpace(touchPoint);
 		clickTower->setPosition(tmapConvertPoint);
 	}
+
+	if (masicTouch)
+	{
+		auto touchPoint = touch->getLocation();
+		Vec2 tmapConvertPoint = tmap->convertToNodeSpace(touchPoint);
+		masicSprite->setPosition(tmapConvertPoint);
+	}
+
 }
 
 void GameStageScene::onTouchEnded(Touch* touch, Event* event)
 {
 	auto touchPoint = touch->getLocation();
 	Vec2 tmapConvertPoint = tmap->convertToNodeSpace(touchPoint);
+
+	if (masicTouch && masicVisible)
+	{
+		if (masicTpye == 1)
+		{
+			for (int i = 0; i != _monster.size(); i++)
+			{
+				auto monsterObj = (Monster*)_monster.at(i);
+				Vec2 monsterVec2 = monsterObj->getPosition();
+				Vec2 dis = tmapConvertPoint - monsterVec2;
+
+				Vec2 absDis = Vec2(fabs(dis.x), fabs(dis.y));
+				if (absDis.x <= 45 && absDis.y <= 45)
+				{
+					monsterObj->hp -= 100;
+					if (monsterObj->hp <= 0)
+					{
+						_masicMonster.pushBack(monsterObj);
+					}
+				}
+			}
+			for (int i = 0; i != _masicMonster.size(); i++)
+			{
+				_monster.eraseObject(_masicMonster.at(i));
+			}
+			_masicMonster.clear();
+
+		}
+		else if (masicTpye == 2)
+		{
+			for (int i = 0; i != _monster.size(); i++)
+			{
+				auto monsterObj = (Monster*)_monster.at(i);
+				Vec2 monsterVec2 = monsterObj->getPosition();
+				Vec2 dis = tmapConvertPoint - monsterVec2;
+
+				Vec2 absDis = Vec2(fabs(dis.x), fabs(dis.y));
+				if (absDis.x <= 45 && absDis.y <= 45)
+				{
+					monsterObj->hp -= 5;
+					monsterObj->speedDown = true;
+					monsterObj->speed->setSpeed(0.5f);
+					monsterObj->setColor(Color3B::YELLOW);
+					if (monsterObj->hp <= 0)
+					{
+						_masicMonster.pushBack(monsterObj);
+					}
+				}
+			}
+			for (int i = 0; i != _masicMonster.size(); i++)
+			{
+				_monster.eraseObject(_masicMonster.at(i));
+			}
+			_masicMonster.clear();
+		}
+
+
+		masicSprite->setVisible(false);
+		masicVisible = false;
+		masicTouch = false;
+		return;
+	}
 
 	if (towerTouch)
 	{
@@ -773,6 +902,8 @@ void GameStageScene::heroMenuCreate()
 
 void GameStageScene::doClick(Ref* pSender)
 {
+	towerTouch = false;
+	masicTouch = false;
 	//타워 설치중이면 메뉴 클릭 불가능
 	for (int i = 0; i != _setupTower.size(); i++)
 	{
@@ -839,19 +970,25 @@ void GameStageScene::doClick(Ref* pSender)
 	}
 	else if (i == 521)
 	{
-		//번개 마법
-		for (int i = 0; i < _monster.size(); i++)
-		{
-			auto obj = (Monster*)_monster.at(i);
-			obj->hp = obj->hp - 20;
-			if (obj->hp <= 0)
-			{
-				_monster.eraseObject(obj);
-			}
-		}
+		masicTpye = 1;
+		masicTouch = true;
+
+
+		////번개 마법
+		//for (int i = 0; i < _monster.size(); i++)
+		//{
+		//	auto obj = (Monster*)_monster.at(i);
+		//	obj->hp = obj->hp - 20;
+		//	if (obj->hp <= 0)
+		//	{
+		//		_monster.eraseObject(obj);
+		//	}
+		//}
 	}
 	else if (i == 522)
 	{
+		masicTpye = 2;
+		masicTouch = true;
 		nowStageGold = nowStageGold + 50;
 		//얼음
 	}

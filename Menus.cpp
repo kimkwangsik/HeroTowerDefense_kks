@@ -40,7 +40,7 @@ Menus::Menus(std::string SceneName)
 	nowSceneNameLabel->setAnchorPoint(Vec2(0.5, 1));
 	menubar->addChild(nowSceneNameLabel);
 
-	if (nowSceneName == "GameStageScene")
+	if (nowSceneName == "GameStageScene" || nowSceneName == "InfinityStage")
 	{
 		char nowgold[10];
 		sprintf(nowgold, "%d", 0);
@@ -66,7 +66,7 @@ Menus::Menus(std::string SceneName)
 
 	MenuItemImage* pMenuItem2;
 
-	if (nowSceneName == "GameStageScene" || nowSceneName == "MainScene")
+	if (nowSceneName == "GameStageScene" || nowSceneName == "MainScene" || nowSceneName == "InfinityStage")
 	{
 		pMenuItem2 = MenuItemImage::create(
 			"Images/Button/b_No.png",
@@ -158,12 +158,14 @@ void Menus::doClick(Ref* pSender)
 	}
 	else if (i == 612)
 	{
-		log("X를 클릭 하셧습니다.");
-		//Director::getInstance()->popScene();
-
 		if (nowSceneName == "GameStageScene")
 		{
 			auto pScene = StageSelectScene::createScene();
+			Director::getInstance()->replaceScene(pScene);
+		}
+		else if (nowSceneName == "InfinityStage")
+		{
+			auto pScene = MainScene::createScene();
 			Director::getInstance()->replaceScene(pScene);
 		}
 		else if (nowSceneName == "StageSelectScene")
@@ -171,8 +173,11 @@ void Menus::doClick(Ref* pSender)
 			auto pScene = MainScene::createScene();
 			Director::getInstance()->replaceScene(pScene);
 		}
-
-		
+		else if (nowSceneName == "HeroStatu")
+		{
+			auto pScene = MainScene::createScene();
+			Director::getInstance()->replaceScene(pScene);
+		}
 	}
 	else if (i == 613 && 0)
 	{
@@ -197,7 +202,7 @@ void Menus::nowGold(float dt)
 	sprintf(gold, "%d", i);
 	goldLabel->setString(gold);
 
-	if (nowSceneName == "GameStageScene")
+	if (nowSceneName == "GameStageScene" || nowSceneName == "InfinityStage")
 	{
 		char nowgold[10];
 		sprintf(nowgold, "%d", *nowStageGold);

@@ -25,6 +25,7 @@ void Tower::setTowerSetting()
 	{
 		_attackDelay = 0.5f;
 		_attackPower = 25.0f;
+		_attackArea = 45.0f;
 		cost = 10;
 		setTexture("Images/Tower/Knight1/Horizontal_3.png");
 		sprintf(name, "Knight");
@@ -33,6 +34,7 @@ void Tower::setTowerSetting()
 	{
 		_attackDelay = 1.0f;
 		_attackPower = 20.0f;
+		_attackArea = 75.0f;
 		cost = 20;
 		setTexture("Images/Tower/Rogue1/Horizontal_3.png");	//Rogue µµÀû.
 		sprintf(name, "Rogue");
@@ -41,6 +43,7 @@ void Tower::setTowerSetting()
 	{
 		_attackDelay = 2.0f;
 		_attackPower = 45.0f;
+		_attackArea = 75.0f;
 		cost = 30;
 		setTexture("Images/Tower/Magician1/Horizontal_3.png");
 		sprintf(name, "Magician");
@@ -98,6 +101,11 @@ void Tower::onEnter()
 	b_No->setAnchorPoint(Vec2(1, 0));
 	addChild(b_No, 50);
 
+	auto draw_node = DrawNode::create();
+	draw_node->setPosition(Vec2(getContentSize().width / 2, getContentSize().height / 2));
+	addChild(draw_node);
+	draw_node->drawCircle(Vec2(0, 0), _attackArea, CC_DEGREES_TO_RADIANS(90), 50, false, Color4F(0, 1, 1, 1));
+
 	towerMenuVisible = true;
 
 	towerUpgradeVisible = false;
@@ -113,6 +121,7 @@ void Tower::onEnter()
 			towerMenuVisible = false;
 			b_No->setVisible(false);
 			b_Yes->setVisible(false);
+			draw_node->setVisible(false);
 			this->setOpacity(255.f);
 			schedule(schedule_selector(Tower::towerTick), _attackDelay);
 			(*nowStageGold) = (*nowStageGold) - cost;
@@ -157,9 +166,9 @@ void Tower::towerTick(float a)
 		Vec2 dis = objVec2 - myPos;
 		
 		Vec2 absDis = Vec2(fabs(dis.x), fabs(dis.y));
-		if (_towerType == 1)
+		if (_towerType == 1 && obj->_fly == false)
 		{
-			if (absDis.x <= 45 && absDis.y <= 45)
+			if (absDis.x <= _attackArea && absDis.y <= _attackArea)
 			{
 				(*_pMonster).at(i)->hp -= _attackPower;
 				if ((*_pMonster).at(i)->hp <= 0)
@@ -184,7 +193,7 @@ void Tower::towerTick(float a)
 			}
 		}
 		else if (_towerType == 2) {
-			if (absDis.x <= 75 && absDis.y <= 75)
+			if (absDis.x <= _attackArea && absDis.y <= _attackArea)
 			{
 				(*_pMonster).at(i)->hp -= _attackPower;
 				if ((*_pMonster).at(i)->hp <= 0)
@@ -208,7 +217,7 @@ void Tower::towerTick(float a)
 			}
 		}
 		else if (_towerType == 3) {
-			if (absDis.x <= 75 && absDis.y <= 75)
+			if (absDis.x <= _attackArea && absDis.y <= _attackArea)
 			{
 				(*_pMonster).at(i)->hp -= _attackPower;
 				if ((*_pMonster).at(i)->hp <= 0)
@@ -217,8 +226,12 @@ void Tower::towerTick(float a)
 					(*_pMonster).eraseObject(obj);
 				}
 
-				obj->speed->setSpeed(0.5f);
-				obj->setColor(Color3B::BLUE);
+				if (obj->boss == false)
+				{
+					obj->speed->setSpeed(0.5f);
+					obj->setColor(Color3B::BLUE);
+					obj->speedDown = true;
+				}
 
 				setFlippedX(false);
 				setAnimation(absDis, dis);
@@ -236,7 +249,11 @@ void Tower::towerTick(float a)
 			}
 		}
 	}
+}
 
+void Tower::resetSpeed(float a)
+{
+	//resetMonster->speed->setSpeed(1.0f);
 }
 
 //void Tower::animationRename()

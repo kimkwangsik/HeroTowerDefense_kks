@@ -17,6 +17,8 @@ public:
 	void remove();
 	void monsterTick(float a);
 
+	void resetSpeed(float a);
+
 	void sendSpeed(cocos2d::Speed* resspeed);
 	cocos2d::Speed* speed;
 
@@ -25,6 +27,9 @@ public:
 	int gauge;
 	cocos2d::ProgressTimer *gaugeBar;
 	bool _fly;
+	bool boss;
+	bool speedDown;
+	
 
 private:
 	cocos2d::EventListener* _listenter;
