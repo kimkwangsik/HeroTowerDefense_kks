@@ -1,6 +1,7 @@
 #include "GameStageScene.h"
 #include "Menus.h"
 #include "GameEnd.h"
+#include "SimpleAudioEngine.h"
 
 USING_NS_CC;
 
@@ -20,13 +21,17 @@ GameStageScene::GameStageScene(int stagelevel)
 		return;
 	}
 
+	phaseLevel = 0;
+
+	log("stop");
 	nowStageLevel = stagelevel;
 
 	nowStageGold = 30;
 	_pnowStageGold = &nowStageGold;
-
+	_pmasicGauge = &masicGaugeNum;
 	skipTrue = true;
 	firstHero = false;
+	SecondHero = false;
 
 	gameOver = false;
 	towerStop = true;
@@ -36,7 +41,6 @@ GameStageScene::GameStageScene(int stagelevel)
 	winSize = Director::getInstance()->getWinSize();
 	VisibleWinSize = Director::getInstance()->getVisibleSize();
 	origin = Director::getInstance()->getVisibleOrigin();
-
 
 	/*
 	char winSizeStr[50];
@@ -76,7 +80,6 @@ GameStageScene::GameStageScene(int stagelevel)
 		this->addChild(pScene, 100);
 	}
 	
-
 	createStage(stagelevel);
 
 	b_Upgrade = Sprite::create("Images/Button/grey_box1.png");
@@ -226,6 +229,20 @@ void GameStageScene::createStage(int stagelevel)
 
 }
 
+void GameStageScene::getOption(bool gold, bool masic)
+{
+	if (gold)
+	{
+		nowStageGold = nowStageGold + 30;
+	}
+	if(masic)
+	{
+		log("충전");
+		masicGaugeNum = 100;
+	}
+
+}
+
 Sequence* GameStageScene::SequenceMonsterAdd(int num, int max)
 {
 	if (num == max)
@@ -289,7 +306,7 @@ void GameStageScene::addMonster(int monNum)
 		monster->boss = true;
 		monster->dropGold = 0;
 	}
-
+	
 	monster->setAnchorPoint(Vec2(0.5, 0));
 	monster->setPosition(startVec2);
 	auto speed = Speed::create(MoveAction(monster), 1.0f);
@@ -334,10 +351,34 @@ Sequence* GameStageScene::SequenceMoveAction(Monster* monster, int num , int max
 		//_Action의 다음액션이 없을때 호출되어 함수의 종료를 가능하게 해줌
 		//DelayTime::create(0)에는 CallFunc를 이용해
 		//몬스터의 제거 또는 행동을 추가
-		auto nullseq = Sequence::create(DelayTime::create(0),
-			CallFunc::create(CC_CALLBACK_0(GameStageScene::removeMonster, this, monster)),
-			nullptr);
-		return nullseq;
+		if (monster->boss == true)
+		{
+			auto nullseq = Sequence::create(
+				CallFunc::create(CC_CALLBACK_0(GameStageScene::attackBossMonsterStop, this, monster)),
+				DelayTime::create(1),
+				CallFunc::create(CC_CALLBACK_0(GameStageScene::attackBossMonster, this, monster)),
+				CallFunc::create(CC_CALLBACK_0(GameStageScene::attackBossMonsterStop, this, monster)),
+				DelayTime::create(1),
+				CallFunc::create(CC_CALLBACK_0(GameStageScene::attackBossMonster, this, monster)),
+				CallFunc::create(CC_CALLBACK_0(GameStageScene::attackBossMonsterStop, this, monster)),
+				DelayTime::create(1),
+				CallFunc::create(CC_CALLBACK_0(GameStageScene::attackBossMonster, this, monster)),
+				CallFunc::create(CC_CALLBACK_0(GameStageScene::attackBossMonsterStop, this, monster)),
+				DelayTime::create(1),
+				CallFunc::create(CC_CALLBACK_0(GameStageScene::attackBossMonster, this, monster)),
+				CallFunc::create(CC_CALLBACK_0(GameStageScene::attackBossMonsterStop, this, monster)),
+				DelayTime::create(1),
+				CallFunc::create(CC_CALLBACK_0(GameStageScene::attackBossMonster, this, monster)),
+				nullptr);
+			return nullseq;
+		}
+		else
+		{
+			auto nullseq = Sequence::create(DelayTime::create(0),
+				CallFunc::create(CC_CALLBACK_0(GameStageScene::removeMonster, this, monster)),
+				nullptr);
+			return nullseq;
+		}
 	}
 
 	//현재 _Action의 액션을 순차적으로 가져온다 
@@ -350,6 +391,81 @@ Sequence* GameStageScene::SequenceMoveAction(Monster* monster, int num , int max
 	//재귀 함수 호출이 완료되서 함수의 맨위에 있는 nullseq가 반환되면 재귀가 종료되며
 	//추가되어있는 Sequence 액션을 반환하여 몬스터에게 적용 시키게 된다.
 	return myAction;
+}
+
+void GameStageScene::attackBossMonsterStop(Monster* monster)
+{
+	monster->stopAction(monster->rep);
+
+	char monsterFileName[50];
+	sprintf(monsterFileName, "Images/Monster/%s_attack/%d.png", monster->myMonsterName.c_str(), 0);
+	monster->setTexture(monsterFileName);
+
+	auto animation = Animation::create();
+	animation->setDelayPerUnit(0.1f);
+	for (int i = 0; i < 10; i++)
+	{
+		char monsterFileName[50];
+		sprintf(monsterFileName, "Images/Monster/%s_attack/%d.png", monster->myMonsterName.c_str(), i);
+		animation->addSpriteFrameWithFile(monsterFileName);
+	}
+	auto animate = Animate::create(animation);
+	monster->runAction(animate);
+}
+
+void GameStageScene::attackBossMonster(Monster* monster)
+{
+	if (_heart.size() > 0)
+	{
+		auto hrartObj = (Sprite*)_heart.at(_heart.size() - 1);
+		hrartObj->removeFromParent();
+		_heart.popBack();
+	}
+	if (_heart.size() == 0)
+	{
+		for (int i = 0; i < _monster.size(); i++)
+		{
+			auto monsterObj = (Monster*)_monster.at(i);
+
+			monsterObj->stopAllActions();
+		}
+		if (firstHero)
+		{
+			hero1->stopAllActions();
+			hero1->unscheduleAllSelectors();
+		}
+		if (SecondHero)
+		{
+			hero2->stopAllActions();
+			hero2->unscheduleAllSelectors();
+		}
+
+		if (towerStop)
+		{
+			stopAllActions();
+
+			for (int j = 0; j < _setupTower.size(); j++)
+			{
+				auto towerObj = (Tower*)_setupTower.at(j);
+				towerObj->unscheduleAllSelectors();
+			}
+			towerStop = false;
+		}
+
+		gameOver = true;
+		log("GameOver");
+
+		unscheduleAllSelectors();
+
+		auto pScene = GameEnd::createScene();
+		auto stageResult = new GameEnd(nowStageLevel, _heart.size());
+		stageResult->autorelease();
+		pScene->addChild(stageResult);
+
+		this->addChild(pScene, 3000);
+	}
+
+	
 }
 
 void GameStageScene::removeMonster(Monster* monster)
@@ -366,6 +482,12 @@ void GameStageScene::removeMonster(Monster* monster)
 				hero1->stopAllActions();
 				hero1->unscheduleAllSelectors();
 			}
+			if (SecondHero)
+			{
+				hero2->stopAllActions();
+				hero2->unscheduleAllSelectors();
+			}
+
 			if (towerStop)
 			{
 				stopAllActions();
@@ -424,6 +546,7 @@ void GameStageScene::myTick(float f)
 		gauge = gauge - 2;
 	}
 	gaugeBar->setPercentage(gauge);
+	masicGaugeBar->setPercentage(masicGaugeNum);
 	//this->SpriteProgressToRadial(gauge);
 	if (gauge < 0 && phaseLevel < 5)
 	{
@@ -432,7 +555,7 @@ void GameStageScene::myTick(float f)
 		char phase[20];
 		sprintf(phase, "%d phase", phaseLevel);
 		phaseLabel->setString(phase);
-		runAction(SequenceMonsterAdd(0, 10));
+		runAction(SequenceMonsterAdd(0, 1));
 	}
 	if (gauge < 0 && 5 == phaseLevel)
 	{
@@ -446,6 +569,7 @@ void GameStageScene::myTick(float f)
 
 void GameStageScene::bossTick(float f)
 {
+	masicGaugeBar->setPercentage(masicGaugeNum);
 	if (_monster.size() == 0)
 	{
 		log("clear!!");
@@ -464,7 +588,9 @@ void GameStageScene::bossTick(float f)
 
 void GameStageScene::onEnter() {
 	Layer::onEnter();
-
+	log("onEnter()");
+	CocosDenshion::SimpleAudioEngine::getInstance()->stopBackgroundMusic();
+	CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("Sound/Music/Hit Them Harder.mp3", true);
 	auto listener = EventListenerTouchOneByOne::create();
 
 	listener->setSwallowTouches(true);
@@ -481,6 +607,9 @@ void GameStageScene::onEnter() {
 
 void GameStageScene::onExit() {
 	_eventDispatcher->removeEventListener(_listenter);
+	log("onExit()");
+	CocosDenshion::SimpleAudioEngine::getInstance()->stopBackgroundMusic();
+	CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("Sound/Music/Woodland Fantasy.mp3", true);
 	Layer::onExit();
 }
 
@@ -507,7 +636,7 @@ bool GameStageScene::onTouchBegan(Touch* touch, Event* event) {
 		clickTower->setOpacity(100.f);
 		clickTower->setpMonster(_pMonster);
 		clickTower->setpGold(_pnowStageGold);
-
+		clickTower->setpMasicGauge(_pmasicGauge);
 		tmap->addChild(clickTower, 101);
 		return true;
 	}
@@ -558,7 +687,48 @@ void GameStageScene::onTouchEnded(Touch* touch, Event* event)
 	{
 		if (masicTpye == 1)
 		{
-			for (int i = 0; i != _monster.size(); i++)
+			_magictouchPoint = tmapConvertPoint;
+
+			auto cache = SpriteFrameCache::getInstance();
+			cache->addSpriteFramesWithFile("fx_f3_starsfury.plist");
+
+			Vector<SpriteFrame*> animFrames;
+
+			char str[100] = { 0 };
+			for (int i = 10; i < 45; i++)
+			{
+				if (i < 10)
+				{
+					sprintf(str, "fx_f3_starsfury_00%d.png", i);
+				}
+				else
+				{
+					sprintf(str, "fx_f3_starsfury_0%d.png", i);
+				}
+
+				if (i == 20)
+				{
+					i = 35;
+				}
+
+				log("%s", str);
+				SpriteFrame* frame = cache->getSpriteFrameByName(str);
+				animFrames.pushBack(frame);
+			}
+
+			auto pMan = Sprite::createWithSpriteFrameName("fx_f3_starsfury_000.png");
+			pMan->setPosition(touchPoint);
+			pMan->setAnchorPoint(Vec2(0.5, 0));
+			this->addChild(pMan);
+
+			auto animation = Animation::createWithSpriteFrames(animFrames, 0.05f);
+			auto animate = Animate::create(animation);
+			auto seq = Sequence::create(animate, RemoveSelf::create(), nullptr);
+			pMan->runAction(seq);
+
+			scheduleOnce(schedule_selector(GameStageScene::magicDeley), 0.5f);
+
+			/*for (int i = 0; i != _monster.size(); i++)
 			{
 				auto monsterObj = (Monster*)_monster.at(i);
 				Vec2 monsterVec2 = monsterObj->getPosition();
@@ -579,10 +749,51 @@ void GameStageScene::onTouchEnded(Touch* touch, Event* event)
 				_monster.eraseObject(_masicMonster.at(i));
 			}
 			_masicMonster.clear();
+*/
+			if (masicGaugeNum > 100)
+			{
+				masicGaugeNum = 100;
+			}
+
+			masicGaugeNum = masicGaugeNum - 80;
+			masicGaugeBar->setPercentage(masicGaugeNum);
 
 		}
 		else if (masicTpye == 2)
 		{
+			auto cache = SpriteFrameCache::getInstance();
+			cache->addSpriteFramesWithFile("fx_f6_chromaticcold.plist");
+
+			Vector<SpriteFrame*> animFrames;
+
+			char str[100] = { 0 };
+			for (int i = 10; i < 20; i++)
+			{
+				if (i < 10)
+				{
+					sprintf(str, "fx_f6_chromaticcold_00%d.png", i);
+				}
+				else
+				{
+					sprintf(str, "fx_f6_chromaticcold_0%d.png", i);
+				}
+				log("%s", str);
+				SpriteFrame* frame = cache->getSpriteFrameByName(str);
+				animFrames.pushBack(frame);
+			}
+			/////////////
+			auto pMan = Sprite::createWithSpriteFrameName("fx_f6_chromaticcold_000.png");
+			pMan->setPosition(touchPoint);
+			pMan->setAnchorPoint(Vec2(0.5, 0.3));
+			this->addChild(pMan);
+
+			auto animation = Animation::createWithSpriteFrames(animFrames, 0.1f);
+			auto animate = Animate::create(animation);
+			auto seq = Sequence::create(animate, RemoveSelf::create(), nullptr);
+			pMan->runAction(seq);
+			/////////
+
+
 			for (int i = 0; i != _monster.size(); i++)
 			{
 				auto monsterObj = (Monster*)_monster.at(i);
@@ -607,6 +818,14 @@ void GameStageScene::onTouchEnded(Touch* touch, Event* event)
 				_monster.eraseObject(_masicMonster.at(i));
 			}
 			_masicMonster.clear();
+
+			if (masicGaugeNum > 100)
+			{
+				masicGaugeNum = 100;
+			}
+
+			masicGaugeNum = masicGaugeNum - 50;
+			masicGaugeBar->setPercentage(masicGaugeNum);
 		}
 
 
@@ -774,7 +993,6 @@ Vec2 GameStageScene::positionForTileCoord(Vec2 position)
 	return Vec2(x, y);
 }
 
-
 Vec2 GameStageScene::tileCoordForPosition(Vec2 position)
 {
 	int x = position.x / 30;
@@ -794,8 +1012,8 @@ void GameStageScene::masicMenuCreate()
 	masicMenuItem1->setTag(521);
 
 	auto masicMenuItem2 = MenuItemImage::create(
-		"Images/spell/ice-blue-2.png",
-		"Images/spell/ice-blue-2.png",
+		"Images/spell/cold.png",
+		"Images/spell/cold.png",
 		CC_CALLBACK_1(GameStageScene::doClick, this));
 	masicMenuItem2->setPosition(Vec2(winSize.width, masicMenuItem1->getPositionY() +
 		masicMenuItem1->getContentSize().height));
@@ -809,6 +1027,28 @@ void GameStageScene::masicMenuCreate()
 	masicMenu->setPosition(Vec2(0 + origin.x, 0 + origin.y));
 
 	addChild(masicMenu, 2);
+
+
+	masicBase = Sprite::create("Images/bar_base.png");
+	masicBase->setPosition(Vec2(0, 0));
+	masicBase->setAnchorPoint(Vec2(1, 1));
+	masicBase->setScaleX(0.6f);
+	masicBase->setRotation(90.f);
+	masicMenuItem1->addChild(masicBase, 2);
+
+	masicGauge = Sprite::create("Images/bar_gauge.png");
+
+	masicGaugeNum = 0;
+
+	masicGaugeBar = ProgressTimer::create(masicGauge);
+	masicGaugeBar->setType(ProgressTimer::Type::BAR);
+	masicGaugeBar->setMidpoint(Vec2(1, 0));
+	masicGaugeBar->setBarChangeRate(Vec2(1, 0));
+	masicGaugeBar->setPercentage(masicGaugeNum);
+
+	masicGaugeBar->setPosition(Vec2(0, 0));
+	masicGaugeBar->setAnchorPoint(Vec2(0, 0));
+	masicBase->addChild(masicGaugeBar, 3);
 }
 
 void GameStageScene::towerMenuCreate()
@@ -871,7 +1111,7 @@ void GameStageScene::heroMenuCreate()
 	heroMenuItem1->setTag(531);
 
 
-	auto heroMenuItem2 = MenuItemImage::create(
+	heroMenuItem2 = MenuItemImage::create(
 		"Images/Hero/hero2.png",
 		"Images/Hero/hero2.png",
 		CC_CALLBACK_1(GameStageScene::doClick, this));
@@ -889,6 +1129,21 @@ void GameStageScene::heroMenuCreate()
 	heroMenuItem3->setAnchorPoint(Vec2(0, 0));
 	heroMenuItem3->setTag(533);
 
+	bool hero1_have = UserDefault::getInstance()->getBoolForKey("Hero1");
+	bool hero2_have = UserDefault::getInstance()->getBoolForKey("Hero2");
+	bool hero3_have = UserDefault::getInstance()->getBoolForKey("Hero3");
+
+	heroMenuItem1->setOpacity(100.f);
+	heroMenuItem2->setOpacity(100.f);
+	heroMenuItem3->setOpacity(100.f);
+
+	if(hero1_have)
+	heroMenuItem1->setOpacity(255.f);
+	if(hero2_have)
+	heroMenuItem2->setOpacity(255.f);
+	if(hero3_have)
+	heroMenuItem3->setOpacity(255.f);
+
 	auto heroMenu = Menu::create(heroMenuItem1, heroMenuItem2, heroMenuItem3, NULL);
 
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
@@ -904,6 +1159,9 @@ void GameStageScene::doClick(Ref* pSender)
 {
 	towerTouch = false;
 	masicTouch = false;
+	bool hero1_have = UserDefault::getInstance()->getBoolForKey("Hero1");
+	bool hero2_have = UserDefault::getInstance()->getBoolForKey("Hero2");
+	bool hero3_have = UserDefault::getInstance()->getBoolForKey("Hero3");
 	//타워 설치중이면 메뉴 클릭 불가능
 	for (int i = 0; i != _setupTower.size(); i++)
 	{
@@ -968,12 +1226,12 @@ void GameStageScene::doClick(Ref* pSender)
 		towerTpye = 3;
 		towerTouch = true;
 	}
-	else if (i == 521)
+	else if (i == 521 && masicGaugeNum >= 80)
 	{
+		
+
 		masicTpye = 1;
 		masicTouch = true;
-
-
 		////번개 마법
 		//for (int i = 0; i < _monster.size(); i++)
 		//{
@@ -985,14 +1243,14 @@ void GameStageScene::doClick(Ref* pSender)
 		//	}
 		//}
 	}
-	else if (i == 522)
+	else if (i == 522 && masicGaugeNum >= 50)
 	{
 		masicTpye = 2;
 		masicTouch = true;
-		nowStageGold = nowStageGold + 50;
+		//nowStageGold = nowStageGold + 50;
 		//얼음
 	}
-	else if (i == 531 && !firstHero)
+	else if (i == 531 && !firstHero && hero1_have)
 	{
 		log("Hero1");
 		hero1 = new Hero(1);
@@ -1000,6 +1258,7 @@ void GameStageScene::doClick(Ref* pSender)
 		hero1->setOpacity(240.f);
 		hero1->setpMonster(_pMonster);
 		hero1->setpGold(_pnowStageGold);
+		hero1->setpMasicGauge(_pmasicGauge);
 
 		tmap->addChild(hero1, 200);
 		firstHero = true;
@@ -1007,28 +1266,63 @@ void GameStageScene::doClick(Ref* pSender)
 		//heroMenuItem1->setNormalImage(Sprite::create("Images/Hero/hero3.png"));
 		//heroMenuItem1->setSelectedImage(Sprite::create("Images/Hero/hero2.png"));
 	}
-	else if (i == 532)
+	else if (i == 532 && !SecondHero && hero2_have)
 	{
 		log("Hero2");
+		hero2 = new Hero(2);
+		hero2->setPosition(_Vec2Point.at(_Vec2Point.size() - 1));
+		hero2->setOpacity(240.f);
+		hero2->setpMonster(_pMonster);
+		hero2->setpGold(_pnowStageGold);
+		hero2->setpMasicGauge(_pmasicGauge);
+
+		tmap->addChild(hero2, 200);
+		SecondHero = true;
+		heroMenuItem2->setOpacity(100.f);
 	}
+//	else if (i == 533 && hero3_have)
 	else if (i == 533)
 	{
 		log("Hero3");
+		masicGaugeNum = 100;
 	}
 }
-
 
 void GameStageScene::trueFalse(float f)
 {
 	if (skipTrue == true)
 	{
-		log("false");
 		skipTrue = false;
 	}
 	else if (skipTrue == false)
 	{
-		log("true");
 		skipTrue = true;
 	}
-	log("O");
+}
+
+void GameStageScene::magicDeley(float dt)
+{
+	auto tmapConvertPoint = _magictouchPoint;
+	for (int i = 0; i != _monster.size(); i++)
+	{
+		auto monsterObj = (Monster*)_monster.at(i);
+		Vec2 monsterVec2 = monsterObj->getPosition();
+		Vec2 dis = tmapConvertPoint - monsterVec2;
+
+		Vec2 absDis = Vec2(fabs(dis.x), fabs(dis.y));
+		if (absDis.x <= 45 && absDis.y <= 45)
+		{
+			monsterObj->hp -= 100;
+			if (monsterObj->hp <= 0)
+			{
+				_masicMonster.pushBack(monsterObj);
+			}
+		}
+	}
+	for (int i = 0; i != _masicMonster.size(); i++)
+	{
+		_monster.eraseObject(_masicMonster.at(i));
+	}
+	_masicMonster.clear();
+
 }

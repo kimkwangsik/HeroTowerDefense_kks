@@ -1,6 +1,7 @@
 #include "IntroScene.h"
 #include "MainScene.h"
 #include "Menus.h"
+#include "SimpleAudioEngine.h"
 
 USING_NS_CC;
 
@@ -36,17 +37,26 @@ bool IntroScene::init()
 	pLabel->setOpacity(255.0);
 	this->addChild(pLabel);
 
+	CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("Sound/Music/Woodland Fantasy.mp3", true);
+
 	createKnight(1);
+
+	//항상 처음 실행 하게 만드는 이벤트
+	UserDefault::getInstance()->setBoolForKey("Start_First", false);
 
 	bool start_First = UserDefault::getInstance()->getBoolForKey("Start_First");
 	if (start_First)
 	{
-
+		
 	}
-	else
+	else //최초 실행시
 	{
 		UserDefault::getInstance()->setBoolForKey("Start_First", true);
-		UserDefault::getInstance()->setIntegerForKey("have_gold", 100);
+		UserDefault::getInstance()->setBoolForKey("Hero1", false);
+		UserDefault::getInstance()->setIntegerForKey("Hero1_Level", 0);
+		UserDefault::getInstance()->setBoolForKey("Hero2", false);
+		UserDefault::getInstance()->setIntegerForKey("Hero2_Level", 0);
+		UserDefault::getInstance()->setIntegerForKey("have_gold", 2000);
 		UserDefault::getInstance()->setIntegerForKey("clear_stage", 0);
 	}
 

@@ -31,7 +31,9 @@ public:
 	float _attackPower;
 	
 	void setpGold(int* _pnowStageGold);
+	void setpMasicGauge(int * _pmasicGauge);
 	int *nowStageGold;
+	int *nowMasicGauge;
 
 
 	//int towerUpgradeLevel;

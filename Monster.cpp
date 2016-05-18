@@ -44,7 +44,7 @@ void Monster::onEnter()
 		animation->addSpriteFrameWithFile(monsterFileName);
 	}
 	auto animate = Animate::create(animation);
-	auto rep = RepeatForever::create(animate);
+	rep = RepeatForever::create(animate);
 	runAction(rep);
 
 

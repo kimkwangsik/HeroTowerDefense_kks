@@ -20,10 +20,16 @@ public:
 	cocos2d::Sprite* b_No;
 	cocos2d::Sprite* b_Upgrade;
 	int *nowStageGold;
+	int *nowMasicGauge;
 	void setpGold(int* _pnowStageGold);
+	void setpMasicGauge(int * _pMasicGauge);
 	int	cost;
 
 	void setAnimation(cocos2d::Vec2 absDis, cocos2d::Vec2 dis);
+
+	void attackDeley(float dt);
+	int _attackedMonster;
+	Monster* attackedMonster;
 
 	int towerUpgradeLevel;
 	char name[10];

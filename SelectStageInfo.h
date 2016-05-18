@@ -11,6 +11,10 @@ public:
 	int _selectStage;
 
 	cocos2d::Size winSize;
+	bool menuItem3;
+	bool menuItem4;
+	cocos2d::MenuItemImage* pMenuItem3;
+	cocos2d::MenuItemImage* pMenuItem4;
 
 	void doClick(Ref* pSender);
 	virtual void onEnter();

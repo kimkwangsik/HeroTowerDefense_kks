@@ -66,7 +66,10 @@ void Tower::setpGold(int * _pnowStageGold)
 	nowStageGold = _pnowStageGold;
 }
 
-
+void Tower::setpMasicGauge(int * _pMasicGauge)
+{
+	nowMasicGauge = _pMasicGauge;
+}
 
 void Tower::onEnter()
 {
@@ -170,12 +173,17 @@ void Tower::towerTick(float a)
 		{
 			if (absDis.x <= _attackArea && absDis.y <= _attackArea)
 			{
-				(*_pMonster).at(i)->hp -= _attackPower;
+
+				attackedMonster = obj;
+				scheduleOnce(schedule_selector(Tower::attackDeley), 0.1f);
+
+				/*(*_pMonster).at(i)->hp -= _attackPower;
 				if ((*_pMonster).at(i)->hp <= 0)
 				{
 					(*nowStageGold) = (*nowStageGold) + obj->dropGold;
+					(*nowMasicGauge) = (*nowMasicGauge) + 5;
 					(*_pMonster).eraseObject(obj);
-				}
+				}*/
 
 				setFlippedX(false);
 				setAnimation(absDis, dis);
@@ -195,14 +203,24 @@ void Tower::towerTick(float a)
 		else if (_towerType == 2) {
 			if (absDis.x <= _attackArea && absDis.y <= _attackArea)
 			{
-				(*_pMonster).at(i)->hp -= _attackPower;
+				attackedMonster = obj;
+
+				auto ball = Sprite::create("Images/Button/scaled-at-25/b_More1.png");
+				ball->setPosition(getContentSize().width / 2, getContentSize().height / 2);
+				addChild(ball);
+				ball->runAction(Sequence::create(MoveBy::create(0.5, dis), RemoveSelf::create(), nullptr));
+
+				scheduleOnce(schedule_selector(Tower::attackDeley), 0.5f);
+
+				/*(*_pMonster).at(i)->hp -= _attackPower;
 				if ((*_pMonster).at(i)->hp <= 0)
 				{
 					(*nowStageGold) = (*nowStageGold) + obj->dropGold;
+					(*nowMasicGauge) = (*nowMasicGauge) + 5;
 					(*_pMonster).eraseObject(obj);
 				}
 				setFlippedX(false);
-				setAnimation(absDis, dis);
+				setAnimation(absDis, dis);*/
 
 				auto animation = Animation::create();
 				animation->setDelayPerUnit(0.1f);
@@ -219,10 +237,21 @@ void Tower::towerTick(float a)
 		else if (_towerType == 3) {
 			if (absDis.x <= _attackArea && absDis.y <= _attackArea)
 			{
-				(*_pMonster).at(i)->hp -= _attackPower;
+				//_attackedMonster = i;
+
+				auto ball = Sprite::create("Images/Button/scaled-at-25/b_Parameters.png");
+				ball->setPosition(getContentSize().width / 2, getContentSize().height / 2);
+				addChild(ball);
+				ball->runAction(Sequence::create(MoveBy::create(0.5, dis), RemoveSelf::create(), nullptr));
+
+				attackedMonster = obj;
+				scheduleOnce(schedule_selector(Tower::attackDeley), 0.5f);
+
+				/*(*_pMonster).at(i)->hp -= _attackPower;
 				if ((*_pMonster).at(i)->hp <= 0)
 				{
 					(*nowStageGold) = (*nowStageGold) + obj->dropGold;
+					(*nowMasicGauge) = (*nowMasicGauge) + 5;
 					(*_pMonster).eraseObject(obj);
 				}
 
@@ -231,7 +260,7 @@ void Tower::towerTick(float a)
 					obj->speed->setSpeed(0.5f);
 					obj->setColor(Color3B::BLUE);
 					obj->speedDown = true;
-				}
+				}*/
 
 				setFlippedX(false);
 				setAnimation(absDis, dis);
@@ -296,4 +325,49 @@ void Tower::setAnimation(cocos2d::Vec2 absDis, cocos2d::Vec2 dis)
 			sprintf(animationStr3, "Images/Tower/%s%d/Down_%d.png", name, towerUpgradeLevel, 1);
 		}
 	}
+}
+
+void Tower::attackDeley(float dt)
+{
+	//int inum = _attackedMonster;
+	auto obj = attackedMonster;
+	for (int i = 0; i < (*_pMonster).size(); i++)
+	{
+		if (obj == (*_pMonster).at(i))
+		{
+			if (_towerType == 3)
+			{
+				if (obj->boss == false)
+				{
+					obj->speed->setSpeed(0.5f);
+					obj->setColor(Color3B::BLUE);
+					obj->speedDown = true;
+				}
+			}
+			obj->hp -= _attackPower;
+			if (obj->hp <= 0)
+			{
+				(*nowStageGold) = (*nowStageGold) + obj->dropGold;
+				(*nowMasicGauge) = (*nowMasicGauge) + 5;
+				(*_pMonster).eraseObject(obj);
+			}
+		}
+	}
+
+	//if ((*_pMonster).at(inum)->boss == false)
+	//{
+	//	(*_pMonster).at(inum)->speed->setSpeed(0.5f);
+	//	(*_pMonster).at(inum)->setColor(Color3B::BLUE);
+	//	(*_pMonster).at(inum)->speedDown = true;
+	//}
+
+	//(*_pMonster).at(inum)->hp -= _attackPower;
+	//if ((*_pMonster).at(inum)->hp <= 0)
+	//{
+	//	(*nowStageGold) = (*nowStageGold) + (*_pMonster).at(inum)->dropGold;
+	//	(*nowMasicGauge) = (*nowMasicGauge) + 5;
+	//	(*_pMonster).eraseObject((*_pMonster).at(inum));
+	//}
+
+	
 }

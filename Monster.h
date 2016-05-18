@@ -29,6 +29,8 @@ public:
 	bool _fly;
 	bool boss;
 	bool speedDown;
+
+	cocos2d::RepeatForever* rep;
 	
 
 private:

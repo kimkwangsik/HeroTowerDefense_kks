@@ -18,41 +18,111 @@ SelectStageInfo::SelectStageInfo(int selectStage)
 	{
 		return;
 	}
-
+	menuItem3 = false;
+	menuItem4 = false;
 	_selectStage = selectStage;
 	winSize = Director::getInstance()->getVisibleSize();
 
-	auto optionbar = Sprite::create("Images/SelectStageInfoBackGround.png");
-	//optionbar->setScale(5.0f);
-	optionbar->setPosition(Vec2(winSize.width / 2, winSize.height / 2));
-	addChild(optionbar);
+	auto StageInfo = Sprite::create("Images/SelectStageInfoBackGround.png");
+	StageInfo->setPosition(Vec2(winSize.width / 2, winSize.height / 2));
+	addChild(StageInfo);
 
-	auto pMenuItem1 = MenuItemFont::create(
-		" 창 닫기 ",
+	char level[20];
+	sprintf(level, "Level %d", _selectStage);
+
+	if (_selectStage == 0)
+	{
+		sprintf(level, "Infinity mode");
+	}
+
+	auto levelLabel = LabelTTF::create(level, "Arial", 20);
+	levelLabel->setPosition(Vec2(10, StageInfo->getContentSize().height-10));
+	levelLabel->setAnchorPoint(Vec2(0, 1));
+	//levelLabel->setColor(Color3B::BLACK);
+	StageInfo->addChild(levelLabel, 1);
+	
+	//char levelsprite[20];
+	//sprintf(levelsprite, "Images/stage/Level_%d.PNG", _selectStage);
+	//auto stageSprite = Sprite::create(levelsprite);
+	
+	auto stageSprite = Sprite::create("Images/stage/Level_1.PNG");
+	stageSprite->setPosition(Vec2(0, 0));
+	stageSprite->setAnchorPoint(Vec2(0, 1));
+
+	stageSprite->setScaleX(0.9f);
+	stageSprite->setScaleY(0.8f);
+	//stageSprite->setColor(Color3B::WHITE);
+	levelLabel->addChild(stageSprite);
+
+	auto pMenuItem1 = MenuItemImage::create(
+		"Images/GameEnd/Game_btn_on.png",
+		"Images/GameEnd/Game_btn_down.png",
 		CC_CALLBACK_1(SelectStageInfo::doClick, this));
-	pMenuItem1->setPosition(Vec2(optionbar->getContentSize().width / 2, 0));
+	pMenuItem1->setPosition(Vec2(StageInfo->getContentSize().width / 4, 10));
 	pMenuItem1->setAnchorPoint(Vec2(0.5, 0));
-	//pMenuItem1->setScale(0.2f);
 
-	auto pMenuItem2 = MenuItemFont::create(
-		" 시작 ",
+	auto cancelMenu = LabelTTF::create(" 취소 ", "Arial", 15);
+	cancelMenu->setPosition(Vec2(pMenuItem1->getContentSize().width / 2,
+		pMenuItem1->getContentSize().height / 2));
+	//mainMenu->setAnchorPoint(Vec2(1, 0));
+	cancelMenu->setColor(Color3B::WHITE);
+	pMenuItem1->addChild(cancelMenu, 2);
+
+	auto pMenuItem2 = MenuItemImage::create(
+		"Images/GameEnd/Game_btn_on.png",
+		"Images/GameEnd/Game_btn_down.png",
 		CC_CALLBACK_1(SelectStageInfo::doClick, this));
-	pMenuItem2->setPosition(Vec2(optionbar->getContentSize().width / 2, optionbar->getContentSize().height));
-	pMenuItem2->setAnchorPoint(Vec2(0.5, 1));
-	//pMenuItem2->setScale(0.2f);
+	pMenuItem2->setPosition(Vec2(StageInfo->getContentSize().width / 4 * 3, 10));
+	pMenuItem2->setAnchorPoint(Vec2(0.5, 0));
+
+	auto startMenu = LabelTTF::create(" 시작 ", "Arial", 15);
+	startMenu->setPosition(Vec2(pMenuItem2->getContentSize().width / 2,
+		pMenuItem2->getContentSize().height / 2));
+	startMenu->setColor(Color3B::WHITE);
+	pMenuItem2->addChild(startMenu, 2);
+
+	pMenuItem3 = MenuItemImage::create(
+		"Images/GameEnd/Game_btn_on.png",
+		"Images/GameEnd/Game_btn_down.png",
+		CC_CALLBACK_1(SelectStageInfo::doClick, this));
+	pMenuItem3->setPosition(Vec2(StageInfo->getContentSize().width - 10, pMenuItem2->getPositionY() + pMenuItem2->getContentSize().height + 10));
+	pMenuItem3->setAnchorPoint(Vec2(1, 0));
+
+	auto goldAdd = LabelTTF::create("골드\n추가", "Arial", 15);
+	goldAdd->setPosition(Vec2(pMenuItem3->getContentSize().width / 2,
+		pMenuItem3->getContentSize().height / 2));
+	goldAdd->setColor(Color3B::WHITE);
+	pMenuItem3->addChild(goldAdd, 2);
+
+	pMenuItem4 = MenuItemImage::create(
+		"Images/GameEnd/Game_btn_on.png",
+		"Images/GameEnd/Game_btn_down.png",
+		CC_CALLBACK_1(SelectStageInfo::doClick, this));
+	pMenuItem4->setPosition(Vec2(StageInfo->getContentSize().width -10, pMenuItem3->getPositionY() + pMenuItem3->getContentSize().height + 10));
+	pMenuItem4->setAnchorPoint(Vec2(1, 0));
+
+	auto fullMasic = LabelTTF::create("마법\n충전", "Arial", 15);
+	fullMasic->setPosition(Vec2(pMenuItem4->getContentSize().width / 2,
+		pMenuItem4->getContentSize().height / 2));
+	fullMasic->setColor(Color3B::WHITE);
+	pMenuItem4->addChild(fullMasic, 2);
+
+	pMenuItem1->setScaleX(2.5f);
+	pMenuItem2->setScaleX(2.5f);
 
 	pMenuItem1->setTag(621);
 	pMenuItem2->setTag(622);
+	pMenuItem3->setTag(623);
+	pMenuItem4->setTag(624);
 
-	auto pMenu = Menu::create(pMenuItem1, pMenuItem2, NULL);
+	auto pMenu = Menu::create(pMenuItem1, pMenuItem2, pMenuItem3, pMenuItem4, NULL);
 	pMenu->setPosition(Vec2::ZERO);
-	optionbar->addChild(pMenu);
+	StageInfo->addChild(pMenu);
 
 	return;
 }
 void SelectStageInfo::onEnter() {
 	Layer::onEnter();
-	Director::getInstance()->pause();
 	auto listener = EventListenerTouchOneByOne::create();
 
 	listener->setSwallowTouches(true);
@@ -62,8 +132,6 @@ void SelectStageInfo::onEnter() {
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
 }
 void SelectStageInfo::onExit() {
-	//_eventDispatcher->removeEventListenersForType(EventListener::Type::TOUCH_ONE_BY_ONE);
-	Director::getInstance()->resume();
 	Layer::onExit();
 }
 bool SelectStageInfo::onTouchBegan(Touch* touch, Event* event) {
@@ -74,17 +142,76 @@ void SelectStageInfo::doClick(Ref* pSender)
 {
 	auto tItem = (MenuItem *)pSender;
 	int i = tItem->getTag();
+	int gold = UserDefault::getInstance()->getIntegerForKey("have_gold");
 
 	if (i == 621)
 	{
+		if (menuItem3)
+		{
+			gold += 10;
+			UserDefault::getInstance()->setIntegerForKey("have_gold", gold);
+		}
+		if (menuItem4)
+		{
+			gold += 10;
+			UserDefault::getInstance()->setIntegerForKey("have_gold", gold);
+		}
+
 		this->removeFromParentAndCleanup(true);
+		
 	}
-	if (i == 622)
+	else if (i == 622)
 	{
 		auto pScene = GameStageScene::createScene();
 		auto stagenum = new GameStageScene(_selectStage);
+		stagenum->getOption(menuItem3, menuItem4);
 		stagenum->autorelease();
 		pScene->addChild(stagenum);
 		Director::getInstance()->replaceScene(pScene);
+	}
+	else if (i == 623)
+	{
+		
+		if (menuItem3)
+		{
+			
+			gold += 10;
+			UserDefault::getInstance()->setIntegerForKey("have_gold", gold);
+
+			pMenuItem3->setNormalImage(Sprite::create("Images/GameEnd/Game_btn_on.png"));
+			pMenuItem3->setSelectedImage(Sprite::create("Images/GameEnd/Game_btn_down.png"));
+			menuItem3 = false;
+		}
+		else if(gold >= 10)
+		{
+			gold -= 10;
+			UserDefault::getInstance()->setIntegerForKey("have_gold", gold);
+
+			pMenuItem3->setNormalImage(Sprite::create("Images/GameEnd/Game_btn_on1.png"));
+			pMenuItem3->setSelectedImage(Sprite::create("Images/GameEnd/Game_btn_down1.png"));
+			menuItem3 = true;
+		}
+	}
+
+	else if (i == 624)
+	{
+		if (menuItem4)
+		{
+			gold += 10;
+			UserDefault::getInstance()->setIntegerForKey("have_gold", gold);
+
+			pMenuItem4->setNormalImage(Sprite::create("Images/GameEnd/Game_btn_on.png"));
+			pMenuItem4->setSelectedImage(Sprite::create("Images/GameEnd/Game_btn_down.png"));
+			menuItem4 = false;
+		}
+		else if (gold >= 10)
+		{
+			gold -= 10;
+			UserDefault::getInstance()->setIntegerForKey("have_gold", gold);
+
+			pMenuItem4->setNormalImage(Sprite::create("Images/GameEnd/Game_btn_on1.png"));
+			pMenuItem4->setSelectedImage(Sprite::create("Images/GameEnd/Game_btn_down1.png"));
+			menuItem4 = true;
+		}
 	}
 }

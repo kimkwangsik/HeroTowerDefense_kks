@@ -13,6 +13,7 @@ public:
 	GameStageScene(int stagelevel);
 
 	void createStage(int level);
+	void getOption(bool gold , bool masic);
 
 	virtual void onEnter();
 	virtual void onExit();
@@ -52,8 +53,14 @@ public:
 	cocos2d::Sprite* timerGauge;
 	int gauge;
 	cocos2d::ProgressTimer *gaugeBar;
-	int phaseLevel = 0;
+	int phaseLevel;
 	cocos2d::LabelTTF* phaseLabel;
+
+	cocos2d::Sprite* masicBase;
+	cocos2d::Sprite* masicGauge;
+	int masicGaugeNum;
+	int *_pmasicGauge;
+	cocos2d::ProgressTimer *masicGaugeBar;
 
 	bool towerTouch = false;
 	bool towerMenustatus = true;
@@ -75,8 +82,14 @@ public:
 	Hero* hero1;
 	bool firstHero;
 
-	cocos2d::MenuItemImage* heroMenuItem1;
+	Hero* hero2;
+	bool SecondHero;
 
+	cocos2d::MenuItemImage* heroMenuItem1;
+	cocos2d::MenuItemImage* heroMenuItem2;
+
+	void magicDeley(float dt);
+	cocos2d::Vec2 _magictouchPoint;
 
 	cocos2d::Sprite* masicSprite;
 	bool masicTouch = false;
@@ -95,6 +108,8 @@ public:
 
 	cocos2d::Sequence* MoveAction(Monster* slime);
 	cocos2d::Sequence* SequenceMoveAction(Monster* slime, int num, int max);
+	void attackBossMonsterStop(Monster * monster);
+	void attackBossMonster(Monster * monster);
 	cocos2d::Sequence* SequenceMonsterAdd(int num, int max);
 	cocos2d::Vector<cocos2d::MoveTo*> _Action;
 
