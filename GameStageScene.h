@@ -54,6 +54,7 @@ public:
 	int gauge;
 	cocos2d::ProgressTimer *gaugeBar;
 	int phaseLevel;
+	int bossPhaseCount = 0;
 	cocos2d::LabelTTF* phaseLabel;
 
 	cocos2d::Sprite* masicBase;
@@ -85,9 +86,12 @@ public:
 	Hero* hero2;
 	bool SecondHero;
 
+	Hero* hero3;
+	bool ThirdHero;
+
 	cocos2d::MenuItemImage* heroMenuItem1;
 	cocos2d::MenuItemImage* heroMenuItem2;
-
+	cocos2d::MenuItemImage* heroMenuItem3;
 	void magicDeley(float dt);
 	cocos2d::Vec2 _magictouchPoint;
 

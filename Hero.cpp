@@ -23,9 +23,7 @@ void Hero::setHeroSetting()
 	{
 		_attackDelay = 0.5f;
 		int level = UserDefault::getInstance()->getIntegerForKey("Hero1_Level");
-		_attackPower = 25.0f + level * 2;
-
-		log("%d , %f", level, _attackPower);
+		_attackPower = 25.0f + (level-1) * 2;
 		setTexture("Images/Hero/Paladin/Walking/Horizontal_1.png");
 		setScale(1.5f);
 		sprintf(name, "Paladin");
@@ -34,18 +32,20 @@ void Hero::setHeroSetting()
 	{
 		_attackDelay = 1.0f;
 		int level = UserDefault::getInstance()->getIntegerForKey("Hero2_Level");
-		_attackPower = 20.0f + level * 3;
+		_attackPower = 20.0f + (level-1) * 3;
 		setTexture("Images/Tower/Rogue1/Horizontal_3.png");	//Rogue µµÀû.
 		setScale(1.5f);
 		sprintf(name, "Rogue");
 	}
-	//else if (_heroType == 3)
-	//{
-	//	_attackDelay = 2.0f;
-	//	_attackPower = 45.0f;
-	//	setTexture("Images/Tower/Magician1/Horizontal_3.png");
-	//	sprintf(name, "Magician");
-	//}
+	else if (_heroType == 3)
+	{
+		_attackDelay = 2.0f;
+		int level = UserDefault::getInstance()->getIntegerForKey("Hero3_Level");
+		_attackPower = 30.0f + (level-1) * 5;
+		setTexture("Images/Tower/Magician1/Horizontal_3.png");
+		setScale(1.5f);
+		sprintf(name, "Magician");
+	}
 
 	setAnchorPoint(Vec2(0.5, 0.3));
 }
@@ -71,6 +71,7 @@ void Hero::setpMasicGauge(int *_pmasicGauge)
 
 void Hero::onEnter()
 {
+	srand((int)time(NULL));
 	Sprite::onEnter();
 	setHeroSetting();
 
@@ -148,6 +149,18 @@ void Hero::heroTick(float a)
 					}
 				}
 
+				int a = rand() % 100 + 1;
+				int level = UserDefault::getInstance()->getIntegerForKey("Hero1_Level");
+				if (a < level + 5)
+				{
+					if (obj->boss == false)
+					{
+						obj->speed->setSpeed(0.0f);
+						obj->setColor(Color3B::GRAY);
+						obj->speedDown = true;
+					}
+				}
+
 				stopAllActions();
 				(*_pMonster).at(i)->hp -= _attackPower;
 				if ((*_pMonster).at(i)->hp <= 0)
@@ -202,22 +215,23 @@ void Hero::heroTick(float a)
 				return;
 			}
 		}
-		/*else if (_heroType == 3) {
+		else if (_heroType == 3) {
 			if (absDis.x <= 75 && absDis.y <= 75)
 			{
 				(*_pMonster).at(i)->hp -= _attackPower;
 				if ((*_pMonster).at(i)->hp <= 0)
 				{
+					(*nowStageGold) = (*nowStageGold) + obj->dropGold;
+					(*nowMasicGauge) = (*nowMasicGauge) + 5;
 					(*_pMonster).eraseObject(obj);
-					(*nowStageGold)++;
 				}
 
 				char animationStr1[50];
-				sprintf(animationStr1, "Images/Tower/%s%d/Horizontal_%d.png", name, towerUpgradeLevel, 1);
+				sprintf(animationStr1, "Images/Tower/%s1/Horizontal_%d.png", name, 1);
 				char animationStr2[50];
-				sprintf(animationStr2, "Images/Tower/%s%d/Horizontal_%d.png", name, towerUpgradeLevel, 2);
+				sprintf(animationStr2, "Images/Tower/%s1/Horizontal_%d.png", name, 2);
 				char animationStr3[50];
-				sprintf(animationStr3, "Images/Tower/%s%d/Horizontal_%d.png", name, towerUpgradeLevel, 3);
+				sprintf(animationStr3, "Images/Tower/%s1/Horizontal_%d.png", name, 3);
 
 				auto animation = Animation::create();
 				animation->setDelayPerUnit(0.2f);
@@ -228,12 +242,21 @@ void Hero::heroTick(float a)
 				auto animate = Animate::create(animation);
 
 				runAction(animate);
-				return;
+				//return;
 			}
-		}*/
+		}
 	}
 
 	stopAllActions();
+
+	if (_heroType == 3)
+	{
+		if ((*_pMonster).size() != 0)
+		{
+			setPosition(nearMonster->getPosition());
+		}
+		return;
+	}
 
 	char MoveAnimationStr1[50];
 	char MoveAnimationStr2[50];

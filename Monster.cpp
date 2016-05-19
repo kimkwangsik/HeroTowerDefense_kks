@@ -76,7 +76,14 @@ void Monster::monsterTick(float a)
 	if (speed->getSpeed() == 0.5f && speedDown)
 	{
 		unschedule(schedule_selector(Monster::resetSpeed));
-		scheduleOnce(schedule_selector(Monster::resetSpeed), 2.5f);
+		scheduleOnce(schedule_selector(Monster::resetSpeed), 2.0f);
+		speedDown = false;
+	}
+
+	if (speed->getSpeed() == 0.0f && speedDown)
+	{
+		unschedule(schedule_selector(Monster::resetSpeed));
+		scheduleOnce(schedule_selector(Monster::resetSpeed), 2.0f);
 		speedDown = false;
 	}
 

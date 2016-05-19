@@ -26,7 +26,6 @@ bool HeroStatu::init()
 	pScene->addChild(scenestr);
 	this->addChild(pScene, 10);
 
-
 	VisibleWinSize = Director::getInstance()->getVisibleSize();
 	
 	auto heroMenuSprite = Sprite::create("Images/g43961.png");
@@ -35,21 +34,29 @@ bool HeroStatu::init()
 	addChild(heroMenuSprite);
 
 	pHeroItem1 = MenuItemImage::create(
-		"Images/GameEnd/Game_btn_on.png",
-		"Images/GameEnd/Game_btn_down.png",
+		"Images/Hero/hero1.png",
+		"Images/Hero/hero1.png",
 		CC_CALLBACK_1(HeroStatu::doClick, this));
 	pHeroItem1->setPosition(Vec2(10, heroMenuSprite->getContentSize().height - 10));
 	pHeroItem1->setAnchorPoint(Vec2(0, 1));
 
 	pHeroItem2 = MenuItemImage::create(
-		"Images/GameEnd/Game_btn_on.png",
-		"Images/GameEnd/Game_btn_down.png",
+		"Images/Hero/hero2.png",
+		"Images/Hero/hero2.png",
 		CC_CALLBACK_1(HeroStatu::doClick, this));
 	pHeroItem2->setPosition(Vec2(pHeroItem1->getContentSize().width + 10, heroMenuSprite->getContentSize().height - 10));
 	pHeroItem2->setAnchorPoint(Vec2(0, 1));
 
+	pHeroItem3 = MenuItemImage::create(
+		"Images/Hero/hero3.png",
+		"Images/Hero/hero3.png",
+		CC_CALLBACK_1(HeroStatu::doClick, this));
+	pHeroItem3->setPosition(Vec2(pHeroItem2->getPositionX() + pHeroItem2->getContentSize().width + 10, heroMenuSprite->getContentSize().height - 10));
+	pHeroItem3->setAnchorPoint(Vec2(0, 1));
+
 	pHeroItem1->setTag(411);
 	pHeroItem2->setTag(412);
+	pHeroItem3->setTag(413);
 
 	bool hero1 = UserDefault::getInstance()->getBoolForKey("Hero1");
 	bool hero2 = UserDefault::getInstance()->getBoolForKey("Hero2");
@@ -65,10 +72,10 @@ bool HeroStatu::init()
 	}
 	if (!hero3)
 	{
-
+		pHeroItem3->setOpacity(100.f);
 	}
 
-	auto pHeroMenu = Menu::create(pHeroItem1, pHeroItem2, NULL);
+	auto pHeroMenu = Menu::create(pHeroItem1, pHeroItem2, pHeroItem3, NULL);
 	pHeroMenu->setPosition(Vec2::ZERO);
 	heroMenuSprite->addChild(pHeroMenu);
 
@@ -79,34 +86,40 @@ bool HeroStatu::init()
 	heroSprite->setAnchorPoint(Vec2(0, 0.5));
 	addChild(heroSprite);
 
+	
 
-
-	pHero1 = MenuItemImage::create(
+	pHeroInfoView = MenuItemImage::create(
 		"Images/GameEnd/Game_btn_on.png",
 		"Images/GameEnd/Game_btn_down.png",
 		CC_CALLBACK_1(HeroStatu::doClick, this));
-	pHero1->setPosition(Vec2(heroSprite->getContentSize().width / 3, 10));
-	pHero1->setAnchorPoint(Vec2(0.5, 0));
+	pHeroInfoView->setPosition(Vec2(heroSprite->getContentSize().width / 3, 10));
+	pHeroInfoView->setAnchorPoint(Vec2(0.5, 0));
 
-	pHero2 = MenuItemImage::create(
+	auto infoView = LabelTTF::create("상세\n정보", "Arial", 15);
+	infoView->setPosition(Vec2(pHeroInfoView->getContentSize().width / 2,
+		pHeroInfoView->getContentSize().height / 2));
+	infoView->setColor(Color3B::WHITE);
+	pHeroInfoView->addChild(infoView, 2);
+
+	pHeroUpgrade = MenuItemImage::create(
 		"Images/GameEnd/Game_btn_on.png",
 		"Images/GameEnd/Game_btn_down.png",
 		CC_CALLBACK_1(HeroStatu::doClick, this));
-	pHero2->setPosition(Vec2(heroSprite->getContentSize().width / 3 * 2, 10));
-	pHero2->setAnchorPoint(Vec2(0.5, 0));
+	pHeroUpgrade->setPosition(Vec2(heroSprite->getContentSize().width / 3 * 2, 10));
+	pHeroUpgrade->setAnchorPoint(Vec2(0.5, 0));
 
 	upgrade = LabelTTF::create("강화", "Arial", 15);
-	upgrade->setPosition(Vec2(pHero2->getContentSize().width / 2,
-		pHero2->getContentSize().height / 2));
+	upgrade->setPosition(Vec2(pHeroUpgrade->getContentSize().width / 2,
+		pHeroUpgrade->getContentSize().height / 2));
 	upgrade->setColor(Color3B::WHITE);
-	pHero2->addChild(upgrade, 2);
+	pHeroUpgrade->addChild(upgrade, 2);
 
-	pHero1->setTag(421);
-	pHero2->setTag(422);
+	pHeroInfoView->setTag(421);
+	pHeroUpgrade->setTag(422);
 
 	
 
-	auto pHero = Menu::create(pHero1, pHero2, NULL);
+	auto pHero = Menu::create(pHeroInfoView, pHeroUpgrade, NULL);
 	pHero->setPosition(Vec2::ZERO);
 	heroSprite->addChild(pHero);
 
@@ -118,9 +131,15 @@ bool HeroStatu::init()
 	heroInfoOn = false;
 	heroSprite->addChild(mainSprite);
 
+	spriteLevelView = LabelTTF::create("", "Arial", 10);
+	spriteLevelView->setPosition(Vec2(mainSprite->getContentSize().width / 2, 0));
+	spriteLevelView->setAnchorPoint(Vec2(0.5, 1));
+	spriteLevelView->setColor(Color3B::BLACK);
+	mainSprite->addChild(spriteLevelView, 2);
+
 	infoLayer = LayerColor::create(Color4B(100, 100, 100, 100));
 	infoLayer->setContentSize(Size(200, 150));
-	infoLayer->setPosition(Vec2(25, pHero1->getPositionY() + pHero1->getContentSize().height));
+	infoLayer->setPosition(Vec2(25, pHeroInfoView->getPositionY() + pHeroInfoView->getContentSize().height));
 	infoLayer->setVisible(false);
 	heroSprite->addChild(infoLayer, 300);
 
@@ -144,34 +163,53 @@ void HeroStatu::doClick(Ref * pSender)
 	bool hero3 = UserDefault::getInstance()->getBoolForKey("Hero3");
 	if (i == 411)
 	{
-		mainSprite->setTexture("Images/Hero/Paladin/Walking/Down_1.png");
+		mainSprite->setTexture("Images/Hero/hero1.png");
 		mainSprite->setVisible(true);
 		infoLayer->setVisible(false);
 		heroInfoOn = true;
 		clickHeroNum = 1;
 		if (hero1)
 		{
-			upgrade->setString("강화");
+			resetHeroInfo("Hero1", false, 10);
 		}
 		else
 		{
-			upgrade->setString("소환");
+			resetHeroInfo("Hero1", false, 100);
+			spriteLevelView->setString("");
 		}
 	}
 	else if (i == 412)
 	{
-		mainSprite->setTexture("Images/Hero/Rogue/Walking/Down_1.png");
+		mainSprite->setTexture("Images/Hero/hero2.png");
 		mainSprite->setVisible(true);
 		infoLayer->setVisible(false);
 		heroInfoOn = true;
 		clickHeroNum = 2;
 		if (hero2)
 		{
-			upgrade->setString("강화");
+			resetHeroInfo("Hero2", false, 20);
 		}
 		else
 		{
-			upgrade->setString("소환");
+			resetHeroInfo("Hero2", false, 200);
+			spriteLevelView->setString("");
+		}
+	}
+	else if (i == 413)
+	{
+		mainSprite->setTexture("Images/Hero/hero3.png");
+		mainSprite->setVisible(true);
+		infoLayer->setVisible(false);
+		heroInfoOn = true;
+		clickHeroNum = 3;
+		if (hero3)
+		{
+			resetHeroInfo("Hero3", false, 30);
+		}
+		else
+		{
+			resetHeroInfo("Hero3", false, 300);
+			spriteLevelView->setString("");
 		}
 	}
 	else if (i == 421)
@@ -181,22 +219,33 @@ void HeroStatu::doClick(Ref * pSender)
 		{
 			if (hero1)
 			{
-				resetHero1Info();
+				resetHeroInfo("Hero1", false, 10);
 			}
 			else
 			{
-				infoLabel->setString("Level 1\n공격력 25\n스킬\n배쉬 5 % \n공격 대상을\n기절 시킴");
+				infoLabel->setString("Level 1\n공격력 25\n스킬\n배쉬\n5 % \n공격 대상을\n기절 시킴");
 			}
 		}
-		else if(clickHeroNum == 2)
+		else if (clickHeroNum == 2)
 		{
 			if (hero2)
 			{
-				resetHero2Info();
+				resetHeroInfo("Hero2", false, 20);
 			}
 			else
 			{
-				infoLabel->setString("Level 1\n공격력 20\n스킬\n대공 전문 1.05 배\n비행 몬스터에게\n데미지 증가");
+				infoLabel->setString("Level 1\n공격력 20\n스킬\n대공 전문\n1.05 배\n비행 몬스터에게\n데미지 증가");
+			}
+		}
+		else if (clickHeroNum == 3)
+		{
+			if (hero3)
+			{
+				resetHeroInfo("Hero3", false, 30);
+			}
+			else
+			{
+				infoLabel->setString("Level 1\n공격력 30\n스킬\n스플래시 데미지\n0.20 배\n주변 몬스터에게\n스플래시 데미지");
 			}
 		}
 
@@ -221,12 +270,7 @@ void HeroStatu::doClick(Ref * pSender)
 			{
 				if (gold >= 10)
 				{
-					int level = UserDefault::getInstance()->getIntegerForKey("Hero1_Level");
-					level++;
-					gold = gold - 10;
-					UserDefault::getInstance()->setIntegerForKey("Hero1_Level", level);
-
-					resetHero1Info();
+					resetHeroInfo("Hero1", true, 10);
 				}
 				else
 				{
@@ -235,21 +279,14 @@ void HeroStatu::doClick(Ref * pSender)
 			}
 			else if (gold >= 100)
 			{
-				int level = UserDefault::getInstance()->getIntegerForKey("Hero1_Level");
-				level++;
-				UserDefault::getInstance()->setIntegerForKey("Hero1_Level", level);
-				gold = gold - 100;
-				UserDefault::getInstance()->setBoolForKey("Hero1", true);
-				pHeroItem1->setOpacity(255.f);
-				upgrade->setString("강화");
-
-				resetHero1Info();
+				resetHeroInfo("Hero1", true, 100);
+				resetHeroInfo("Hero1", false, 10);
 			}
 			else
 			{
 				log("소환 금액 부족");
 			}
-			UserDefault::getInstance()->setIntegerForKey("have_gold", gold);
+			
 		}
 		else if (clickHeroNum == 2)
 		{
@@ -257,12 +294,7 @@ void HeroStatu::doClick(Ref * pSender)
 			{
 				if (gold >= 20)
 				{
-					int level = UserDefault::getInstance()->getIntegerForKey("Hero2_Level");
-					level++;
-					gold = gold - 20;
-					UserDefault::getInstance()->setIntegerForKey("Hero2_Level", level);
-
-					resetHero2Info();
+					resetHeroInfo("Hero2", true, 20);
 				}
 				else
 				{
@@ -271,41 +303,122 @@ void HeroStatu::doClick(Ref * pSender)
 			}
 			else if (gold >= 200)
 			{
-				int level = UserDefault::getInstance()->getIntegerForKey("Hero2_Level");
-				level++;
-				UserDefault::getInstance()->setIntegerForKey("Hero2_Level", level);
-				gold = gold - 200;
-				UserDefault::getInstance()->setBoolForKey("Hero2", true);
-				pHeroItem2->setOpacity(255.f);
-				upgrade->setString("강화");
-
-				resetHero2Info();
+				resetHeroInfo("Hero2", true, 200);
+				resetHeroInfo("Hero2", false, 20);
 			}
 			else
 			{
 				log("소환 금액 부족");
 			}
-			UserDefault::getInstance()->setIntegerForKey("have_gold", gold);
+		}
+		else if (clickHeroNum == 3)
+		{
+			if (hero3)
+			{
+				if (gold >= 30)
+				{
+					resetHeroInfo("Hero3", true, 30);
+				}
+				else
+				{
+					log("강화 금액 부족");
+				}
+			}
+			else if (gold >= 300)
+			{
+				resetHeroInfo("Hero3", true, 300);
+				resetHeroInfo("Hero3", false, 30);
+			}
+			else
+			{
+				log("소환 금액 부족");
+			}
 		}
 	}
 }
 
-void HeroStatu::resetHero1Info()
+void HeroStatu::resetHeroInfo(char* name, bool upgradeinfo, int cost)
 {
-	int level = UserDefault::getInstance()->getIntegerForKey("Hero1_Level");
-	int attackPoint = 25 + ((level - 1) * 2);
-	int skillPoint = 5 + ((level - 1) * 1);
-	char heroInfostr[100];
-	sprintf(heroInfostr, "Level %d\n공격력 %d(+2)\n스킬\n배쉬 %d 퍼 (+1 퍼 )\n공격 대상을\n기절 시킴", level, attackPoint, skillPoint);
-	infoLabel->setString(heroInfostr);
-}
 
-void HeroStatu::resetHero2Info()
-{
-	int level = UserDefault::getInstance()->getIntegerForKey("Hero2_Level");
-	int attackPoint = 20 + ((level - 1) * 3);
-	float skillPoint = 1.05 + ((level - 1) * 0.01);
+	char namestr[20];
+	sprintf(namestr, name);
+
+	char levelstr[20];
+	sprintf(levelstr, "%s_Level", namestr);
+	bool hero = UserDefault::getInstance()->getBoolForKey(namestr);
+
+	int have_gold = UserDefault::getInstance()->getIntegerForKey("have_gold");
+
+	int level = UserDefault::getInstance()->getIntegerForKey(levelstr);
+	if (upgradeinfo)
+	{
+		level++;
+		have_gold = have_gold - cost;
+		UserDefault::getInstance()->setIntegerForKey(levelstr, level);
+		if (!hero)
+		{
+			UserDefault::getInstance()->setBoolForKey(namestr, true);
+		}
+	}
+
+
+	hero = UserDefault::getInstance()->getBoolForKey(namestr);
+
+	if (!hero)
+	{
+		char coststr[20];
+		sprintf(coststr, "소환\n%d", cost);
+		upgrade->setString(coststr);
+	}
+	else
+	{
+		char coststr[20];
+		sprintf(coststr, "강화\n%d", cost);
+		upgrade->setString(coststr);
+	}
+
 	char heroInfostr[100];
-	sprintf(heroInfostr, "Level %d\n공격력 %d(+3)\n스킬\n대공 전문 %1.2f 배 (+0.01 배 )\n비행 몬스터에게\n데미지 증가", level, attackPoint, skillPoint);
+	if (name == "Hero1")
+	{
+		int attackPoint = 25 + ((level - 1) * 2);
+		int skillPoint = 5 + ((level - 1) * 1);
+		sprintf(heroInfostr, "Level %d\n공격력 %d(+2)\n스킬\n배쉬\n%d 퍼 (+1 퍼 )\n공격 대상을\n기절 시킴", level, attackPoint, skillPoint);
+		if (hero)
+		{
+			pHeroItem1->setOpacity(255.f);
+			char levelLabelstr[20];
+			sprintf(levelLabelstr, "Level %d", level);
+			spriteLevelView->setString(levelLabelstr);
+		}
+	}
+	else if (name == "Hero2")
+	{
+		int attackPoint = 20 + ((level - 1) * 3);
+		float skillPoint = 1.05 + ((level - 1) * 0.01);
+		sprintf(heroInfostr, "Level %d\n공격력 %d(+3)\n스킬\n대공 전문\n%1.2f 배 (+0.01 배 )\n비행 몬스터에게\n데미지 증가", level, attackPoint, skillPoint);
+		if (hero)
+		{
+			pHeroItem2->setOpacity(255.f);
+			char levelLabelstr[20];
+			sprintf(levelLabelstr, "Level %d", level);
+			spriteLevelView->setString(levelLabelstr);
+		}
+	}
+	else if (name == "Hero3")
+	{
+		int attackPoint = 30 + ((level - 1) * 5);
+		float skillPoint = 0.20 + ((level - 1) * 0.02);
+		sprintf(heroInfostr, "Level %d\n공격력 %d(+5)\n스킬\n스플래시 데미지\n%1.2f 배 (+0.02 배 )\n주변 몬스터에게\n스플래시 데미지", level, attackPoint, skillPoint);
+		if (hero)
+		{
+			pHeroItem3->setOpacity(255.f);
+			char levelLabelstr[20];
+			sprintf(levelLabelstr, "Level %d", level);
+			spriteLevelView->setString(levelLabelstr);
+		}
+	}
 	infoLabel->setString(heroInfostr);
+
+
+	UserDefault::getInstance()->setIntegerForKey("have_gold", have_gold);
 }

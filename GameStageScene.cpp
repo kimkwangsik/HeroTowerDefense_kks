@@ -32,6 +32,7 @@ GameStageScene::GameStageScene(int stagelevel)
 	skipTrue = true;
 	firstHero = false;
 	SecondHero = false;
+	ThirdHero = false;
 
 	gameOver = false;
 	towerStop = true;
@@ -262,49 +263,56 @@ Sequence* GameStageScene::SequenceMonsterAdd(int num, int max)
 	return myAction;
 }
 
-void GameStageScene::addMonster(int monNum)
+void GameStageScene::addMonster(int pMonNum)
 {
 	Vec2 startVec2 = _Vec2Point.at(0);
 	Monster* monster;
 
-	
+	int monNum = pMonNum % 6;
+	float infinityHP = 1.0f;
+	if (nowStageLevel == 0)
+	{
+		infinityHP = 1 + (float)pMonNum / 10;
+		log("infinityHP : %f", infinityHP);
+	}
 	if (monNum == 1)
 	{
 		monster = new Monster("greenslime");
-		monster->maxHp = 100.f;
+		monster->maxHp = 100.f * infinityHP;
 		monster->dropGold = 1;
 	}
 	else if (monNum == 2)
 	{
 		monster = new Monster("blueslime");
-		monster->maxHp = 120.f;
+		monster->maxHp = 120.f * infinityHP;
 		monster->dropGold = 1;
 	}
 	else if (monNum == 3)
 	{
 		monster = new Monster("yellowslime");
-		monster->maxHp = 150.f;
+		monster->maxHp = 150.f * infinityHP;
 		monster->dropGold = 1;
 	}
 	else if (monNum == 4)
 	{
 		monster = new Monster("redslime");
-		monster->maxHp = 180.f;
+		monster->maxHp = 180.f * infinityHP;
 		monster->dropGold = 2;
 	}
 	else if (monNum == 5)
 	{
 		monster = new Monster("minotaur");
-		monster->maxHp = 200.f;
+		monster->maxHp = 200.f * infinityHP;
 		monster->dropGold = 2;
 	}
 	else
 	{
 		monster = new Monster("minotaur");
 		monster->setScale(2.f);
-		monster->maxHp = 1000.f;
+		monster->maxHp = 1000.f * infinityHP;
 		monster->boss = true;
 		monster->dropGold = 0;
+		bossPhaseCount++;
 	}
 	
 	monster->setAnchorPoint(Vec2(0.5, 0));
@@ -537,27 +545,29 @@ void GameStageScene::removeMonster(Monster* monster)
 
 void GameStageScene::myTick(float f)
 {
-	if (phaseLevel == 0)
+	int phase = phaseLevel % 6;
+
+	if (phase == 0)
 	{
 		gauge = gauge - 4;
 	}
-	else if (phaseLevel <= 5)
+	else if (phase <= 5)
 	{
 		gauge = gauge - 2;
 	}
 	gaugeBar->setPercentage(gauge);
 	masicGaugeBar->setPercentage(masicGaugeNum);
 	//this->SpriteProgressToRadial(gauge);
-	if (gauge < 0 && phaseLevel < 5)
+	if (gauge < 0 && phase < 5)
 	{
 		gauge = 100;
 		++phaseLevel;
 		char phase[20];
-		sprintf(phase, "%d phase", phaseLevel);
+		sprintf(phase, "%d phase", phaseLevel - bossPhaseCount);
 		phaseLabel->setString(phase);
-		runAction(SequenceMonsterAdd(0, 1));
+		runAction(SequenceMonsterAdd(0, 10));
 	}
-	if (gauge < 0 && 5 == phaseLevel)
+	if (gauge < 0 && 5 == phase)
 	{
 		phaseLevel++;
 		phaseLabel->setString("BOSS phase");
@@ -570,6 +580,16 @@ void GameStageScene::myTick(float f)
 void GameStageScene::bossTick(float f)
 {
 	masicGaugeBar->setPercentage(masicGaugeNum);
+	if (nowStageLevel == 0 && _monster.size() == 0)
+	{
+		gauge = 100;
+		gaugeBar->setPercentage(gauge);
+		phaseLabel->setString("rest phase");
+		log("Boss clear!!");
+		this->unschedule(schedule_selector(GameStageScene::bossTick));
+		this->schedule(schedule_selector(GameStageScene::myTick), 0.5f);
+		return;
+	}
 	if (_monster.size() == 0)
 	{
 		log("clear!!");
@@ -711,7 +731,7 @@ void GameStageScene::onTouchEnded(Touch* touch, Event* event)
 					i = 35;
 				}
 
-				log("%s", str);
+				//log("%s", str);
 				SpriteFrame* frame = cache->getSpriteFrameByName(str);
 				animFrames.pushBack(frame);
 			}
@@ -805,7 +825,7 @@ void GameStageScene::onTouchEnded(Touch* touch, Event* event)
 				{
 					monsterObj->hp -= 5;
 					monsterObj->speedDown = true;
-					monsterObj->speed->setSpeed(0.5f);
+					monsterObj->speed->setSpeed(0.0f);
 					monsterObj->setColor(Color3B::YELLOW);
 					if (monsterObj->hp <= 0)
 					{
@@ -1121,7 +1141,7 @@ void GameStageScene::heroMenuCreate()
 
 	
 
-	auto heroMenuItem3 = MenuItemImage::create(
+	heroMenuItem3 = MenuItemImage::create(
 		"Images/Hero/hero3.png",
 		"Images/Hero/hero3.png",
 		CC_CALLBACK_1(GameStageScene::doClick, this));
@@ -1280,11 +1300,19 @@ void GameStageScene::doClick(Ref* pSender)
 		SecondHero = true;
 		heroMenuItem2->setOpacity(100.f);
 	}
-//	else if (i == 533 && hero3_have)
-	else if (i == 533)
+	else if (i == 533 && hero3_have)
 	{
 		log("Hero3");
-		masicGaugeNum = 100;
+		hero3 = new Hero(3);
+		hero3->setPosition(_Vec2Point.at(_Vec2Point.size() - 1));
+		hero3->setOpacity(240.f);
+		hero3->setpMonster(_pMonster);
+		hero3->setpGold(_pnowStageGold);
+		hero3->setpMasicGauge(_pmasicGauge);
+
+		tmap->addChild(hero3, 200);
+		ThirdHero = true;
+		heroMenuItem3->setOpacity(100.f);
 	}
 }
 

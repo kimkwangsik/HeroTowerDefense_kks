@@ -56,6 +56,8 @@ bool IntroScene::init()
 		UserDefault::getInstance()->setIntegerForKey("Hero1_Level", 0);
 		UserDefault::getInstance()->setBoolForKey("Hero2", false);
 		UserDefault::getInstance()->setIntegerForKey("Hero2_Level", 0);
+		UserDefault::getInstance()->setBoolForKey("Hero3", false);
+		UserDefault::getInstance()->setIntegerForKey("Hero3_Level", 0);
 		UserDefault::getInstance()->setIntegerForKey("have_gold", 2000);
 		UserDefault::getInstance()->setIntegerForKey("clear_stage", 0);
 	}

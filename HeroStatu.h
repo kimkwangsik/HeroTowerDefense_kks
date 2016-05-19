@@ -18,12 +18,14 @@ public:
 	int clickHeroNum;
 
 	cocos2d::LabelTTF* upgrade;
+	cocos2d::LabelTTF* spriteLevelView;
 
 	cocos2d::Sprite* mainSprite;
 	cocos2d::MenuItemImage* pHeroItem1;
 	cocos2d::MenuItemImage* pHeroItem2;
-	cocos2d::MenuItemImage* pHero1;
-	cocos2d::MenuItemImage* pHero2;
+	cocos2d::MenuItemImage* pHeroItem3;
+	cocos2d::MenuItemImage* pHeroInfoView;
+	cocos2d::MenuItemImage* pHeroUpgrade;
 
 	cocos2d::Size VisibleWinSize;
 
@@ -33,11 +35,7 @@ public:
 
 	void doClick(Ref* pSender);
 
-	void resetHero1Info();
-
-	void resetHero2Info();
-
-	//virtual void onEnter();
+	void resetHeroInfo(char * name, bool upgradeinfo, int cost);
 };
 
 #endif // __HELLOWORLD_SCENE_H__
