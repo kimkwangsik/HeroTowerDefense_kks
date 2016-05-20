@@ -20,6 +20,13 @@ bool StageSelectScene::init()
 	{
 		return false;
 	}
+
+	auto pScene1 = Menus::createScene();
+	auto scenestr1 = new Menus("StageSelectScene");
+	scenestr1->autorelease();
+	pScene1->addChild(scenestr1);
+	this->addChild(pScene1, 3);
+
 	maxStage = UserDefault::getInstance()->getIntegerForKey("clear_stage");
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 
@@ -37,20 +44,14 @@ bool StageSelectScene::init()
 	tableViewBackGround->addChild(tableView1,3);
 	tableView1->reloadData();
 
-	char maxStagestr[30];
-	sprintf(maxStagestr, "최종 클리어 스테이지\nLevel%ld", maxStage);
+	char maxStagestrC[100];
+	sprintf(maxStagestrC, "최종 클리어 스테이지\nLevel%d", maxStage);
 
-	auto maxStageLabel = LabelTTF::create(maxStagestr, "Helvetica", 20.0);	//폰트 수정 또는 확인 필수
+	auto maxStageLabel = LabelTTF::create(maxStagestrC, "Helvetica", 20.0);	//폰트 수정 또는 확인 필수
 	maxStageLabel->setPosition(Vec2(tableViewBackGround->getContentSize().width/2,10));
 	maxStageLabel->setAnchorPoint(Vec2(0.5, 0));
 	maxStageLabel->setColor(Color3B::BLACK);
 	tableViewBackGround->addChild(maxStageLabel, 3);
-
-	auto pScene = Menus::createScene();
-	auto scenestr = new Menus("StageSelectScene");
-	scenestr->autorelease();
-	pScene->addChild(scenestr);
-	this->addChild(pScene, 3);
 
 	return true;
 }
@@ -80,7 +81,6 @@ void StageSelectScene::doClick(Ref* pSender, int selectStage)
 		log("이전 스테이지를 클리어 해주세요");
 		return;
 	}
-
 	auto pScene = SelectStageInfo::createScene();
 	auto stagenum = new SelectStageInfo(selectStage);
 	stagenum->autorelease();
@@ -92,10 +92,8 @@ TableViewCell* StageSelectScene::tableCellAtIndex(TableView* table, ssize_t idx)
 {
 	int idxint = idx + 1;
 	char str[20];
-	sprintf(str, "Level\n%ld", idxint);
+	sprintf(str, "Level\n%d", idxint);
 	auto cell = table->dequeueCell();
-
-	
 
 	MenuItemImage* pMenuItem;
 

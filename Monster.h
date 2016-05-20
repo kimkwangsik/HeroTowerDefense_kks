@@ -1,4 +1,4 @@
-#ifndef __Monster_H__
+﻿#ifndef __Monster_H__
 #define __Monster_H__
 
 #include "cocos2d.h"

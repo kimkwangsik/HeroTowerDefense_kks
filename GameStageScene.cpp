@@ -1,4 +1,4 @@
-#include "GameStageScene.h"
+ï»¿#include "GameStageScene.h"
 #include "Menus.h"
 #include "GameEnd.h"
 #include "SimpleAudioEngine.h"
@@ -238,7 +238,7 @@ void GameStageScene::getOption(bool gold, bool masic)
 	}
 	if(masic)
 	{
-		log("ÃæÀü");
+		log("ì¶©ì „");
 		masicGaugeNum = 100;
 	}
 
@@ -346,7 +346,7 @@ Sequence* GameStageScene::MoveAction(Monster* monster)
 	auto myAction = Sequence::create(SequenceMoveAction(monster, 0, (_Vec2Point.size() - 2) + 1),
 		nullptr);
 
-	_Action.clear();	// ¾×¼Ç Àû¿ë ÇÏ±â Àü¿¡ _Action¿¡ ÀúÀåµÈ ¾×¼ÇµéÀ» Áö¿î´Ù.
+	_Action.clear();	// ì•¡ì…˜ ì ìš© í•˜ê¸° ì „ì— _Actionì— ì €ìž¥ëœ ì•¡ì…˜ë“¤ì„ ì§€ìš´ë‹¤.
 
 	return myAction;
 }
@@ -356,9 +356,9 @@ Sequence* GameStageScene::SequenceMoveAction(Monster* monster, int num , int max
 	if (num == max)
 	{	
 		//auto removeAction = CallFunc::create(re,CC_CALLFUNC_SELECTOR(Node::removeFromParent));
-		//_ActionÀÇ ´ÙÀ½¾×¼ÇÀÌ ¾øÀ»¶§ È£ÃâµÇ¾î ÇÔ¼öÀÇ Á¾·á¸¦ °¡´ÉÇÏ°Ô ÇØÁÜ
-		//DelayTime::create(0)¿¡´Â CallFunc¸¦ ÀÌ¿ëÇØ
-		//¸ó½ºÅÍÀÇ Á¦°Å ¶Ç´Â Çàµ¿À» Ãß°¡
+		//_Actionì˜ ë‹¤ìŒì•¡ì…˜ì´ ì—†ì„ë•Œ í˜¸ì¶œë˜ì–´ í•¨ìˆ˜ì˜ ì¢…ë£Œë¥¼ ê°€ëŠ¥í•˜ê²Œ í•´ì¤Œ
+		//DelayTime::create(0)ì—ëŠ” CallFuncë¥¼ ì´ìš©í•´
+		//ëª¬ìŠ¤í„°ì˜ ì œê±° ë˜ëŠ” í–‰ë™ì„ ì¶”ê°€
 		if (monster->boss == true)
 		{
 			auto nullseq = Sequence::create(
@@ -389,15 +389,15 @@ Sequence* GameStageScene::SequenceMoveAction(Monster* monster, int num , int max
 		}
 	}
 
-	//ÇöÀç _ActionÀÇ ¾×¼ÇÀ» ¼øÂ÷ÀûÀ¸·Î °¡Á®¿Â´Ù 
+	//í˜„ìž¬ _Actionì˜ ì•¡ì…˜ì„ ìˆœì°¨ì ìœ¼ë¡œ ê°€ì ¸ì˜¨ë‹¤ 
 	auto actionBefore = _Action.at(num);
 
-	//À§ÀÇ ¾×¼ÇÀ» Sequence ¿¡ Ãß°¡ÈÄ ´Ù¸¥_ActionÀ» Ãß°¡ÇØÁÙ SequenceMoveAction() ÇÔ¼ö¸¦ Àç±Í
+	//ìœ„ì˜ ì•¡ì…˜ì„ Sequence ì— ì¶”ê°€í›„ ë‹¤ë¥¸_Actionì„ ì¶”ê°€í•´ì¤„ SequenceMoveAction() í•¨ìˆ˜ë¥¼ ìž¬ê·€
 	auto myAction = Sequence::create(
 		actionBefore, SequenceMoveAction(monster, ++num , max), nullptr);
 
-	//Àç±Í ÇÔ¼ö È£ÃâÀÌ ¿Ï·áµÇ¼­ ÇÔ¼öÀÇ ¸ÇÀ§¿¡ ÀÖ´Â nullseq°¡ ¹ÝÈ¯µÇ¸é Àç±Í°¡ Á¾·áµÇ¸ç
-	//Ãß°¡µÇ¾îÀÖ´Â Sequence ¾×¼ÇÀ» ¹ÝÈ¯ÇÏ¿© ¸ó½ºÅÍ¿¡°Ô Àû¿ë ½ÃÅ°°Ô µÈ´Ù.
+	//ìž¬ê·€ í•¨ìˆ˜ í˜¸ì¶œì´ ì™„ë£Œë˜ì„œ í•¨ìˆ˜ì˜ ë§¨ìœ„ì— ìžˆëŠ” nullseqê°€ ë°˜í™˜ë˜ë©´ ìž¬ê·€ê°€ ì¢…ë£Œë˜ë©°
+	//ì¶”ê°€ë˜ì–´ìžˆëŠ” Sequence ì•¡ì…˜ì„ ë°˜í™˜í•˜ì—¬ ëª¬ìŠ¤í„°ì—ê²Œ ì ìš© ì‹œí‚¤ê²Œ ëœë‹¤.
 	return myAction;
 }
 
@@ -640,7 +640,7 @@ bool GameStageScene::onTouchBegan(Touch* touch, Event* event) {
 
 	for (int i = 0; i != _setupTower.size(); i++)
 	{
-		//Å¸¿ö ¼³Ä¡ÁßÀÌ¸é ¹Ù·Î ¸®ÅÏ
+		//íƒ€ì›Œ ì„¤ì¹˜ì¤‘ì´ë©´ ë°”ë¡œ ë¦¬í„´
 		auto obj = (Tower*)_setupTower.at(i);
 		auto bol = obj->towerMenuVisible;
 		if (bol)
@@ -864,7 +864,7 @@ void GameStageScene::onTouchEnded(Touch* touch, Event* event)
 
 		for (int i = 0; i != _setupTower.size(); i++)
 		{
-			//ÇöÀç Å¸¿ö°¡ ¾ø´Â À§Ä¡ °Ë»öÇØ¼­ »èÁ¦ÇÏ´Â ±¸¹®
+			//í˜„ìž¬ íƒ€ì›Œê°€ ì—†ëŠ” ìœ„ì¹˜ ê²€ìƒ‰í•´ì„œ ì‚­ì œí•˜ëŠ” êµ¬ë¬¸
 			auto obj = (Tower*)_setupTower.at(i);
 			auto bol = obj->towerSetup;
 			if (bol)
@@ -884,7 +884,7 @@ void GameStageScene::onTouchEnded(Touch* touch, Event* event)
 
 			if (obj->getPosition() == Vec2(xPoint * 30 + 15, yPoint * 30 + 15))
 			{
-				//log("¼³Ä¡ ºÒ°¡");
+				//log("ì„¤ì¹˜ ë¶ˆê°€");
 				clickTower->removeFromParent();
 				return;
 			}
@@ -896,7 +896,7 @@ void GameStageScene::onTouchEnded(Touch* touch, Event* event)
 
 		if (tileGid)
 		{
-			//log("¼³Ä¡ ºÒ°¡");
+			//log("ì„¤ì¹˜ ë¶ˆê°€");
 			clickTower->removeFromParent();
 		}
 		else if (1)
@@ -1182,7 +1182,7 @@ void GameStageScene::doClick(Ref* pSender)
 	bool hero1_have = UserDefault::getInstance()->getBoolForKey("Hero1");
 	bool hero2_have = UserDefault::getInstance()->getBoolForKey("Hero2");
 	bool hero3_have = UserDefault::getInstance()->getBoolForKey("Hero3");
-	//Å¸¿ö ¼³Ä¡ÁßÀÌ¸é ¸Þ´º Å¬¸¯ ºÒ°¡´É
+	//íƒ€ì›Œ ì„¤ì¹˜ì¤‘ì´ë©´ ë©”ë‰´ í´ë¦­ ë¶ˆê°€ëŠ¥
 	for (int i = 0; i != _setupTower.size(); i++)
 	{
 		auto obj = (Tower*)_setupTower.at(i);
@@ -1193,7 +1193,7 @@ void GameStageScene::doClick(Ref* pSender)
 		}
 	}
 
-	//¸Þ´º Å¬¸¯½Ã Å¸¿ö ¾÷±×·¹ÀÌµå ÁßÁö
+	//ë©”ë‰´ í´ë¦­ì‹œ íƒ€ì›Œ ì—…ê·¸ë ˆì´ë“œ ì¤‘ì§€
 	towerUpgradeVisible = false;
 	b_Upgrade->setVisible(false);
 	for (int i = 0; i != _setupTower.size(); i++)
@@ -1252,7 +1252,7 @@ void GameStageScene::doClick(Ref* pSender)
 
 		masicTpye = 1;
 		masicTouch = true;
-		////¹ø°³ ¸¶¹ý
+		////ë²ˆê°œ ë§ˆë²•
 		//for (int i = 0; i < _monster.size(); i++)
 		//{
 		//	auto obj = (Monster*)_monster.at(i);
@@ -1268,7 +1268,7 @@ void GameStageScene::doClick(Ref* pSender)
 		masicTpye = 2;
 		masicTouch = true;
 		//nowStageGold = nowStageGold + 50;
-		//¾óÀ½
+		//ì–¼ìŒ
 	}
 	else if (i == 531 && !firstHero && hero1_have)
 	{

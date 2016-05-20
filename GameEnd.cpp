@@ -1,4 +1,4 @@
-#include "GameEnd.h"
+ï»¿#include "GameEnd.h"
 #include "GameStageScene.h"
 #include "MainScene.h"
 #include "StageSelectScene.h"
@@ -40,7 +40,7 @@ GameEnd::GameEnd(int stagelevel, int heartCount)
 	pMenuItem1->setPosition(Vec2(clearPanel->getContentSize().width / 4, 20));
 	pMenuItem1->setAnchorPoint(Vec2(0.5, 0));
 
-	auto mainMenu = LabelTTF::create("¸ÞÀÎ\nÈ­¸é", "Arial", 15);
+	auto mainMenu = LabelTTF::create("ë©”ì¸\ní™”ë©´", "Arial", 15);
 	mainMenu->setPosition(Vec2(pMenuItem1->getContentSize().width / 2, 
 		pMenuItem1->getContentSize().height / 2));
 	//mainMenu->setAnchorPoint(Vec2(1, 0));
@@ -54,7 +54,7 @@ GameEnd::GameEnd(int stagelevel, int heartCount)
 	pMenuItem2->setPosition(Vec2(clearPanel->getContentSize().width / 2, 20));
 	pMenuItem2->setAnchorPoint(Vec2(0.5, 0));
 
-	auto restartMenu = LabelTTF::create("ÀçµµÀü", "Arial", 15);
+	auto restartMenu = LabelTTF::create("ìž¬ë„ì „", "Arial", 15);
 	restartMenu->setPosition(Vec2(pMenuItem2->getContentSize().width / 2,
 		pMenuItem2->getContentSize().height / 2));
 	//mainMenu->setAnchorPoint(Vec2(1, 0));
@@ -68,7 +68,7 @@ GameEnd::GameEnd(int stagelevel, int heartCount)
 	pMenuItem3->setPosition(Vec2(clearPanel->getContentSize().width / 4 * 3, 20));
 	pMenuItem3->setAnchorPoint(Vec2(0.5, 0));
 
-	auto stageMenu = LabelTTF::create("½ºÅ×ÀÌÁö\n¼±ÅÃ", "Arial", 15);
+	auto stageMenu = LabelTTF::create("ìŠ¤í…Œì´ì§€\nì„ íƒ", "Arial", 15);
 	stageMenu->setPosition(Vec2(pMenuItem3->getContentSize().width / 2,
 		pMenuItem3->getContentSize().height / 2));
 	//mainMenu->setAnchorPoint(Vec2(1, 0));
@@ -124,7 +124,7 @@ GameEnd::GameEnd(int stagelevel, int heartCount)
 			UserDefault::getInstance()->setIntegerForKey("clear_stage", stagelevel);
 		}
 
-		auto reward = LabelTTF::create("º¸»ó", "Arial", 20);
+		auto reward = LabelTTF::create("ë³´ìƒ", "Arial", 20);
 		reward->setPosition(Vec2(star2->getContentSize().width / 2, 0));
 		reward->setAnchorPoint(Vec2(0.5, 1));
 		star2->addChild(reward);
@@ -144,7 +144,7 @@ GameEnd::GameEnd(int stagelevel, int heartCount)
 	}
 	else if(nowHeartCount == 0)
 	{
-		auto stageFall = LabelTTF::create("½ÇÆÐ", "Arial", 30);
+		auto stageFall = LabelTTF::create("ì‹¤íŒ¨", "Arial", 30);
 		stageFall->setColor(Color3B::WHITE);
 		stageFall->setPosition(Vec2(clearPanel->getContentSize().width / 2, clearPanel->getContentSize().height - 20));
 		stageFall->setAnchorPoint(Vec2(0.5, 1));
@@ -179,7 +179,7 @@ void GameEnd::doClick(Ref* pSender)
 	int i = tItem->getTag();
 	if (i == 631)
 	{
-		//¸ÞÀÎÈ­¸é
+		//ë©”ì¸í™”ë©´
 		//Director::getInstance()->popScene();
 		//Director::getInstance()->popScene();
 
@@ -188,7 +188,7 @@ void GameEnd::doClick(Ref* pSender)
 	}
 	else if (i == 632)
 	{
-		//ÀçµµÀü
+		//ìž¬ë„ì „
 		auto pScene = GameStageScene::createScene();
 		auto stagenum = new GameStageScene(nowStagelevel);
 		stagenum->autorelease();
@@ -197,7 +197,7 @@ void GameEnd::doClick(Ref* pSender)
 	}
 	else if (i == 633)
 	{
-		//½ºÅ×ÀÌÁö ¼±ÅÃÈ­¸é
+		//ìŠ¤í…Œì´ì§€ ì„ íƒí™”ë©´
 		//Director::getInstance()->popScene();
 		auto pScene = StageSelectScene::createScene();
 		Director::getInstance()->replaceScene(pScene);

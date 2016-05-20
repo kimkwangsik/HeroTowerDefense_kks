@@ -1,4 +1,4 @@
-#ifndef __Tower_H__
+﻿#ifndef __Tower_H__
 #define __Tower_H__
 
 #include "cocos2d.h"

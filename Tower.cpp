@@ -1,4 +1,4 @@
-#include "tower.h"
+Ôªø#include "tower.h"
 #include "GameStageScene.h"
 
 USING_NS_CC;
@@ -36,7 +36,7 @@ void Tower::setTowerSetting()
 		_attackPower = 20.0f;
 		_attackArea = 75.0f;
 		cost = 20;
-		setTexture("Images/Tower/Rogue1/Horizontal_3.png");	//Rogue µµ¿˚.
+		setTexture("Images/Tower/Rogue1/Horizontal_3.png");	//Rogue ÎèÑÏ†Å.
 		sprintf(name, "Rogue");
 	}
 	else if (_towerType == 3)

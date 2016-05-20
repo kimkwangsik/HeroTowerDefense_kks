@@ -1,4 +1,4 @@
-#ifndef __SelectStageInfo_H__
+﻿#ifndef __SelectStageInfo_H__
 #define __SelectStageInfo_H__
 
 #include "cocos2d.h"

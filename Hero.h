@@ -1,4 +1,4 @@
-#ifndef __Hero_H__
+﻿#ifndef __Hero_H__
 #define __Hero_H__
 
 #include "cocos2d.h"

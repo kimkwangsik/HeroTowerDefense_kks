@@ -1,4 +1,4 @@
-#include "SelectStageInfo.h"
+ï»¿#include "SelectStageInfo.h"
 #include "GameStageScene.h"
 
 USING_NS_CC;
@@ -61,7 +61,7 @@ SelectStageInfo::SelectStageInfo(int selectStage)
 	pMenuItem1->setPosition(Vec2(StageInfo->getContentSize().width / 4, 10));
 	pMenuItem1->setAnchorPoint(Vec2(0.5, 0));
 
-	auto cancelMenu = LabelTTF::create(" Ãë¼Ò ", "Arial", 15);
+	auto cancelMenu = LabelTTF::create(" ì·¨ì†Œ ", "Arial", 15);
 	cancelMenu->setPosition(Vec2(pMenuItem1->getContentSize().width / 2,
 		pMenuItem1->getContentSize().height / 2));
 	//mainMenu->setAnchorPoint(Vec2(1, 0));
@@ -75,7 +75,7 @@ SelectStageInfo::SelectStageInfo(int selectStage)
 	pMenuItem2->setPosition(Vec2(StageInfo->getContentSize().width / 4 * 3, 10));
 	pMenuItem2->setAnchorPoint(Vec2(0.5, 0));
 
-	auto startMenu = LabelTTF::create(" ½ÃÀÛ ", "Arial", 15);
+	auto startMenu = LabelTTF::create(" ì‹œìž‘ ", "Arial", 15);
 	startMenu->setPosition(Vec2(pMenuItem2->getContentSize().width / 2,
 		pMenuItem2->getContentSize().height / 2));
 	startMenu->setColor(Color3B::WHITE);
@@ -88,7 +88,7 @@ SelectStageInfo::SelectStageInfo(int selectStage)
 	pMenuItem3->setPosition(Vec2(StageInfo->getContentSize().width - 10, pMenuItem2->getPositionY() + pMenuItem2->getContentSize().height + 10));
 	pMenuItem3->setAnchorPoint(Vec2(1, 0));
 
-	auto goldAdd = LabelTTF::create("°ñµå\nÃß°¡", "Arial", 15);
+	auto goldAdd = LabelTTF::create("ê³¨ë“œ\nì¶”ê°€", "Arial", 15);
 	goldAdd->setPosition(Vec2(pMenuItem3->getContentSize().width / 2,
 		pMenuItem3->getContentSize().height / 2));
 	goldAdd->setColor(Color3B::WHITE);
@@ -101,7 +101,7 @@ SelectStageInfo::SelectStageInfo(int selectStage)
 	pMenuItem4->setPosition(Vec2(StageInfo->getContentSize().width -10, pMenuItem3->getPositionY() + pMenuItem3->getContentSize().height + 10));
 	pMenuItem4->setAnchorPoint(Vec2(1, 0));
 
-	auto fullMasic = LabelTTF::create("¸¶¹ý\nÃæÀü", "Arial", 15);
+	auto fullMasic = LabelTTF::create("ë§ˆë²•\nì¶©ì „", "Arial", 15);
 	fullMasic->setPosition(Vec2(pMenuItem4->getContentSize().width / 2,
 		pMenuItem4->getContentSize().height / 2));
 	fullMasic->setColor(Color3B::WHITE);

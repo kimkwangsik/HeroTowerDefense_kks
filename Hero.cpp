@@ -1,4 +1,4 @@
-#include "Hero.h"
+ï»¿#include "Hero.h"
 #include "GameStageScene.h"
 
 USING_NS_CC;
@@ -33,7 +33,7 @@ void Hero::setHeroSetting()
 		_attackDelay = 1.0f;
 		int level = UserDefault::getInstance()->getIntegerForKey("Hero2_Level");
 		_attackPower = 20.0f + (level-1) * 3;
-		setTexture("Images/Tower/Rogue1/Horizontal_3.png");	//Rogue µµÀû.
+		setTexture("Images/Tower/Rogue1/Horizontal_3.png");	//Rogue ë„ì .
 		setScale(1.5f);
 		sprintf(name, "Rogue");
 	}
@@ -242,21 +242,23 @@ void Hero::heroTick(float a)
 				auto animate = Animate::create(animation);
 
 				runAction(animate);
-				//return;
+				return;
 			}
 		}
 	}
 
 	stopAllActions();
 
-	if (_heroType == 3)
+	bool moveOK = false;
+
+	/*if (_heroType == 3)
 	{
 		if ((*_pMonster).size() != 0)
 		{
 			setPosition(nearMonster->getPosition());
 		}
 		return;
-	}
+	}*/
 
 	char MoveAnimationStr1[50];
 	char MoveAnimationStr2[50];
@@ -324,6 +326,7 @@ void Hero::heroTick(float a)
 		auto animate = Animate::create(animation);
 
 		runAction(animate);
+		moveOK = true;
 	}
 	else
 	{
@@ -331,6 +334,20 @@ void Hero::heroTick(float a)
 		sprintf(def, "Images/Hero/%s/Walking/Horizontal_1.png", name);
 		setTexture(def);
 	}
-	auto moveb = MoveBy::create(disVec/60.f, minDis);
-	runAction(moveb);
+	if (moveOK)
+	{
+		if (nearMonster->getPositionX() >= 400.f)
+		{
+			stopAllActions();
+			char def[50];
+			sprintf(def, "Images/Hero/%s/Walking/Horizontal_1.png", name);
+			setTexture(def);
+		}
+		else
+		{
+			auto moveb = MoveBy::create(disVec / 60.f, minDis);
+			runAction(moveb);
+		}
+	}
+	
 }

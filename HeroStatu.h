@@ -1,4 +1,4 @@
-#ifndef __HeroStatu_H__
+﻿#ifndef __HeroStatu_H__
 #define __HeroStatu_H__
 
 #include "cocos2d.h"
@@ -35,7 +35,7 @@ public:
 
 	void doClick(Ref* pSender);
 
-	void resetHeroInfo(char* name, bool upgradeinfo, int cost);
+	void resetHeroInfo(std::string name, bool upgradeinfo, int cost);
 };
 
 #endif // __HELLOWORLD_SCENE_H__

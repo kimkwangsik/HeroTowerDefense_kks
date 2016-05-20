@@ -1,4 +1,4 @@
-#ifndef __InfinityInfo_H__
+﻿#ifndef __InfinityInfo_H__
 #define __InfinityInfo_H__
 
 #include "cocos2d.h"

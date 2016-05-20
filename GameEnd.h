@@ -1,4 +1,4 @@
-#ifndef __GameEnd_H__
+﻿#ifndef __GameEnd_H__
 #define __GameEnd_H__
 
 #include "cocos2d.h"

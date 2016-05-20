@@ -1,4 +1,4 @@
-#include "Monster.h"
+ï»¿#include "Monster.h"
 
 USING_NS_CC;
 
@@ -30,7 +30,7 @@ void Monster::onEnter()
 	hp = maxHp;
 	speedDown = true;
 
-	//±âº» ÀÚ¼¼¿Í °È´Â ¸ğ¼Ç
+	//ê¸°ë³¸ ìì„¸ì™€ ê±·ëŠ” ëª¨ì…˜
 	char monsterFileName[50];
 	sprintf(monsterFileName, "Images/Monster/%s_walk/%d.png", myMonsterName.c_str(), 0);
 	setTexture(monsterFileName);

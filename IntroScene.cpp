@@ -1,4 +1,4 @@
-#include "IntroScene.h"
+ï»¿#include "IntroScene.h"
 #include "MainScene.h"
 #include "Menus.h"
 #include "SimpleAudioEngine.h"
@@ -41,7 +41,7 @@ bool IntroScene::init()
 
 	createKnight(1);
 
-	//Ç×»ó Ã³À½ ½ÇÇà ÇÏ°Ô ¸¸µå´Â ÀÌº¥Æ®
+	//í•­ìƒ ì²˜ìŒ ì‹¤í–‰ í•˜ê²Œ ë§Œë“œëŠ” ì´ë²¤íŠ¸
 	UserDefault::getInstance()->setBoolForKey("Start_First", false);
 
 	bool start_First = UserDefault::getInstance()->getBoolForKey("Start_First");
@@ -49,7 +49,7 @@ bool IntroScene::init()
 	{
 		
 	}
-	else //ÃÖÃÊ ½ÇÇà½Ã
+	else //ìµœì´ˆ ì‹¤í–‰ì‹œ
 	{
 		UserDefault::getInstance()->setBoolForKey("Start_First", true);
 		UserDefault::getInstance()->setBoolForKey("Hero1", false);

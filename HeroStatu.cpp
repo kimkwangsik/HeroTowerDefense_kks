@@ -1,4 +1,4 @@
-#include "HeroStatu.h"
+ï»¿#include "HeroStatu.h"
 #include "Menus.h"
 
 USING_NS_CC;
@@ -95,7 +95,7 @@ bool HeroStatu::init()
 	pHeroInfoView->setPosition(Vec2(heroSprite->getContentSize().width / 3, 10));
 	pHeroInfoView->setAnchorPoint(Vec2(0.5, 0));
 
-	auto infoView = LabelTTF::create("»ó¼¼\nÁ¤º¸", "Arial", 15);
+	auto infoView = LabelTTF::create("ìƒì„¸\nì •ë³´", "Arial", 15);
 	infoView->setPosition(Vec2(pHeroInfoView->getContentSize().width / 2,
 		pHeroInfoView->getContentSize().height / 2));
 	infoView->setColor(Color3B::WHITE);
@@ -108,7 +108,7 @@ bool HeroStatu::init()
 	pHeroUpgrade->setPosition(Vec2(heroSprite->getContentSize().width / 3 * 2, 10));
 	pHeroUpgrade->setAnchorPoint(Vec2(0.5, 0));
 
-	upgrade = LabelTTF::create("°­È­", "Arial", 15);
+	upgrade = LabelTTF::create("ê°•í™”", "Arial", 15);
 	upgrade->setPosition(Vec2(pHeroUpgrade->getContentSize().width / 2,
 		pHeroUpgrade->getContentSize().height / 2));
 	upgrade->setColor(Color3B::WHITE);
@@ -214,7 +214,7 @@ void HeroStatu::doClick(Ref * pSender)
 	}
 	else if (i == 421)
 	{
-		log("Á¤º¸");
+		log("ì •ë³´");
 		if (clickHeroNum == 1)
 		{
 			if (hero1)
@@ -223,7 +223,7 @@ void HeroStatu::doClick(Ref * pSender)
 			}
 			else
 			{
-				infoLabel->setString("Level 1\n°ø°Ý·Â 25\n½ºÅ³\n¹è½¬\n5 % \n°ø°Ý ´ë»óÀ»\n±âÀý ½ÃÅ´");
+				infoLabel->setString("Level 1\nê³µê²©ë ¥ 25\nìŠ¤í‚¬\në°°ì‰¬\n5 % \nê³µê²© ëŒ€ìƒì„\nê¸°ì ˆ ì‹œí‚´");
 			}
 		}
 		else if (clickHeroNum == 2)
@@ -234,7 +234,7 @@ void HeroStatu::doClick(Ref * pSender)
 			}
 			else
 			{
-				infoLabel->setString("Level 1\n°ø°Ý·Â 20\n½ºÅ³\n´ë°ø Àü¹®\n1.05 ¹è\nºñÇà ¸ó½ºÅÍ¿¡°Ô\nµ¥¹ÌÁö Áõ°¡");
+				infoLabel->setString("Level 1\nê³µê²©ë ¥ 20\nìŠ¤í‚¬\nëŒ€ê³µ ì „ë¬¸\n1.05 ë°°\në¹„í–‰ ëª¬ìŠ¤í„°ì—ê²Œ\në°ë¯¸ì§€ ì¦ê°€");
 			}
 		}
 		else if (clickHeroNum == 3)
@@ -245,7 +245,7 @@ void HeroStatu::doClick(Ref * pSender)
 			}
 			else
 			{
-				infoLabel->setString("Level 1\n°ø°Ý·Â 30\n½ºÅ³\n½ºÇÃ·¡½Ã µ¥¹ÌÁö\n0.20 ¹è\nÁÖº¯ ¸ó½ºÅÍ¿¡°Ô\n½ºÇÃ·¡½Ã µ¥¹ÌÁö");
+				infoLabel->setString("Level 1\nê³µê²©ë ¥ 30\nìŠ¤í‚¬\nìŠ¤í”Œëž˜ì‹œ ë°ë¯¸ì§€\n0.20 ë°°\nì£¼ë³€ ëª¬ìŠ¤í„°ì—ê²Œ\nìŠ¤í”Œëž˜ì‹œ ë°ë¯¸ì§€");
 			}
 		}
 
@@ -274,7 +274,7 @@ void HeroStatu::doClick(Ref * pSender)
 				}
 				else
 				{
-					log("°­È­ ±Ý¾× ºÎÁ·");
+					log("ê°•í™” ê¸ˆì•¡ ë¶€ì¡±");
 				}
 			}
 			else if (gold >= 100)
@@ -284,7 +284,7 @@ void HeroStatu::doClick(Ref * pSender)
 			}
 			else
 			{
-				log("¼ÒÈ¯ ±Ý¾× ºÎÁ·");
+				log("ì†Œí™˜ ê¸ˆì•¡ ë¶€ì¡±");
 			}
 			
 		}
@@ -298,7 +298,7 @@ void HeroStatu::doClick(Ref * pSender)
 				}
 				else
 				{
-					log("°­È­ ±Ý¾× ºÎÁ·");
+					log("ê°•í™” ê¸ˆì•¡ ë¶€ì¡±");
 				}
 			}
 			else if (gold >= 200)
@@ -308,7 +308,7 @@ void HeroStatu::doClick(Ref * pSender)
 			}
 			else
 			{
-				log("¼ÒÈ¯ ±Ý¾× ºÎÁ·");
+				log("ì†Œí™˜ ê¸ˆì•¡ ë¶€ì¡±");
 			}
 		}
 		else if (clickHeroNum == 3)
@@ -321,7 +321,7 @@ void HeroStatu::doClick(Ref * pSender)
 				}
 				else
 				{
-					log("°­È­ ±Ý¾× ºÎÁ·");
+					log("ê°•í™” ê¸ˆì•¡ ë¶€ì¡±");
 				}
 			}
 			else if (gold >= 300)
@@ -331,17 +331,29 @@ void HeroStatu::doClick(Ref * pSender)
 			}
 			else
 			{
-				log("¼ÒÈ¯ ±Ý¾× ºÎÁ·");
+				log("ì†Œí™˜ ê¸ˆì•¡ ë¶€ì¡±");
 			}
 		}
 	}
 }
 
-void HeroStatu::resetHeroInfo(char* name, bool upgradeinfo, int cost)
+void HeroStatu::resetHeroInfo(std::string name, bool upgradeinfo, int cost)
 {
-
+	//const char * namec = name.c_str();
 	char namestr[20];
-	sprintf(namestr, name);
+	if (name == "Hero1")
+	{
+		sprintf(namestr, "Hero1");
+	}
+	else if (name == "Hero2")
+	{
+		sprintf(namestr, "Hero2");
+	}
+	else if (name == "Hero3")
+	{
+		sprintf(namestr, "Hero3");
+	}
+
 
 	char levelstr[20];
 	sprintf(levelstr, "%s_Level", namestr);
@@ -367,22 +379,22 @@ void HeroStatu::resetHeroInfo(char* name, bool upgradeinfo, int cost)
 	if (!hero)
 	{
 		char coststr[20];
-		sprintf(coststr, "¼ÒÈ¯\n%d", cost);
+		sprintf(coststr, "ì†Œí™˜\n%d", cost);
 		upgrade->setString(coststr);
 	}
 	else
 	{
 		char coststr[20];
-		sprintf(coststr, "°­È­\n%d", cost);
+		sprintf(coststr, "ê°•í™”\n%d", cost);
 		upgrade->setString(coststr);
 	}
 
-	char heroInfostr[100];
+	char heroInfostr[200];
 	if (name == "Hero1")
 	{
 		int attackPoint = 25 + ((level - 1) * 2);
 		int skillPoint = 5 + ((level - 1) * 1);
-		sprintf(heroInfostr, "Level %d\n°ø°Ý·Â %d(+2)\n½ºÅ³\n¹è½¬\n%d ÆÛ (+1 ÆÛ )\n°ø°Ý ´ë»óÀ»\n±âÀý ½ÃÅ´", level, attackPoint, skillPoint);
+		sprintf(heroInfostr, "Level %d\nê³µê²©ë ¥ %d(+2)\nìŠ¤í‚¬\në°°ì‰¬\n%d í¼ (+1 í¼ )\nê³µê²© ëŒ€ìƒì„\nê¸°ì ˆ ì‹œí‚´", level, attackPoint, skillPoint);
 		if (hero)
 		{
 			pHeroItem1->setOpacity(255.f);
@@ -395,7 +407,7 @@ void HeroStatu::resetHeroInfo(char* name, bool upgradeinfo, int cost)
 	{
 		int attackPoint = 20 + ((level - 1) * 3);
 		float skillPoint = 1.05 + ((level - 1) * 0.01);
-		sprintf(heroInfostr, "Level %d\n°ø°Ý·Â %d(+3)\n½ºÅ³\n´ë°ø Àü¹®\n%1.2f ¹è (+0.01 ¹è )\nºñÇà ¸ó½ºÅÍ¿¡°Ô\nµ¥¹ÌÁö Áõ°¡", level, attackPoint, skillPoint);
+		sprintf(heroInfostr, "Level %d\nê³µê²©ë ¥ %d(+3)\nìŠ¤í‚¬\nëŒ€ê³µ ì „ë¬¸\n%1.2f ë°° (+0.01 ë°° )\në¹„í–‰ ëª¬ìŠ¤í„°ì—ê²Œ\në°ë¯¸ì§€ ì¦ê°€", level, attackPoint, skillPoint);
 		if (hero)
 		{
 			pHeroItem2->setOpacity(255.f);
@@ -408,7 +420,7 @@ void HeroStatu::resetHeroInfo(char* name, bool upgradeinfo, int cost)
 	{
 		int attackPoint = 30 + ((level - 1) * 5);
 		float skillPoint = 0.20 + ((level - 1) * 0.02);
-		sprintf(heroInfostr, "Level %d\n°ø°Ý·Â %d(+5)\n½ºÅ³\n½ºÇÃ·¡½Ã µ¥¹ÌÁö\n%1.2f ¹è (+0.02 ¹è )\nÁÖº¯ ¸ó½ºÅÍ¿¡°Ô\n½ºÇÃ·¡½Ã µ¥¹ÌÁö", level, attackPoint, skillPoint);
+		sprintf(heroInfostr, "Level %d\nê³µê²©ë ¥ %d(+5)\nìŠ¤í‚¬\nìŠ¤í”Œëž˜ì‹œ ë°ë¯¸ì§€\n%1.2f ë°° (+0.02 ë°° )\nì£¼ë³€ ëª¬ìŠ¤í„°ì—ê²Œ\nìŠ¤í”Œëž˜ì‹œ ë°ë¯¸ì§€", level, attackPoint, skillPoint);
 		if (hero)
 		{
 			pHeroItem3->setOpacity(255.f);

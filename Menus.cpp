@@ -1,4 +1,4 @@
-#include "Menus.h"
+ï»¿#include "Menus.h"
 #include "Options.h"
 #include "GameStageScene.h"
 #include "StageSelectScene.h"
@@ -28,17 +28,17 @@ Menus::Menus(std::string SceneName)
 	winSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-	auto menubar = Sprite::create("Images/MenuButton/menubar.png");// 1024 x 66 »çÀÌÁî ±×¸²
+	auto menubar = Sprite::create("Images/MenuButton/menubar.png");// 1024 x 66 ì‚¬ì´ì¦ˆ ê·¸ë¦¼
 	menubar->setPosition(Vec2(winSize.width / 2, winSize.height + origin.y));
 	menubar->setAnchorPoint(Vec2(0.5, 1));
 	menubar->setTag(610);
 	addChild(menubar);
 
-	auto nowSceneNameLabel = LabelTTF::create(SceneName, "Arial", 20);
+	/*auto nowSceneNameLabel = LabelTTF::create(SceneName, "Arial", 20);
 	nowSceneNameLabel->setPosition(Vec2(winSize.width / 2, 0));
 	nowSceneNameLabel->setColor(Color3B::BLACK);
 	nowSceneNameLabel->setAnchorPoint(Vec2(0.5, 1));
-	menubar->addChild(nowSceneNameLabel);
+	menubar->addChild(nowSceneNameLabel);*/
 
 	if (nowSceneName == "GameStageScene" || nowSceneName == "InfinityStage")
 	{
@@ -140,7 +140,7 @@ void Menus::doClick(Ref* pSender)
 	int i = tItem->getTag();
 	if (i == 611)
 	{
-		log("¸Þ´º°¡ ¼±ÅÃµÇ¾ú½À´Ï´Ù.");
+		log("ë©”ë‰´ê°€ ì„ íƒë˜ì—ˆìŠµë‹ˆë‹¤.");
 		auto pScene = Options::createScene();
 		this->addChild(pScene, 3000);
 	}
