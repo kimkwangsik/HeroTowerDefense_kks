@@ -121,7 +121,7 @@ Menus::Menus(std::string SceneName)
 	char gold[10];
 	sprintf(gold, "%d", i);
 
-	goldLabel = LabelTTF::create(gold, "Arial", 20);
+	goldLabel = LabelTTF::create(gold, "fonts/arial.ttf", 20);
 
 	goldLabel->setPosition(Vec2(gold_crystal->getContentSize().width, gold_crystal->getContentSize().height/2));
 	goldLabel->setColor(Color3B::BLACK);
@@ -130,18 +130,6 @@ Menus::Menus(std::string SceneName)
 
 
 	this->schedule(schedule_selector(Menus::nowGold));
-
-	
-
-	/*auto gold = Sprite3D::create("gold.obj");
-	gold->setScale(2.0f);
-	gold->setPosition(Vec2(winSize.width/2, 5));
-	gold->setPositionZ(10.f);
-	gold->setColor(Color3B::YELLOW);
-	gold->setGlobalZOrder(10);
-	gold->setRotation3D(Vec3(-45, 0, -45));
-	menubar->addChild(gold);*/
-
 
 	return;
 }

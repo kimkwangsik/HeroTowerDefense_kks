@@ -35,7 +35,7 @@ public:
 
 	void doClick(Ref* pSender);
 
-	void resetHeroInfo(char * name, bool upgradeinfo, int cost);
+	void resetHeroInfo(char* name, bool upgradeinfo, int cost);
 };
 
 #endif // __HELLOWORLD_SCENE_H__
