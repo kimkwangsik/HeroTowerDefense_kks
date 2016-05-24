@@ -205,12 +205,17 @@ void Tower::towerTick(float a)
 			{
 				attackedMonster = obj;
 
-				auto ball = Sprite::create("Images/Button/scaled-at-25/b_More1.png");
+				auto ball = Sprite::create("Images/Tower/Green_Dagger.png");
+				Vec2 shootVector = obj->getPosition() - getPosition();
+				float shootAngle = shootVector.getAngle();
+				float cocosAngle = CC_RADIANS_TO_DEGREES(-1 * shootAngle);
+				ball->setRotation(cocosAngle+90);
+
 				ball->setPosition(getContentSize().width / 2, getContentSize().height / 2);
 				addChild(ball);
-				ball->runAction(Sequence::create(MoveBy::create(0.5, dis), RemoveSelf::create(), nullptr));
+				ball->runAction(Sequence::create(MoveBy::create(0.2, dis), RemoveSelf::create(), nullptr));
 
-				scheduleOnce(schedule_selector(Tower::attackDeley), 0.5f);
+				scheduleOnce(schedule_selector(Tower::attackDeley), 0.2f);
 
 				/*(*_pMonster).at(i)->hp -= _attackPower;
 				if ((*_pMonster).at(i)->hp <= 0)
@@ -239,7 +244,7 @@ void Tower::towerTick(float a)
 			{
 				//_attackedMonster = i;
 
-				auto ball = Sprite::create("Images/Button/scaled-at-25/b_Parameters.png");
+				auto ball = Sprite::create("Images/Tower/ice_ball.png");
 				ball->setPosition(getContentSize().width / 2, getContentSize().height / 2);
 				addChild(ball);
 				ball->runAction(Sequence::create(MoveBy::create(0.5, dis), RemoveSelf::create(), nullptr));
@@ -344,7 +349,15 @@ void Tower::attackDeley(float dt)
 					obj->speedDown = true;
 				}
 			}
-			obj->hp -= _attackPower;
+			if (_towerType == 2 && obj->_fly)
+			{
+				obj->hp -= (_attackPower * 1.5f);
+			}
+			else
+			{
+				obj->hp -= _attackPower;
+			}
+			
 			if (obj->hp <= 0)
 			{
 				(*nowStageGold) = (*nowStageGold) + obj->dropGold;
@@ -352,22 +365,5 @@ void Tower::attackDeley(float dt)
 				(*_pMonster).eraseObject(obj);
 			}
 		}
-	}
-
-	//if ((*_pMonster).at(inum)->boss == false)
-	//{
-	//	(*_pMonster).at(inum)->speed->setSpeed(0.5f);
-	//	(*_pMonster).at(inum)->setColor(Color3B::BLUE);
-	//	(*_pMonster).at(inum)->speedDown = true;
-	//}
-
-	//(*_pMonster).at(inum)->hp -= _attackPower;
-	//if ((*_pMonster).at(inum)->hp <= 0)
-	//{
-	//	(*nowStageGold) = (*nowStageGold) + (*_pMonster).at(inum)->dropGold;
-	//	(*nowMasicGauge) = (*nowMasicGauge) + 5;
-	//	(*_pMonster).eraseObject((*_pMonster).at(inum));
-	//}
-
-	
+	}	
 }

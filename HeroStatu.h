@@ -12,6 +12,8 @@ public:
 
 	CREATE_FUNC(HeroStatu);
 
+
+	bool touchMenu;
 	bool myhero1;
 	bool myhero2;
 	bool myhero3;

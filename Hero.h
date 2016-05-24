@@ -23,18 +23,32 @@ public:
 	void setHeroSetting();
 
 	void heroTick(float a);
+	void magicianMove(float dt);
+	void setDefTexture();
+	void setAnimation(cocos2d::Vec2 absDis, cocos2d::Vec2 dis);
+	void attackDeley(float dt);
 	cocos2d::Vec2 minDis;
 	cocos2d::Vec2 absMaxDis;
 	cocos2d::Vector<Monster*> *_pMonster;
 	Monster* nearMonster;
 	bool near1;
+	cocos2d::Vec2 magicainMoveVec;
 	float _attackPower;
+	Monster* attackedMonsterHero;
+
+
+	char animationStr1[100];
+	char animationStr2[100];
+	char animationStr3[100];
 	
 	void setpGold(int* _pnowStageGold);
 	void setpMasicGauge(int * _pmasicGauge);
 	int *nowStageGold;
 	int *nowMasicGauge;
 
+
+	cocos2d::Vec2 splashVec;
+	cocos2d::Vector<Monster*> _masicMonster;
 
 	//int towerUpgradeLevel;
 	//cocos2d::Sprite* b_Yes;
@@ -53,6 +67,7 @@ private:
 	int _heroType;
 	bool _setupBegan;
 	float _attackDelay;
+	int _level;
 };
 
 #endif //defined(__SpriteExtendEx__Monster__)//

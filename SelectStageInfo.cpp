@@ -38,7 +38,7 @@ SelectStageInfo::SelectStageInfo(int selectStage)
 	auto levelLabel = LabelTTF::create(level, "Arial", 20);
 	levelLabel->setPosition(Vec2(10, StageInfo->getContentSize().height-10));
 	levelLabel->setAnchorPoint(Vec2(0, 1));
-	//levelLabel->setColor(Color3B::BLACK);
+	levelLabel->setColor(Color3B::BLACK);
 	StageInfo->addChild(levelLabel, 1);
 	
 	//char levelsprite[20];
@@ -46,17 +46,16 @@ SelectStageInfo::SelectStageInfo(int selectStage)
 	//auto stageSprite = Sprite::create(levelsprite);
 	
 	auto stageSprite = Sprite::create("Images/stage/Level_1.PNG");
-	stageSprite->setPosition(Vec2(0, 0));
+	stageSprite->setPosition(Vec2(10, StageInfo->getContentSize().height - levelLabel->getContentSize().height - 10));
 	stageSprite->setAnchorPoint(Vec2(0, 1));
 
 	stageSprite->setScaleX(0.9f);
 	stageSprite->setScaleY(0.8f);
-	//stageSprite->setColor(Color3B::WHITE);
-	levelLabel->addChild(stageSprite);
+	StageInfo->addChild(stageSprite);
 
 	auto pMenuItem1 = MenuItemImage::create(
-		"Images/GameEnd/Game_btn_on.png",
-		"Images/GameEnd/Game_btn_down.png",
+		"Images/GameEnd/Game_btn_onX.png",
+		"Images/GameEnd/Game_btn_downX.png",
 		CC_CALLBACK_1(SelectStageInfo::doClick, this));
 	pMenuItem1->setPosition(Vec2(StageInfo->getContentSize().width / 4, 10));
 	pMenuItem1->setAnchorPoint(Vec2(0.5, 0));
@@ -65,12 +64,12 @@ SelectStageInfo::SelectStageInfo(int selectStage)
 	cancelMenu->setPosition(Vec2(pMenuItem1->getContentSize().width / 2,
 		pMenuItem1->getContentSize().height / 2));
 	//mainMenu->setAnchorPoint(Vec2(1, 0));
-	cancelMenu->setColor(Color3B::WHITE);
+	cancelMenu->setColor(Color3B::BLACK);
 	pMenuItem1->addChild(cancelMenu, 2);
 
 	auto pMenuItem2 = MenuItemImage::create(
-		"Images/GameEnd/Game_btn_on.png",
-		"Images/GameEnd/Game_btn_down.png",
+		"Images/GameEnd/Game_btn_onX.png",
+		"Images/GameEnd/Game_btn_downX.png",
 		CC_CALLBACK_1(SelectStageInfo::doClick, this));
 	pMenuItem2->setPosition(Vec2(StageInfo->getContentSize().width / 4 * 3, 10));
 	pMenuItem2->setAnchorPoint(Vec2(0.5, 0));
@@ -78,7 +77,7 @@ SelectStageInfo::SelectStageInfo(int selectStage)
 	auto startMenu = LabelTTF::create(" 시작 ", "Arial", 15);
 	startMenu->setPosition(Vec2(pMenuItem2->getContentSize().width / 2,
 		pMenuItem2->getContentSize().height / 2));
-	startMenu->setColor(Color3B::WHITE);
+	startMenu->setColor(Color3B::BLACK);
 	pMenuItem2->addChild(startMenu, 2);
 
 	pMenuItem3 = MenuItemImage::create(
@@ -91,7 +90,7 @@ SelectStageInfo::SelectStageInfo(int selectStage)
 	auto goldAdd = LabelTTF::create("골드\n추가", "Arial", 15);
 	goldAdd->setPosition(Vec2(pMenuItem3->getContentSize().width / 2,
 		pMenuItem3->getContentSize().height / 2));
-	goldAdd->setColor(Color3B::WHITE);
+	goldAdd->setColor(Color3B::BLACK);
 	pMenuItem3->addChild(goldAdd, 2);
 
 	pMenuItem4 = MenuItemImage::create(
@@ -104,11 +103,11 @@ SelectStageInfo::SelectStageInfo(int selectStage)
 	auto fullMasic = LabelTTF::create("마법\n충전", "Arial", 15);
 	fullMasic->setPosition(Vec2(pMenuItem4->getContentSize().width / 2,
 		pMenuItem4->getContentSize().height / 2));
-	fullMasic->setColor(Color3B::WHITE);
+	fullMasic->setColor(Color3B::BLACK);
 	pMenuItem4->addChild(fullMasic, 2);
 
-	pMenuItem1->setScaleX(2.5f);
-	pMenuItem2->setScaleX(2.5f);
+	//pMenuItem1->setScaleX(2.5f);
+	//pMenuItem2->setScaleX(2.5f);
 
 	pMenuItem1->setTag(621);
 	pMenuItem2->setTag(622);

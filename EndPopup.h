@@ -1,25 +1,24 @@
-﻿#ifndef __Options_H__
-#define __Options_H__
+#ifndef __EndPopup_H__
+#define __EndPopup_H__
 
 #include "cocos2d.h"
 
-class Options : public cocos2d::Layer
+class EndPopup : public cocos2d::Layer
 {
 public:
 	static cocos2d::Scene* createScene();
+	
+	EndPopup(std::string SceneName);
+	void doClick(Ref * pSender);
+	std::string nowSceneName;
 
-	virtual bool init();
-
-	CREATE_FUNC(Options);
+	//CREATE_FUNC(Menus);
 	cocos2d::Size winSize;
-
-	cocos2d::MenuItemFont* pMenuItem2;
-	cocos2d::MenuItemFont* pMenuItem3;
-
-	void doClick(Ref* pSender);
 	virtual void onEnter();
 	virtual void onExit();
 	virtual bool onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event);
+
+	//void abc();
 };
 
 #endif // __HELLOWORLD_SCENE_H__

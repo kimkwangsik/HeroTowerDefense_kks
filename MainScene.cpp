@@ -28,51 +28,19 @@ bool MainScene::init()
 	pScene->addChild(scenestr);
 	this->addChild(pScene,10);
 
-
 	VisibleWinSize = Director::getInstance()->getVisibleSize();
 
-	auto tmap = TMXTiledMap::create("TileMaps/Main.tmx");
+	auto MainBackGround = Sprite::create("TileMaps/Main.png");
+	MainBackGround->setPosition(Vec2(VisibleWinSize.width / 2, VisibleWinSize.height / 2));
+	MainBackGround->setAnchorPoint(Vec2(0.5, 0.5));
+	addChild(MainBackGround, -1);
 
-	tmap->setPosition(Vec2(
-		(VisibleWinSize.width / 2),
-		(VisibleWinSize.height / 2)
-		));
-
-	tmap->setAnchorPoint(Vec2(0.5, 0.5));
-
-	objects = tmap->getObjectGroup("ViaPoint");
-
-	ValueMap StageMode = objects->getObject("Stage");
-	ValueMap InfiniteMode = objects->getObject("Infinite");
-	ValueMap HeroMode = objects->getObject("Hero");
-
-	int StageX = StageMode["x"].asInt();
-	int StageY = StageMode["y"].asInt();
-
-	
-
-	/*auto fortress1 = Sprite::create("Images/Main/fortress.png");
-	fortress1->setPosition(Vec2(StageX, StageY));
-	fortress1->setScale(2.f);
-	tmap->addChild(fortress1);*/
-
-	int InfiniteX = InfiniteMode["x"].asInt();
-	int InfiniteY = InfiniteMode["y"].asInt();
-
-	/*auto magic_stones = Sprite::create("Images/Main/magic_stones.png");
-	magic_stones->setPosition(Vec2(InfiniteX, InfiniteY));
-	magic_stones->setScale(2.f);
-	tmap->addChild(magic_stones);*/
-
-	int HeroX = HeroMode["x"].asInt();
-	int HeroY = HeroMode["y"].asInt();
-
-	/*auto statue = Sprite::create("Images/Main/statue.png");
-	statue->setPosition(Vec2(HeroX, HeroY));
-	statue->setScale(2.f);
-	tmap->addChild(statue);*/
-
-	this->addChild(tmap, 0, 191);
+	int StageX = 329;
+	int StageY = 89;
+	int InfiniteX = 270;
+	int InfiniteY = 209;
+	int HeroX = 119;
+	int HeroY = 119;
 
 	auto fortress = MenuItemImage::create(
 		"Images/Main/fortress.png",
@@ -124,14 +92,6 @@ void MainScene::doClick(Ref* pSender)
 		stagenum->autorelease();
 		pScene->addChild(stagenum);
 		addChild(pScene, 4);
-
-		/*int have_gold = UserDefault::getInstance()->getIntegerForKey("have_gold");
-		have_gold = have_gold - 10;
-		if (have_gold < 0)
-		{
-			have_gold = 150;
-		}
-		UserDefault::getInstance()->setIntegerForKey("have_gold", have_gold);*/
 	}
 	if (i == 103)
 	{
@@ -141,11 +101,9 @@ void MainScene::doClick(Ref* pSender)
 
 }
 
-
 void MainScene::doNoClick(Ref* pSender)
 {
 	auto tItem = (MenuItem *)pSender;
 	int i = tItem->getTag();
 	log("%d번째 메뉴가 선택되었습니다.", i);
-
 }

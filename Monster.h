@@ -30,6 +30,8 @@ public:
 	bool boss;
 	bool speedDown;
 
+	int animationNum;
+
 	cocos2d::RepeatForever* rep;
 	
 

@@ -10,6 +10,7 @@ Monster::Monster(std::string monsterName)
 	, dropGold(1)
 	, _fly(false)
 	, boss(false)
+	, animationNum(10)
 {
 	bool b0k = initWithTexture(nullptr, Rect::ZERO);
 	if (b0k)
@@ -37,7 +38,7 @@ void Monster::onEnter()
 
 	auto animation = Animation::create();
 	animation->setDelayPerUnit(0.15f);
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < animationNum; i++)
 	{
 		char monsterFileName[50];
 		sprintf(monsterFileName, "Images/Monster/%s_walk/%d.png", myMonsterName.c_str(), i);

@@ -20,6 +20,9 @@ bool StageSelectScene::init()
 	{
 		return false;
 	}
+	auto visibleSize = Director::getInstance()->getVisibleSize();
+
+	
 
 	auto pScene1 = Menus::createScene();
 	auto scenestr1 = new Menus("StageSelectScene");
@@ -27,8 +30,12 @@ bool StageSelectScene::init()
 	pScene1->addChild(scenestr1);
 	this->addChild(pScene1, 3);
 
+	auto MainBackGround = Sprite::create("TileMaps/Main.png");
+	MainBackGround->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2));
+	MainBackGround->setAnchorPoint(Vec2(0.5, 0.5));
+	this->addChild(MainBackGround, 0);
+
 	maxStage = UserDefault::getInstance()->getIntegerForKey("clear_stage");
-	auto visibleSize = Director::getInstance()->getVisibleSize();
 
 	auto tableViewBackGround = Sprite::create("Images/tableViewBackGround.png");
 	tableViewBackGround->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2));

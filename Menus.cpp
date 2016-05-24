@@ -3,6 +3,7 @@
 #include "GameStageScene.h"
 #include "StageSelectScene.h"
 #include "MainScene.h"
+#include "EndPopup.h"
 
 USING_NS_CC;
 
@@ -116,7 +117,7 @@ Menus::Menus(std::string SceneName)
 
 
 	int i = UserDefault::getInstance()->getIntegerForKey("have_gold");
-	log("have_gold is %d", i);
+	//log("have_gold is %d", i);
 
 	char gold[10];
 	sprintf(gold, "%d", i);
@@ -148,13 +149,27 @@ void Menus::doClick(Ref* pSender)
 	{
 		if (nowSceneName == "GameStageScene")
 		{
-			auto pScene = StageSelectScene::createScene();
-			Director::getInstance()->replaceScene(pScene);
+			auto pScene = EndPopup::createScene();
+			auto scenestr = new EndPopup("GameStageScene");
+			scenestr->autorelease();
+			pScene->addChild(scenestr);
+			this->addChild(pScene, 3000);
 		}
 		else if (nowSceneName == "InfinityStage")
 		{
-			auto pScene = MainScene::createScene();
-			Director::getInstance()->replaceScene(pScene);
+			auto pScene = EndPopup::createScene();
+			auto scenestr = new EndPopup("InfinityStage");
+			scenestr->autorelease();
+			pScene->addChild(scenestr);
+			this->addChild(pScene, 3000);
+		}
+		else if (nowSceneName == "MainScene")
+		{
+			auto pScene = EndPopup::createScene();
+			auto scenestr = new EndPopup("MainScene");
+			scenestr->autorelease();
+			pScene->addChild(scenestr);
+			this->addChild(pScene, 3000);
 		}
 		else if (nowSceneName == "StageSelectScene")
 		{

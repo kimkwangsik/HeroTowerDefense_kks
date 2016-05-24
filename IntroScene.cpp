@@ -60,6 +60,18 @@ bool IntroScene::init()
 		UserDefault::getInstance()->setIntegerForKey("Hero3_Level", 0);
 		UserDefault::getInstance()->setIntegerForKey("have_gold", 2000);
 		UserDefault::getInstance()->setIntegerForKey("clear_stage", 0);
+		UserDefault::getInstance()->setBoolForKey("sound", true);
+		UserDefault::getInstance()->setBoolForKey("vibration", true);
+	}
+
+	bool soundon = UserDefault::getInstance()->getBoolForKey("sound");
+	if (soundon)
+	{
+
+	}
+	else
+	{
+		CocosDenshion::SimpleAudioEngine::getInstance()->pauseBackgroundMusic();
 	}
 
 	return true;
