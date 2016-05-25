@@ -5,6 +5,7 @@
 #include "Tower.h"
 #include "Monster.h"
 #include "Hero.h"
+#include "sqlite3.h"
 
 class GameStageScene : public cocos2d::LayerColor
 {
@@ -103,19 +104,28 @@ public:
 
 
 
+	std::string dbfileName;
 
-
+	int splNum;
+	std::string splName;
+	int splHp;
+	int splSpeed;
+	bool splFly;
+	bool splBoss;
+	int splAnimate;
+	int splgold;
 
 	void addMonster(int monNum);
 	void removeMonster(Monster* slime);
 	//cocos2d::Sequence* abcde;
 
-	cocos2d::Sequence* MoveAction(Monster* slime);
+	cocos2d::Sequence* MoveAction(Monster* slime , int speed);
 	cocos2d::Sequence* SequenceMoveAction(Monster* slime, int num, int max);
 	void attackBossMonsterStop(Monster * monster);
 	void attackBossMonster(Monster * monster);
 	cocos2d::Sequence* SequenceMonsterAdd(int num, int max);
 	cocos2d::Vector<cocos2d::MoveTo*> _Action;
+	std::vector<bool> _Actionbool;
 
 	cocos2d::Vector<Monster*> _monster;
 	cocos2d::Vector<Monster*> *_pMonster;

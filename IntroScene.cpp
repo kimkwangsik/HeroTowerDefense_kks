@@ -2,6 +2,7 @@
 #include "MainScene.h"
 #include "Menus.h"
 #include "SimpleAudioEngine.h"
+#include "assets-manager\AssetsManager.h"
 
 USING_NS_CC;
 
@@ -59,9 +60,45 @@ bool IntroScene::init()
 		UserDefault::getInstance()->setBoolForKey("Hero3", false);
 		UserDefault::getInstance()->setIntegerForKey("Hero3_Level", 0);
 		UserDefault::getInstance()->setIntegerForKey("have_gold", 2000);
-		UserDefault::getInstance()->setIntegerForKey("clear_stage", 0);
+		UserDefault::getInstance()->setIntegerForKey("clear_stage", 2);
 		UserDefault::getInstance()->setBoolForKey("sound", true);
 		UserDefault::getInstance()->setBoolForKey("vibration", true);
+
+
+		auto dbfileName = cocos2d::FileUtils::getInstance()->getWritablePath();
+		dbfileName = dbfileName + "monster.sqlite";
+
+		/*auto dbfileName1 = cocos2d::FileUtils::getInstance()->getWritablePath();
+		dbfileName = dbfileName + "monster1.sqlite";*/
+
+		std::string srcPath = "monster.sqlite";
+		std::string destPath = FileUtils::getInstance()->fullPathForFilename(dbfileName);
+
+		ssize_t size = 0;
+		unsigned char * data = FileUtils::getInstance()->getFileData(srcPath, "rb", &size);
+
+		FILE * destFile = fopen(destPath.c_str(), "wb+");
+		fwrite(data, sizeof(unsigned char), size, destFile);
+
+		fclose(destFile);
+		free(data);
+
+		
+
+		sqlite3* pDB = NULL;
+		char* errMsg = nullptr;
+		int result;
+
+		result = sqlite3_open(dbfileName.c_str(), &pDB);
+		if (result != SQLITE_OK)
+		{
+			log("Open Error : Code:%d  Msg:%s", result, errMsg);
+		}
+		else
+		{
+			log("ok");
+		}
+
 	}
 
 	bool soundon = UserDefault::getInstance()->getBoolForKey("sound");

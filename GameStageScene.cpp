@@ -114,7 +114,17 @@ GameStageScene::GameStageScene(int stagelevel)
 	draw_node->setPosition(Vec2(masicSprite->getContentSize().width/2, masicSprite->getContentSize().height / 2));
 	masicSprite->addChild(draw_node);
 	draw_node->drawCircle(Vec2(0, 0), 45, CC_DEGREES_TO_RADIANS(90), 50, false, Color4F(0, 1, 1, 1));
+
+
+	dbfileName = cocos2d::FileUtils::getInstance()->getWritablePath();
+	dbfileName = dbfileName + "monster.sqlite";
+
+
+	log("dbfileName %s", dbfileName.c_str());
+	//dbfileName = "monster.sqlite";
 	
+	
+
 	return;
 }
 
@@ -268,60 +278,73 @@ void GameStageScene::addMonster(int pMonNum)
 {
 	Vec2 startVec2 = _Vec2Point.at(0);
 	Monster* monster;
-
 	int monNum = pMonNum % 6;
-	float infinityHP = 1.0f;
-	if (nowStageLevel == 0)
+	if (monNum == 0)
 	{
-		infinityHP = 1 + (float)pMonNum / 10;
-		log("infinityHP : %f", infinityHP);
+		monNum = 6;
 	}
-	if (monNum == 1)
+
+	sqlite3* pDB = NULL;
+	char* errMsg = nullptr;
+	int result;
+
+	result = sqlite3_open(dbfileName.c_str(), &pDB);
+	if (result != SQLITE_OK)
 	{
-		monster = new Monster("greenslime");
-		monster->maxHp = 100.f * infinityHP;
-		monster->dropGold = 1;
+		log("Open Error : Code:%d  Msg:%s", result, errMsg);
 	}
-	else if (monNum == 2)
+	// select data
+	std::string sqlStr;
+	char sqlStrname[100];
+	sprintf(sqlStrname, "select num, name, hp, speed, fly, boss, animateNum, dropgold from info where num = %d", monNum);
+	sqlStr = sqlStrname;
+
+	//log("file %s", sqlStr.c_str());
+	sqlite3_stmt* statement;
+	if (sqlite3_prepare_v2(pDB, sqlStr.c_str(), -1, &statement, nullptr) == SQLITE_OK)
 	{
-		monster = new Monster("bat");
-		monster->animationNum = 4;
-		monster->_fly = true;
-		monster->maxHp = 120.f * infinityHP;
-		monster->dropGold = 1;
+		sqlite3_step(statement);
+		splNum = sqlite3_column_int(statement, 0);
+		splName = (char *)sqlite3_column_text(statement, 1);
+		splHp = sqlite3_column_int(statement, 2);
+		splSpeed = sqlite3_column_int(statement, 3);
+		splFly = sqlite3_column_int(statement, 4);
+		splBoss = sqlite3_column_int(statement, 5);
+		splAnimate = sqlite3_column_int(statement, 6);
+		splgold = sqlite3_column_int(statement, 7);
+		log("aaa %s", (char *)sqlite3_column_text(statement, 1));
 	}
-	else if (monNum == 3)
+	sqlite3_finalize(statement);
+
+	sqlite3_close(pDB);
+
+	//log("main %s", splName.c_str());
+
+
+	monster = new Monster(splName);
+	monster->animationNum = splAnimate;
+	monster->_fly = splFly;
+	monster->maxHp = splHp * (bossPhaseCount + 1);
+	monster->boss = splBoss;
+	monster->dropGold = splgold;
+	if (splBoss)
 	{
-		monster = new Monster("yellowslime");
-		monster->maxHp = 150.f * infinityHP;
-		monster->dropGold = 1;
+		monster->setScale(2.0f);
 	}
-	else if (monNum == 4)
-	{
-		monster = new Monster("redslime");
-		monster->maxHp = 180.f * infinityHP;
-		monster->dropGold = 2;
-	}
-	else if (monNum == 5)
-	{
-		monster = new Monster("undeadking");
-		monster->maxHp = 200.f * infinityHP;
-		monster->animationNum = 4;
-		monster->dropGold = 2;
-	}
-	else
-	{
-		monster = new Monster("minotaur");
-		monster->setScale(2.f);
-		monster->maxHp = 1000.f * infinityHP;
-		monster->boss = true;
-		monster->dropGold = 0;
-		bossPhaseCount++;
-	}
+	
+
+	/*monster = new Monster("blueslime");
+	monster->animationNum = 4;
+	monster->_fly = false;
+	monster->maxHp = 50;
+	monster->boss = false;
+	monster->dropGold = 1;
+
+	splSpeed = 30;*/
 	
 	monster->setAnchorPoint(Vec2(0.5, 0));
 	monster->setPosition(startVec2);
-	auto speed = Speed::create(MoveAction(monster), 1.0f);
+	auto speed = Speed::create(MoveAction(monster, splSpeed), 1.0f);
 	monster->sendSpeed(speed);
 	monster->runAction(speed);
 
@@ -330,7 +353,7 @@ void GameStageScene::addMonster(int pMonNum)
 	tmap->addChild(monster);
 }
 
-Sequence* GameStageScene::MoveAction(Monster* monster)
+Sequence* GameStageScene::MoveAction(Monster* monster, int speed)
 {
 	for (int i = 1; i < _Vec2Point.size(); i++)
 	{
@@ -341,15 +364,28 @@ Sequence* GameStageScene::MoveAction(Monster* monster)
 		float disY = (beforeVec2.y - afterVec2.y);
 
 		float dis = sqrt((disX*disX) + (disY*disY));
+		
+		float fullspeed = dis / speed;
+		//log("%f", fullspeed);
+		auto action = MoveTo::create(dis / speed, Vec2(afterVec2.x, afterVec2.y));
 
-		auto action = MoveTo::create(dis / 30.0f, Vec2(afterVec2.x, afterVec2.y));
-
+		if (disX >= 0)
+		{
+			_Actionbool.push_back(true);
+		}
+		else
+		{
+			_Actionbool.push_back(false);
+		}
+		
 		_Action.pushBack(action);
 	}
+	
 
-	auto myAction = Sequence::create(SequenceMoveAction(monster, 0, (_Vec2Point.size() - 2) + 1),
+	auto myAction = Sequence::create(SequenceMoveAction(monster, 0, (_Vec2Point.size() - 2) + 1), 
 		nullptr);
 
+	_Actionbool.clear();
 	_Action.clear();	// 액션 적용 하기 전에 _Action에 저장된 액션들을 지운다.
 
 	return myAction;
@@ -386,7 +422,7 @@ Sequence* GameStageScene::SequenceMoveAction(Monster* monster, int num , int max
 		}
 		else
 		{
-			auto nullseq = Sequence::create(DelayTime::create(0),
+			auto nullseq = Sequence::create(DelayTime::create(0), 
 				CallFunc::create(CC_CALLBACK_0(GameStageScene::removeMonster, this, monster)),
 				nullptr);
 			return nullseq;
@@ -396,9 +432,21 @@ Sequence* GameStageScene::SequenceMoveAction(Monster* monster, int num , int max
 	//현재 _Action의 액션을 순차적으로 가져온다 
 	auto actionBefore = _Action.at(num);
 
+	FlipX* flipXAction;
+	if (_Actionbool.at(num))
+	{
+		//log("true");
+		flipXAction = FlipX::create(false);
+	}
+	else
+	{
+		//log("false");
+		flipXAction = FlipX::create(true);
+	}
+
 	//위의 액션을 Sequence 에 추가후 다른_Action을 추가해줄 SequenceMoveAction() 함수를 재귀
 	auto myAction = Sequence::create(
-		actionBefore, SequenceMoveAction(monster, ++num , max), nullptr);
+		flipXAction, actionBefore, SequenceMoveAction(monster, ++num, max), nullptr);
 
 	//재귀 함수 호출이 완료되서 함수의 맨위에 있는 nullseq가 반환되면 재귀가 종료되며
 	//추가되어있는 Sequence 액션을 반환하여 몬스터에게 적용 시키게 된다.
@@ -604,6 +652,7 @@ void GameStageScene::bossTick(float f)
 	masicGaugeBar->setPercentage(masicGaugeNum);
 	if (nowStageLevel == 0 && _monster.size() == 0)
 	{
+		bossPhaseCount++;
 		gauge = 100;
 		gaugeBar->setPercentage(gauge);
 		phaseLabel->setString("rest phase");

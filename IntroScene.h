@@ -2,6 +2,7 @@
 #define __IntroScene_H__
 
 #include "cocos2d.h"
+#include "sqlite3.h"
 
 class IntroScene : public cocos2d::Layer
 {

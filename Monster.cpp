@@ -31,9 +31,11 @@ void Monster::onEnter()
 	hp = maxHp;
 	speedDown = true;
 
+	//log("monster %s", myMonsterName.c_str());
+
 	//기본 자세와 걷는 모션
 	char monsterFileName[50];
-	sprintf(monsterFileName, "Images/Monster/%s_walk/%d.png", myMonsterName.c_str(), 0);
+	sprintf(monsterFileName, "Images/Monster/%s/%d.png", myMonsterName.c_str(), 0);
 	setTexture(monsterFileName);
 
 	auto animation = Animation::create();
@@ -41,7 +43,7 @@ void Monster::onEnter()
 	for (int i = 0; i < animationNum; i++)
 	{
 		char monsterFileName[50];
-		sprintf(monsterFileName, "Images/Monster/%s_walk/%d.png", myMonsterName.c_str(), i);
+		sprintf(monsterFileName, "Images/Monster/%s/%d.png", myMonsterName.c_str(), i);
 		animation->addSpriteFrameWithFile(monsterFileName);
 	}
 	auto animate = Animate::create(animation);
