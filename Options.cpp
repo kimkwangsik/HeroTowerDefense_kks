@@ -2,7 +2,25 @@
 #include "SimpleAudioEngine.h"
 
 USING_NS_CC;
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+#include "platform/android/jni/JniHelper.h"
 
+void callJavaMethodOption(std::string func)
+{
+	JniMethodInfo t;
+
+	if (JniHelper::getStaticMethodInfo(t
+		, "org/cocos2dx/cpp/AppActivity"
+		, func.c_str()
+		, "()V"))
+	{
+		t.env->CallStaticVoidMethod(t.classID, t.methodID);
+		t.env->DeleteLocalRef(t.classID);
+	}
+}
+#else
+//#include "Util/dmob/LayerAdmob.h"
+#endif // (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
 Scene* Options::createScene()
 {
 	auto scene = Scene::create();
@@ -86,6 +104,7 @@ bool Options::init()
 }
 void Options::onEnter() {
 	Layer::onEnter();
+	doShow(this);
 	Director::getInstance()->pause();
 	auto listener = EventListenerTouchOneByOne::create();
 
@@ -97,6 +116,7 @@ void Options::onEnter() {
 }
 void Options::onExit() {
 	//_eventDispatcher->removeEventListenersForType(EventListener::Type::TOUCH_ONE_BY_ONE);
+	doHide(this);
 	Director::getInstance()->resume();
 	Layer::onExit();
 }
@@ -148,4 +168,22 @@ void Options::doClick(Ref* pSender)
 		}
 	}
 	
+}
+
+void Options::doShow(Ref* pSender)
+{
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+	callJavaMethodOption("ShowAdPopup");
+
+#endif
+
+}
+
+void Options::doHide(Ref* pSender)
+{
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+	callJavaMethodOption("HideAdPopup");
+
+#endif
+
 }

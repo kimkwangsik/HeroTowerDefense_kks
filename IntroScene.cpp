@@ -6,6 +6,26 @@
 
 USING_NS_CC;
 
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+#include "platform/android/jni/JniHelper.h"
+
+void callJavaMethodIntro(std::string func)
+{
+	JniMethodInfo t;
+
+	if (JniHelper::getStaticMethodInfo(t
+		, "org/cocos2dx/cpp/AppActivity"
+		, func.c_str()
+		, "()V"))
+	{
+		t.env->CallStaticVoidMethod(t.classID, t.methodID);
+		t.env->DeleteLocalRef(t.classID);
+	}
+}
+#else
+//#include "Util/dmob/LayerAdmob.h"
+#endif // (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+
 Scene* IntroScene::createScene()
 {
 	auto scene = Scene::create();
@@ -43,7 +63,7 @@ bool IntroScene::init()
 	createKnight(1);
 
 	//항상 처음 실행 하게 만드는 이벤트
-	UserDefault::getInstance()->setBoolForKey("Start_First", false);
+	//UserDefault::getInstance()->setBoolForKey("Start_First", false);
 
 	bool start_First = UserDefault::getInstance()->getBoolForKey("Start_First");
 	if (start_First)
@@ -59,8 +79,8 @@ bool IntroScene::init()
 		UserDefault::getInstance()->setIntegerForKey("Hero2_Level", 0);
 		UserDefault::getInstance()->setBoolForKey("Hero3", false);
 		UserDefault::getInstance()->setIntegerForKey("Hero3_Level", 0);
-		UserDefault::getInstance()->setIntegerForKey("have_gold", 2000);
-		UserDefault::getInstance()->setIntegerForKey("clear_stage", 2);
+		UserDefault::getInstance()->setIntegerForKey("have_gold", 50);
+		UserDefault::getInstance()->setIntegerForKey("clear_stage", 0);
 		UserDefault::getInstance()->setBoolForKey("sound", true);
 		UserDefault::getInstance()->setBoolForKey("vibration", true);
 
@@ -68,11 +88,8 @@ bool IntroScene::init()
 		auto dbfileName = cocos2d::FileUtils::getInstance()->getWritablePath();
 		dbfileName = dbfileName + "monster.sqlite";
 
-		/*auto dbfileName1 = cocos2d::FileUtils::getInstance()->getWritablePath();
-		dbfileName = dbfileName + "monster1.sqlite";*/
-
-		std::string srcPath = "monster.sqlite";
-		std::string destPath = FileUtils::getInstance()->fullPathForFilename(dbfileName);
+		std::string srcPath = FileUtils::getInstance()->fullPathForFilename("data/monster.sqlite");
+		std::string destPath = dbfileName;
 
 		ssize_t size = 0;
 		unsigned char * data = FileUtils::getInstance()->getFileData(srcPath, "rb", &size);
@@ -82,23 +99,6 @@ bool IntroScene::init()
 
 		fclose(destFile);
 		free(data);
-
-		
-
-		sqlite3* pDB = NULL;
-		char* errMsg = nullptr;
-		int result;
-
-		result = sqlite3_open(dbfileName.c_str(), &pDB);
-		if (result != SQLITE_OK)
-		{
-			log("Open Error : Code:%d  Msg:%s", result, errMsg);
-		}
-		else
-		{
-			log("ok");
-		}
-
 	}
 
 	bool soundon = UserDefault::getInstance()->getBoolForKey("sound");
@@ -156,6 +156,9 @@ void IntroScene::onEnter() {
 }
 void IntroScene::onExit() {
 	_eventDispatcher->removeEventListener(introListener);
+
+	//나갈때 광고 끄기
+	doHide(this);
 	Layer::onExit();
 }
 bool IntroScene::onTouchBegan(Touch* touch, Event* event) {
@@ -179,4 +182,13 @@ bool IntroScene::onTouchBegan(Touch* touch, Event* event) {
 	Director::getInstance()->replaceScene(pScene);
 
 	return true;
+}
+
+void IntroScene::doHide(Ref* pSender)
+{
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+	callJavaMethodIntro("HideAdPopup");
+
+#endif
+
 }

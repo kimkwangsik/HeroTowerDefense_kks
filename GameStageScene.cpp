@@ -21,7 +21,7 @@ GameStageScene::GameStageScene(int stagelevel)
 	{
 		return;
 	}
-
+	srand((int)time(NULL));
 	phaseLevel = 0;
 
 	log("stop");
@@ -43,26 +43,7 @@ GameStageScene::GameStageScene(int stagelevel)
 	winSize = Director::getInstance()->getWinSize();
 	VisibleWinSize = Director::getInstance()->getVisibleSize();
 	origin = Director::getInstance()->getVisibleOrigin();
-
-	/*
-	char winSizeStr[50];
-	sprintf(winSizeStr, "%f , %f", winSize.width, winSize.height);
 	
-	char VisibleWinSizeStr[50];
-	sprintf(VisibleWinSizeStr, "%f , %f", VisibleWinSize.width, VisibleWinSize.height);
-
-	auto Label = LabelTTF::create(winSizeStr, "Arial", 20);
-	Label->setPosition(Vec2(winSize.width / 2, winSize.height / 2));
-	Label->setAnchorPoint(Vec2(0.5, 0.5));
-	Label->setColor(Color3B::BLACK);
-	addChild(Label, 2);
-
-	auto Label1 = LabelTTF::create(VisibleWinSizeStr, "Arial", 20);
-	Label1->setPosition(Vec2(VisibleWinSize.width / 2, VisibleWinSize.height / 2));
-	Label1->setAnchorPoint(Vec2(0.5, 0.5));
-	Label1->setColor(Color3B::RED);
-	addChild(Label1, 2);*/
-
 	auto pScene = Menus::createScene();
 	
 	if (stagelevel == 0)
@@ -118,12 +99,6 @@ GameStageScene::GameStageScene(int stagelevel)
 
 	dbfileName = cocos2d::FileUtils::getInstance()->getWritablePath();
 	dbfileName = dbfileName + "monster.sqlite";
-
-
-	log("dbfileName %s", dbfileName.c_str());
-	//dbfileName = "monster.sqlite";
-	
-	
 
 	return;
 }
@@ -255,7 +230,7 @@ void GameStageScene::getOption(bool gold, bool masic)
 
 }
 
-Sequence* GameStageScene::SequenceMonsterAdd(int num, int max)
+Sequence* GameStageScene::SequenceMonsterAdd(int num, int max , int monNum)
 {
 	if (num == max)
 	{
@@ -264,12 +239,12 @@ Sequence* GameStageScene::SequenceMonsterAdd(int num, int max)
 	}
 
 	auto addAction = Sequence::create(
-		CallFunc::create(CC_CALLBACK_0(GameStageScene::addMonster, this, phaseLevel)),
+		CallFunc::create(CC_CALLBACK_0(GameStageScene::addMonster, this, monNum)),
 		DelayTime::create(1),
 		nullptr);
 
 	auto myAction = Sequence::create(
-		addAction, SequenceMonsterAdd(++num, max), nullptr);
+		addAction, SequenceMonsterAdd(++num, max, monNum), nullptr);
 
 	return myAction;
 }
@@ -278,11 +253,6 @@ void GameStageScene::addMonster(int pMonNum)
 {
 	Vec2 startVec2 = _Vec2Point.at(0);
 	Monster* monster;
-	int monNum = pMonNum % 6;
-	if (monNum == 0)
-	{
-		monNum = 6;
-	}
 
 	sqlite3* pDB = NULL;
 	char* errMsg = nullptr;
@@ -296,7 +266,7 @@ void GameStageScene::addMonster(int pMonNum)
 	// select data
 	std::string sqlStr;
 	char sqlStrname[100];
-	sprintf(sqlStrname, "select num, name, hp, speed, fly, boss, animateNum, dropgold from info where num = %d", monNum);
+	sprintf(sqlStrname, "select num, name, hp, speed, fly, boss, animateNum, dropgold from info where num = %d", pMonNum);
 	sqlStr = sqlStrname;
 
 	//log("file %s", sqlStr.c_str());
@@ -312,14 +282,10 @@ void GameStageScene::addMonster(int pMonNum)
 		splBoss = sqlite3_column_int(statement, 5);
 		splAnimate = sqlite3_column_int(statement, 6);
 		splgold = sqlite3_column_int(statement, 7);
-		log("aaa %s", (char *)sqlite3_column_text(statement, 1));
 	}
 	sqlite3_finalize(statement);
 
 	sqlite3_close(pDB);
-
-	//log("main %s", splName.c_str());
-
 
 	monster = new Monster(splName);
 	monster->animationNum = splAnimate;
@@ -331,16 +297,6 @@ void GameStageScene::addMonster(int pMonNum)
 	{
 		monster->setScale(2.0f);
 	}
-	
-
-	/*monster = new Monster("blueslime");
-	monster->animationNum = 4;
-	monster->_fly = false;
-	monster->maxHp = 50;
-	monster->boss = false;
-	monster->dropGold = 1;
-
-	splSpeed = 30;*/
 	
 	monster->setAnchorPoint(Vec2(0.5, 0));
 	monster->setPosition(startVec2);
@@ -365,8 +321,6 @@ Sequence* GameStageScene::MoveAction(Monster* monster, int speed)
 
 		float dis = sqrt((disX*disX) + (disY*disY));
 		
-		float fullspeed = dis / speed;
-		//log("%f", fullspeed);
 		auto action = MoveTo::create(dis / speed, Vec2(afterVec2.x, afterVec2.y));
 
 		if (disX >= 0)
@@ -532,7 +486,7 @@ void GameStageScene::attackBossMonster(Monster* monster)
 		unscheduleAllSelectors();
 
 		auto pScene = GameEnd::createScene();
-		auto stageResult = new GameEnd(nowStageLevel, _heart.size());
+		auto stageResult = new GameEnd(nowStageLevel, _heart.size(), phaseLevel);
 		stageResult->autorelease();
 		pScene->addChild(stageResult);
 
@@ -599,7 +553,7 @@ void GameStageScene::removeMonster(Monster* monster)
 				unscheduleAllSelectors();
 
 				auto pScene = GameEnd::createScene();
-				auto stageResult = new GameEnd(nowStageLevel, _heart.size());
+				auto stageResult = new GameEnd(nowStageLevel, _heart.size(), phaseLevel);
 				stageResult->autorelease();
 				pScene->addChild(stageResult);
 
@@ -635,13 +589,64 @@ void GameStageScene::myTick(float f)
 		char phase[20];
 		sprintf(phase, "%d phase", phaseLevel - bossPhaseCount);
 		phaseLabel->setString(phase);
-		runAction(SequenceMonsterAdd(0, MONSTERCOUNT));
+
+		int monNum;
+		if (nowStageLevel == 0)
+		{
+			/*if (phaseLevel % 6 == 0)
+			{
+				int a = 1;
+				do
+				{
+					a = rand() % 6;
+				} while (a % 6 != 0);
+				monNum = a + 6;
+			}
+			else {*/
+				int a = 0;
+				do
+				{
+					a = rand() % 6;
+				} while (a % 6 == 0);
+				monNum = a;
+		//	}
+		}
+		else
+		{
+			monNum = phaseLevel % 6;
+			if (monNum == 0)
+			{
+				monNum = 6;
+			}
+		}
+
+		runAction(SequenceMonsterAdd(0, MONSTERCOUNT, monNum));
 	}
 	if (gauge < 0 && 5 == phase)
 	{
 		phaseLevel++;
 		phaseLabel->setString("BOSS phase");
-		runAction(SequenceMonsterAdd(0, 1));
+
+		int monNum;
+		if (nowStageLevel == 0)
+		{
+			int a = 0;
+			do
+			{
+				a = rand() % 6;
+			} while (a % 6 != 0);
+			monNum = a + 6;
+		}
+		else
+		{
+			monNum = phaseLevel % 6;
+			if (monNum == 0)
+			{
+				monNum = 6;
+			}
+		}
+
+		runAction(SequenceMonsterAdd(0, 1, monNum));
 		this->unschedule(schedule_selector(GameStageScene::myTick));
 		this->schedule(schedule_selector(GameStageScene::bossTick));
 	}
@@ -666,7 +671,7 @@ void GameStageScene::bossTick(float f)
 		log("clear!!");
 
 		auto pScene = GameEnd::createScene();
-		auto stageResult = new GameEnd(nowStageLevel, _heart.size());
+		auto stageResult = new GameEnd(nowStageLevel, _heart.size(), phaseLevel);
 		stageResult->autorelease();
 		pScene->addChild(stageResult);
 
@@ -800,7 +805,7 @@ void GameStageScene::onTouchEnded(Touch* touch, Event* event)
 			_magictouchPoint = tmapConvertPoint;
 
 			auto cache = SpriteFrameCache::getInstance();
-			cache->addSpriteFramesWithFile("fx_f3_starsfury.plist");
+			cache->addSpriteFramesWithFile("Images/spell/fx_f3_starsfury.plist");
 
 			Vector<SpriteFrame*> animFrames;
 
@@ -872,7 +877,7 @@ void GameStageScene::onTouchEnded(Touch* touch, Event* event)
 		else if (masicTpye == 2)
 		{
 			auto cache = SpriteFrameCache::getInstance();
-			cache->addSpriteFramesWithFile("fx_f6_chromaticcold.plist");
+			cache->addSpriteFramesWithFile("Images/spell/fx_f6_chromaticcold.plist");
 
 			Vector<SpriteFrame*> animFrames;
 

@@ -17,6 +17,8 @@ public:
 	cocos2d::MenuItemFont* pMenuItem3;
 
 	void doClick(Ref* pSender);
+	void doShow(Ref * pSender);
+	void doHide(Ref * pSender);
 	virtual void onEnter();
 	virtual void onExit();
 	virtual bool onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event);

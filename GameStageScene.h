@@ -123,7 +123,7 @@ public:
 	cocos2d::Sequence* SequenceMoveAction(Monster* slime, int num, int max);
 	void attackBossMonsterStop(Monster * monster);
 	void attackBossMonster(Monster * monster);
-	cocos2d::Sequence* SequenceMonsterAdd(int num, int max);
+	cocos2d::Sequence* SequenceMonsterAdd(int num, int max, int monNum);
 	cocos2d::Vector<cocos2d::MoveTo*> _Action;
 	std::vector<bool> _Actionbool;
 

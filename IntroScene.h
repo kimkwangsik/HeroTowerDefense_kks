@@ -23,6 +23,8 @@ public:
 	virtual void onExit();
 	virtual bool onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event);
 
+	void doHide(Ref * pSender);
+
 	void createKnight(float a);
 };
 

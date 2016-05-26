@@ -1,4 +1,4 @@
-#ifndef __EndPopup_H__
+﻿#ifndef __EndPopup_H__
 #define __EndPopup_H__
 
 #include "cocos2d.h"
@@ -10,6 +10,8 @@ public:
 	
 	EndPopup(std::string SceneName);
 	void doClick(Ref * pSender);
+	void doShow(Ref * pSender);
+	void doHide(Ref * pSender);
 	std::string nowSceneName;
 
 	//CREATE_FUNC(Menus);

@@ -1,7 +1,27 @@
-#include "EndPopup.h"
+ï»¿#include "EndPopup.h"
 #include "MainScene.h"
 
 USING_NS_CC;
+
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+#include "platform/android/jni/JniHelper.h"
+
+void callJavaMethodEndPopup(std::string func)
+{
+	JniMethodInfo t;
+
+	if (JniHelper::getStaticMethodInfo(t
+		, "org/cocos2dx/cpp/AppActivity"
+		, func.c_str()
+		, "()V"))
+	{
+		t.env->CallStaticVoidMethod(t.classID, t.methodID);
+		t.env->DeleteLocalRef(t.classID);
+	}
+}
+#else
+//#include "Util/dmob/LayerAdmob.h"
+#endif // (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
 
 Scene* EndPopup::createScene()
 {
@@ -24,7 +44,7 @@ EndPopup::EndPopup(std::string SceneName)
 	endmenu->setAnchorPoint(Vec2(0.5, 0.5));
 	addChild(endmenu);
 
-	auto endLabel = LabelTTF::create("°ÔÀÓÀ» Á¾·á\nÇÏ½Ã°Ú½À´Ï±î?", "Helvetica", 20.0);
+	auto endLabel = LabelTTF::create("ê²Œìž„ì„ ì¢…ë£Œ\ní•˜ì‹œê² ìŠµë‹ˆê¹Œ?", "Helvetica", 20.0);
 	endLabel->setPosition(Vec2(endmenu->getContentSize().width/2, endmenu->getContentSize().height - 10));
 	endLabel->setAnchorPoint(Vec2(0.5, 1));
 	endLabel->setColor(Color3B::BLACK);
@@ -32,7 +52,7 @@ EndPopup::EndPopup(std::string SceneName)
 
 	if (nowSceneName != "MainScene")
 	{
-		endLabel->setString("¸ÞÀÎ È­¸éÀ¸·Î\nµ¹¾Æ°©´Ï´Ù.");
+		endLabel->setString("ë©”ì¸ í™”ë©´ìœ¼ë¡œ\nëŒì•„ê°‘ë‹ˆë‹¤.");
 	}
 
 	auto pMenuItem1 = MenuItemImage::create(
@@ -62,6 +82,7 @@ EndPopup::EndPopup(std::string SceneName)
 
 void EndPopup::onEnter() {
 	Layer::onEnter();
+	doShow(this);
 	Director::getInstance()->pause();
 	auto listener = EventListenerTouchOneByOne::create();
 
@@ -72,6 +93,7 @@ void EndPopup::onEnter() {
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
 }
 void EndPopup::onExit() {
+	doHide(this);
 	//_eventDispatcher->removeEventListenersForType(EventListener::Type::TOUCH_ONE_BY_ONE);
 	Director::getInstance()->resume();
 	Layer::onExit();
@@ -104,4 +126,22 @@ void EndPopup::doClick(Ref* pSender)
 		this->removeFromParentAndCleanup(true);
 		log("No");
 	}
+}
+
+void EndPopup::doShow(Ref* pSender)
+{
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+	callJavaMethodEndPopup("ShowAdPopup");
+
+#endif
+
+}
+
+void EndPopup::doHide(Ref* pSender)
+{
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+	callJavaMethodEndPopup("HideAdPopup");
+
+#endif
+
 }
