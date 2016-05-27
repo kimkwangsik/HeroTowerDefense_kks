@@ -22,9 +22,8 @@ GameStageScene::GameStageScene(int stagelevel)
 		return;
 	}
 	srand((int)time(NULL));
-	phaseLevel = 0;
+	phaseLevel = 5;
 
-	log("stop");
 	nowStageLevel = stagelevel;
 
 	nowStageGold = 30;
@@ -433,6 +432,12 @@ void GameStageScene::attackBossMonster(Monster* monster)
 	{
 		auto hrartObj = (Sprite*)_heart.at(_heart.size() - 1);
 		hrartObj->removeFromParent();
+		bool soundon = UserDefault::getInstance()->getBoolForKey("sound");
+		if (soundon)
+		{
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sound/Effect_Sound/Boss_Attack.wav"); 
+		}
+
 		bool vibon = UserDefault::getInstance()->getBoolForKey("vibration");
 		if (vibon)
 		{
@@ -485,6 +490,7 @@ void GameStageScene::attackBossMonster(Monster* monster)
 
 		unscheduleAllSelectors();
 
+		CocosDenshion::SimpleAudioEngine::getInstance()->stopBackgroundMusic();
 		auto pScene = GameEnd::createScene();
 		auto stageResult = new GameEnd(nowStageLevel, _heart.size(), phaseLevel);
 		stageResult->autorelease();
@@ -552,6 +558,7 @@ void GameStageScene::removeMonster(Monster* monster)
 				
 				unscheduleAllSelectors();
 
+				CocosDenshion::SimpleAudioEngine::getInstance()->stopBackgroundMusic();
 				auto pScene = GameEnd::createScene();
 				auto stageResult = new GameEnd(nowStageLevel, _heart.size(), phaseLevel);
 				stageResult->autorelease();
@@ -670,6 +677,7 @@ void GameStageScene::bossTick(float f)
 	{
 		log("clear!!");
 
+		CocosDenshion::SimpleAudioEngine::getInstance()->stopBackgroundMusic();
 		auto pScene = GameEnd::createScene();
 		auto stageResult = new GameEnd(nowStageLevel, _heart.size(), phaseLevel);
 		stageResult->autorelease();
@@ -714,7 +722,6 @@ void GameStageScene::onEnter() {
 void GameStageScene::onExit() {
 	_eventDispatcher->removeEventListener(_listenter);
 	log("onExit()");
-	CocosDenshion::SimpleAudioEngine::getInstance()->stopBackgroundMusic();
 	CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("Sound/Music/Woodland Fantasy.mp3", true);
 	bool soundon = UserDefault::getInstance()->getBoolForKey("sound");
 	if (soundon)
@@ -907,7 +914,11 @@ void GameStageScene::onTouchEnded(Touch* touch, Event* event)
 			auto seq = Sequence::create(animate, RemoveSelf::create(), nullptr);
 			pMan->runAction(seq);
 			/////////
-
+			bool soundon = UserDefault::getInstance()->getBoolForKey("sound");
+			if (soundon)
+			{
+				CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sound/Effect_Sound/Ice_attack_2.wav");
+			}
 
 			for (int i = 0; i != _monster.size(); i++)
 			{
@@ -918,7 +929,7 @@ void GameStageScene::onTouchEnded(Touch* touch, Event* event)
 				Vec2 absDis = Vec2(fabs(dis.x), fabs(dis.y));
 				if (absDis.x <= 45 && absDis.y <= 45)
 				{
-					monsterObj->hp -= 5;
+					monsterObj->hp -= monsterObj->maxHp / 5;
 					monsterObj->speedDown = true;
 					monsterObj->speed->setSpeed(0.0f);
 					monsterObj->setColor(Color3B::YELLOW);
@@ -1423,6 +1434,11 @@ void GameStageScene::trueFalse(float f)
 void GameStageScene::magicDeley(float dt)
 {
 	auto tmapConvertPoint = _magictouchPoint;
+	bool soundon = UserDefault::getInstance()->getBoolForKey("sound");
+	if (soundon)
+	{
+		CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sound/Effect_Sound/Fire_impact_1.wav");
+	}
 	for (int i = 0; i != _monster.size(); i++)
 	{
 		auto monsterObj = (Monster*)_monster.at(i);
@@ -1432,7 +1448,7 @@ void GameStageScene::magicDeley(float dt)
 		Vec2 absDis = Vec2(fabs(dis.x), fabs(dis.y));
 		if (absDis.x <= 45 && absDis.y <= 45)
 		{
-			monsterObj->hp -= 100;
+			monsterObj->hp -= monsterObj->maxHp / 2;
 			if (monsterObj->hp <= 0)
 			{
 				_masicMonster.pushBack(monsterObj);

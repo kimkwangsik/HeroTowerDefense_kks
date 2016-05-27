@@ -1,5 +1,6 @@
 ﻿#include "SelectStageInfo.h"
 #include "GameStageScene.h"
+#include "SimpleAudioEngine.h"
 
 USING_NS_CC;
 
@@ -18,6 +19,9 @@ SelectStageInfo::SelectStageInfo(int selectStage)
 	{
 		return;
 	}
+
+	soundon = UserDefault::getInstance()->getBoolForKey("sound");
+
 	menuItem3 = false;
 	menuItem4 = false;
 	_selectStage = selectStage;
@@ -161,6 +165,10 @@ void SelectStageInfo::doClick(Ref* pSender)
 	}
 	else if (i == 622)
 	{
+		if (soundon)
+		{
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sound/Effect_Sound/Menu.wav");
+		}
 		auto pScene = GameStageScene::createScene();
 		auto stagenum = new GameStageScene(_selectStage);
 		stagenum->getOption(menuItem3, menuItem4);

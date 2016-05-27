@@ -49,11 +49,20 @@ bool IntroScene::init()
 
 	addChild(Back_Castel, 0);
 
-	auto pLabel = LabelTTF::create("touch to start",
-		"Arial", 34);
+	auto logo = Sprite::create("Images/Logo/HeroTowerDefense3.png");
+	logo->setPosition(Vec2(winSize.width / 2, winSize.height / 4 * 3));
+	//logo->setScale(0.5f);
+	logo->setAnchorPoint(Vec2(0.5, 0.7));
+	this->addChild(logo);
 
-	pLabel->setPosition(Vec2(winSize.width - 20, winSize.height / 2));
-	pLabel->setColor(Color3B::BLACK);
+
+	/*auto pLabel = LabelTTF::create("touch to start",
+		"Arial", 34);*/
+
+	auto pLabel = Sprite::create("Images/Logo/touch_to_start1.png");
+
+	pLabel->setPosition(Vec2(winSize.width - 20, winSize.height / 3));
+	//pLabel->setColor(Color3B::BLACK);
 	pLabel->setAnchorPoint(Vec2(1, 0.5));
 	pLabel->setOpacity(255.0);
 	this->addChild(pLabel);
@@ -63,7 +72,7 @@ bool IntroScene::init()
 	createKnight(1);
 
 	//항상 처음 실행 하게 만드는 이벤트
-	//UserDefault::getInstance()->setBoolForKey("Start_First", false);
+	UserDefault::getInstance()->setBoolForKey("Start_First", false);
 
 	bool start_First = UserDefault::getInstance()->getBoolForKey("Start_First");
 	if (start_First)
@@ -79,7 +88,7 @@ bool IntroScene::init()
 		UserDefault::getInstance()->setIntegerForKey("Hero2_Level", 0);
 		UserDefault::getInstance()->setBoolForKey("Hero3", false);
 		UserDefault::getInstance()->setIntegerForKey("Hero3_Level", 0);
-		UserDefault::getInstance()->setIntegerForKey("have_gold", 50);
+		UserDefault::getInstance()->setIntegerForKey("have_gold", 1000);
 		UserDefault::getInstance()->setIntegerForKey("clear_stage", 0);
 		UserDefault::getInstance()->setBoolForKey("sound", true);
 		UserDefault::getInstance()->setBoolForKey("vibration", true);
@@ -156,7 +165,11 @@ void IntroScene::onEnter() {
 }
 void IntroScene::onExit() {
 	_eventDispatcher->removeEventListener(introListener);
-
+	bool soundon = UserDefault::getInstance()->getBoolForKey("sound");
+	if (soundon)
+	{
+		CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sound/Effect_Sound/Menu.wav");
+	}
 	//나갈때 광고 끄기
 	doHide(this);
 	Layer::onExit();

@@ -1,5 +1,6 @@
 ﻿#include "HeroStatu.h"
 #include "Menus.h"
+#include "SimpleAudioEngine.h"
 
 USING_NS_CC;
 
@@ -168,6 +169,7 @@ void HeroStatu::doClick(Ref * pSender)
 	bool hero1 = UserDefault::getInstance()->getBoolForKey("Hero1");
 	bool hero2 = UserDefault::getInstance()->getBoolForKey("Hero2");
 	bool hero3 = UserDefault::getInstance()->getBoolForKey("Hero3");
+	bool soundon = UserDefault::getInstance()->getBoolForKey("sound");
 	if (i == 411)
 	{
 		touchMenu = true;
@@ -273,6 +275,7 @@ void HeroStatu::doClick(Ref * pSender)
 	}
 	else if (i == 422 && touchMenu)
 	{
+		
 		if (clickHeroNum == 1)
 		{
 			if (hero1)
@@ -280,9 +283,17 @@ void HeroStatu::doClick(Ref * pSender)
 				if (gold >= 100)
 				{
 					resetHeroInfo("Hero1", true, 100);
+					if (soundon)
+					{
+						CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sound/Effect_Sound/Item.wav");
+					}
 				}
 				else
 				{
+					if (soundon)
+					{
+						CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sound/Effect_Sound/Oooo.wav");
+					}
 					log("강화 금액 부족");
 				}
 			}
@@ -290,9 +301,17 @@ void HeroStatu::doClick(Ref * pSender)
 			{
 				resetHeroInfo("Hero1", true, 100);
 				resetHeroInfo("Hero1", false, 100);
+				if (soundon)
+				{
+					CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sound/Effect_Sound/Item.wav");
+				}
 			}
 			else
 			{
+				if (soundon)
+				{
+					CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sound/Effect_Sound/Oooo.wav");
+				}
 				log("소환 금액 부족");
 			}
 			
@@ -304,9 +323,17 @@ void HeroStatu::doClick(Ref * pSender)
 				if (gold >= 200)
 				{
 					resetHeroInfo("Hero2", true, 200);
+					if (soundon)
+					{
+						CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sound/Effect_Sound/Item.wav");
+					}
 				}
 				else
 				{
+					if (soundon)
+					{
+						CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sound/Effect_Sound/Oooo.wav");
+					}
 					log("강화 금액 부족");
 				}
 			}
@@ -314,9 +341,17 @@ void HeroStatu::doClick(Ref * pSender)
 			{
 				resetHeroInfo("Hero2", true, 200);
 				resetHeroInfo("Hero2", false, 200);
+				if (soundon)
+				{
+					CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sound/Effect_Sound/Item.wav");
+				}
 			}
 			else
 			{
+				if (soundon)
+				{
+					CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sound/Effect_Sound/Oooo.wav");
+				}
 				log("소환 금액 부족");
 			}
 		}
@@ -327,9 +362,17 @@ void HeroStatu::doClick(Ref * pSender)
 				if (gold >= 300)
 				{
 					resetHeroInfo("Hero3", true, 300);
+					if (soundon)
+					{
+						CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sound/Effect_Sound/Item.wav");
+					}
 				}
 				else
 				{
+					if (soundon)
+					{
+						CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sound/Effect_Sound/Oooo.wav");
+					}
 					log("강화 금액 부족");
 				}
 			}
@@ -337,9 +380,18 @@ void HeroStatu::doClick(Ref * pSender)
 			{
 				resetHeroInfo("Hero3", true, 300);
 				resetHeroInfo("Hero3", false, 300);
+				if (soundon)
+				{
+					CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sound/Effect_Sound/Item.wav");
+				}
 			}
 			else
 			{
+				
+				if (soundon)
+				{
+					CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sound/Effect_Sound/Oooo.wav");
+				}
 				log("소환 금액 부족");
 			}
 		}

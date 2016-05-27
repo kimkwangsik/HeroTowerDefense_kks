@@ -10,6 +10,8 @@ public:
 	SelectStageInfo(int selectStage);
 	int _selectStage;
 
+	bool soundon;
+
 	cocos2d::Size winSize;
 	bool menuItem3;
 	bool menuItem4;

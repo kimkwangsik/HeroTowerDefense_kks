@@ -1,5 +1,6 @@
 ﻿#include "Hero.h"
 #include "GameStageScene.h"
+#include "SimpleAudioEngine.h"
 
 USING_NS_CC;
 
@@ -309,8 +310,6 @@ void Hero::heroTick(float a)
 
 		if ((*_pMonster).size() != 0 && moveOK)
 		{
-			
-
 			if (nearMonster->getPositionX() >= 400.f)
 			{
 				return;
@@ -529,8 +528,28 @@ void Hero::attackDeley(float dt)
 {
 	//int inum = _attackedMonster;
 	auto obj = attackedMonsterHero;
+	bool magicionAttacked = true;
+	bool soundon = UserDefault::getInstance()->getBoolForKey("sound");
+
+	
+	if (soundon)
+	{
+		if (_heroType == 1)
+		{
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sound/Effect_Sound/Attack_sound_knight.wav");
+		}
+		else if (_heroType == 2)
+		{
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sound/Effect_Sound/Attack_sound.wav");
+		}
+		else if (_heroType == 3)
+		{
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sound/Effect_Sound/Wind_effects_5.wav");
+		}
+	}
 	for (int i = 0; i < (*_pMonster).size(); i++)
 	{
+		auto removeobj = (*_pMonster).at(i);
 		if (obj == (*_pMonster).at(i))
 		{
 			if (_heroType == 2 && obj->_fly)
@@ -608,19 +627,95 @@ void Hero::attackDeley(float dt)
 				obj->hp -= _attackPower;
 			}
 
-			if (obj->hp <= 0)
-			{
-				(*nowStageGold) = (*nowStageGold) + obj->dropGold;
-				(*nowMasicGauge) = (*nowMasicGauge) + 5;
-				_masicMonster.pushBack(obj);
-				//(*_pMonster).eraseObject(obj);
-			}
+			
+			magicionAttacked = false;
+		}
+		
 
-			for (int i = 0; i != _masicMonster.size(); i++)
+		/*if (removeobj->hp <= 0)
+		{
+			(*nowStageGold) = (*nowStageGold) + removeobj->dropGold;
+			(*nowMasicGauge) = (*nowMasicGauge) + 5;
+			_masicMonster.pushBack(removeobj);
+		}*/
+	}
+
+	if (magicionAttacked)
+	{
+		if (_heroType == 3)
+		{
+			log("마법사 공격 대상X");
+
+			Vec2 dis = splashVec - getPosition();
+			Vec2 conSize = Vec2((getContentSize().width / 2), (getContentSize().height / 2));
+
+			auto cache = SpriteFrameCache::getInstance();
+			cache->addSpriteFramesWithFile("Images/Hero/spell/fx_f3_fountainofyouth.plist");
+			Vector<SpriteFrame*> animFrames;
+
+			char str[100] = { 0 };
+			for (int i = 5; i < 11; i++)
 			{
-				(*_pMonster).eraseObject(_masicMonster.at(i));
+				if (i < 10)
+				{
+					sprintf(str, "fx_f3_fountainofyouth_00%d.png", i);
+				}
+				else
+				{
+					sprintf(str, "fx_f3_fountainofyouth_0%d.png", i);
+				}
+				SpriteFrame* frame = cache->getSpriteFrameByName(str);
+				animFrames.pushBack(frame);
 			}
-			_masicMonster.clear();
+			/////////////
+			auto pMan = Sprite::createWithSpriteFrameName("fx_f3_fountainofyouth_000.png");
+			pMan->setScale(1.5f);
+			pMan->setPosition((dis / 1.5) + conSize);
+			pMan->setAnchorPoint(Vec2(0.5, 0.5));
+			this->addChild(pMan);
+
+			auto animation = Animation::createWithSpriteFrames(animFrames, 0.1f);
+			auto animate = Animate::create(animation);
+			auto seq = Sequence::create(animate, RemoveSelf::create(), nullptr);
+			pMan->runAction(seq);
+
+			for (int j = 0; j != (*_pMonster).size(); j++)
+			{
+				auto monsterObj = (Monster*)(*_pMonster).at(j);
+				Vec2 monsterVec2 = monsterObj->getPosition();
+				Vec2 dis = splashVec - monsterVec2;
+
+				Vec2 absDis = Vec2(fabs(dis.x), fabs(dis.y));
+				if (absDis.x <= 60 && absDis.y <= 60)
+				{
+					monsterObj->hp -= (_attackPower * (0.50 + ((_level - 1) * 0.05)));
+					if (monsterObj->hp <= 0)
+					{
+						_masicMonster.pushBack(monsterObj);
+					}
+					if (monsterObj->boss == false)
+					{
+						monsterObj->speed->setSpeed(0.5f);
+						monsterObj->setColor(Color3B::BLUE);
+						monsterObj->speedDown = true;
+					}
+				}
+			}
 		}
 	}
+	for (int i = 0; i < (*_pMonster).size(); i++)
+	{
+		auto removeobj = (*_pMonster).at(i);
+		if (removeobj->hp <= 0)
+		{
+			(*nowStageGold) = (*nowStageGold) + removeobj->dropGold;
+			(*nowMasicGauge) = (*nowMasicGauge) + 5;
+			_masicMonster.pushBack(removeobj);
+		}
+	}
+	for (int i = 0; i != _masicMonster.size(); i++)
+	{
+		(*_pMonster).eraseObject(_masicMonster.at(i));
+	}
+	_masicMonster.clear();
 }
