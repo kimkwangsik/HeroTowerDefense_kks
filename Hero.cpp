@@ -17,7 +17,6 @@ Hero::Hero(int typenum)
 	}
 }
 
-
 void Hero::setHeroSetting()
 {
 	if (_heroType == 1)
@@ -529,7 +528,7 @@ void Hero::attackDeley(float dt)
 	//int inum = _attackedMonster;
 	auto obj = attackedMonsterHero;
 	bool magicionAttacked = true;
-	bool soundon = UserDefault::getInstance()->getBoolForKey("sound");
+	bool soundon = UserDefault::getInstance()->getBoolForKey("effect_sound");
 
 	
 	if (soundon)
@@ -645,7 +644,6 @@ void Hero::attackDeley(float dt)
 		if (_heroType == 3)
 		{
 			log("마법사 공격 대상X");
-
 			Vec2 dis = splashVec - getPosition();
 			Vec2 conSize = Vec2((getContentSize().width / 2), (getContentSize().height / 2));
 

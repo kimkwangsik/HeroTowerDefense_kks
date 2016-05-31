@@ -102,6 +102,9 @@ public:
 	bool masicVisible;
 	cocos2d::Vector<Monster*> _masicMonster;
 
+	cocos2d::MenuItemImage* masicMenuItem1;
+	cocos2d::MenuItemImage* masicMenuItem2;
+
 
 
 	std::string dbfileName;

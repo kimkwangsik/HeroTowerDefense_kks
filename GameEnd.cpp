@@ -4,6 +4,7 @@
 #include "StageSelectScene.h"
 
 USING_NS_CC;
+static GameEnd *g_pHello = NULL;
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
 #include "platform/android/jni/JniHelper.h"
@@ -21,9 +22,21 @@ void callJavaMethodGameEnd(std::string func)
 		t.env->DeleteLocalRef(t.classID);
 	}
 }
-#else
-//#include "Util/dmob/LayerAdmob.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif // _cplusplus
+	void Java_org_cocos2dx_cpp_AppActivity_AddGetGoldInNative(JNIEnv *env, jobject obj)
+	{
+		g_pHello->addGoldFromJava();
+	}
+#ifdef __cplusplus
+}
+#endif // DEBUG
+
 #endif // (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+
+
 
 Scene* GameEnd::createScene()
 {
@@ -55,10 +68,10 @@ GameEnd::GameEnd(int stagelevel, int heartCount, int phase)
 	clearPanel->runAction(ScaleTo::create(1, 1.f));
 
 	auto pMenuItem1 = MenuItemImage::create(
-		"Images/GameEnd/Game_btn_on.png",
-		"Images/GameEnd/Game_btn_down.png",
+		"Images/GameEnd/Game_btn_on130.png",
+		"Images/GameEnd/Game_btn_down130.png",
 		CC_CALLBACK_1(GameEnd::doClick, this));
-	pMenuItem1->setPosition(Vec2(clearPanel->getContentSize().width / 4, 20));
+	pMenuItem1->setPosition(Vec2(clearPanel->getContentSize().width / 4 - 10, 20));
 	pMenuItem1->setAnchorPoint(Vec2(0.5, 0));
 
 	auto mainMenu = LabelTTF::create("메인\n화면", "Arial", 15);
@@ -69,8 +82,8 @@ GameEnd::GameEnd(int stagelevel, int heartCount, int phase)
 	pMenuItem1->addChild(mainMenu, 2);
 
 	auto pMenuItem2 = MenuItemImage::create(
-		"Images/GameEnd/Game_btn_on.png",
-		"Images/GameEnd/Game_btn_down.png",
+		"Images/GameEnd/Game_btn_on130.png",
+		"Images/GameEnd/Game_btn_down130.png",
 		CC_CALLBACK_1(GameEnd::doClick, this));
 	pMenuItem2->setPosition(Vec2(clearPanel->getContentSize().width / 2, 20));
 	pMenuItem2->setAnchorPoint(Vec2(0.5, 0));
@@ -83,10 +96,10 @@ GameEnd::GameEnd(int stagelevel, int heartCount, int phase)
 	pMenuItem2->addChild(restartMenu, 2);
 
 	auto pMenuItem3 = MenuItemImage::create(
-		"Images/GameEnd/Game_btn_on.png",
-		"Images/GameEnd/Game_btn_down.png",
+		"Images/GameEnd/Game_btn_on130.png",
+		"Images/GameEnd/Game_btn_down130.png",
 		CC_CALLBACK_1(GameEnd::doClick, this));
-	pMenuItem3->setPosition(Vec2(clearPanel->getContentSize().width / 4 * 3, 20));
+	pMenuItem3->setPosition(Vec2(clearPanel->getContentSize().width / 4 * 3 + 10, 20));
 	pMenuItem3->setAnchorPoint(Vec2(0.5, 0));
 
 	auto stageMenu = LabelTTF::create("스테이지\n선택", "Arial", 15);
@@ -129,6 +142,8 @@ GameEnd::GameEnd(int stagelevel, int heartCount, int phase)
 			clearPanel->addChild(star3, 3);
 			
 		}
+
+		getGold *= nowStagelevel;
 
 		int i = UserDefault::getInstance()->getIntegerForKey("have_gold");
 		getGoldAD = getGold;
@@ -219,10 +234,10 @@ GameEnd::GameEnd(int stagelevel, int heartCount, int phase)
 	if (nowHeartCount != 0 || nowStagelevel == 0)
 	{
 		pMenuItem4 = MenuItemImage::create(
-			"Images/GameEnd/Game_btn_on.png",
-			"Images/GameEnd/Game_btn_down.png",
+			"Images/GameEnd/Game_btn_on130.png",
+			"Images/GameEnd/Game_btn_down130.png",
 			CC_CALLBACK_1(GameEnd::doClick, this));
-		pMenuItem4->setPosition(Vec2(clearPanel->getContentSize().width / 4 * 3, 70));
+		pMenuItem4->setPosition(Vec2(clearPanel->getContentSize().width / 4 * 3 + 10, 70));
 		pMenuItem4->setAnchorPoint(Vec2(0.5, 0));
 
 		auto adView = LabelTTF::create("보상2배\n광고", "Arial", 15);
@@ -245,6 +260,7 @@ GameEnd::GameEnd(int stagelevel, int heartCount, int phase)
 	clearPanel->addChild(pMenu);
 
 
+	g_pHello = this;
 
 	return;
 }
@@ -261,8 +277,13 @@ void GameEnd::onEnter() {
 	_listener = listener;
 }
 void GameEnd::onExit() {
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+	callJavaMethodGameEnd("Cancel");
+
+#endif
 	_eventDispatcher->removeEventListener(_listener);
-	doHide(this);
+	doHide(this); 
+
 	//Director::getInstance()->resume();
 	Layer::onExit();
 }
@@ -299,17 +320,21 @@ void GameEnd::doClick(Ref* pSender)
 	{
 		doFullShow(this);
 		goldbonus = false;
-		char gold[10];
-		sprintf(gold, "%d", getGoldAD*2);
 		pMenuItem4->setOpacity(100.0f);
-		goldLabel->setString(gold);
-		int i = UserDefault::getInstance()->getIntegerForKey("have_gold");
-		i = i + getGoldAD;
-		UserDefault::getInstance()->setIntegerForKey("have_gold", i);
 	}
 	//this->removeFromParentAndCleanup(true);
 }
 
+
+void GameEnd::addGoldFromJava()
+{
+	char gold[10];
+	sprintf(gold, "%d", getGoldAD * 2);
+	goldLabel->setString(gold);
+	int i = UserDefault::getInstance()->getIntegerForKey("have_gold");
+	i = i + getGoldAD;
+	UserDefault::getInstance()->setIntegerForKey("have_gold", i);
+}
 
 
 void GameEnd::doShow(Ref* pSender)

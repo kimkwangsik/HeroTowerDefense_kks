@@ -22,7 +22,7 @@ GameStageScene::GameStageScene(int stagelevel)
 		return;
 	}
 	srand((int)time(NULL));
-	phaseLevel = 5;
+	phaseLevel = 0;
 
 	nowStageLevel = stagelevel;
 
@@ -133,7 +133,7 @@ void GameStageScene::createStage(int stagelevel)
 	char phase[20];
 	sprintf(phase, "%d phase", phaseLevel);
 
-	phaseLabel = LabelTTF::create(phase, "Arial", 20);
+	phaseLabel = LabelTTF::create("rest phase", "Arial", 20);
 	phaseLabel->setPosition(Vec2(-10, 0));
 	phaseLabel->setAnchorPoint(Vec2(1, 0));
 	phaseLabel->setColor(Color3B::WHITE);
@@ -409,6 +409,7 @@ Sequence* GameStageScene::SequenceMoveAction(Monster* monster, int num , int max
 void GameStageScene::attackBossMonsterStop(Monster* monster)
 {
 	monster->stopAction(monster->rep);
+	int monster_animationNum = monster->animationNum;
 
 	char monsterFileName[50];
 	sprintf(monsterFileName, "Images/Monster/%s_attack/%d.png", monster->myMonsterName.c_str(), 0);
@@ -416,7 +417,7 @@ void GameStageScene::attackBossMonsterStop(Monster* monster)
 
 	auto animation = Animation::create();
 	animation->setDelayPerUnit(0.1f);
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < monster_animationNum; i++)
 	{
 		char monsterFileName[50];
 		sprintf(monsterFileName, "Images/Monster/%s_attack/%d.png", monster->myMonsterName.c_str(), i);
@@ -432,7 +433,7 @@ void GameStageScene::attackBossMonster(Monster* monster)
 	{
 		auto hrartObj = (Sprite*)_heart.at(_heart.size() - 1);
 		hrartObj->removeFromParent();
-		bool soundon = UserDefault::getInstance()->getBoolForKey("sound");
+		bool soundon = UserDefault::getInstance()->getBoolForKey("effect_sound");
 		if (soundon)
 		{
 			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sound/Effect_Sound/Boss_Attack.wav"); 
@@ -588,6 +589,21 @@ void GameStageScene::myTick(float f)
 	}
 	gaugeBar->setPercentage(gauge);
 	masicGaugeBar->setPercentage(masicGaugeNum);
+	if (80 <= masicGaugeNum)
+	{
+		masicMenuItem1->setOpacity(255.f);
+		masicMenuItem2->setOpacity(255.f);
+	}
+	else if (50 <= masicGaugeNum)
+	{
+		masicMenuItem1->setOpacity(255.f);
+		masicMenuItem2->setOpacity(100.f);
+	}
+	else
+	{
+		masicMenuItem1->setOpacity(100.f);
+		masicMenuItem2->setOpacity(100.f);
+	}
 	//this->SpriteProgressToRadial(gauge);
 	if (gauge < 0 && phase < 5)
 	{
@@ -598,33 +614,33 @@ void GameStageScene::myTick(float f)
 		phaseLabel->setString(phase);
 
 		int monNum;
-		if (nowStageLevel == 0)
+		if (nowStageLevel == 0 && phaseLevel > 30)
 		{
-			/*if (phaseLevel % 6 == 0)
+			int a = 0;
+			do
 			{
-				int a = 1;
-				do
-				{
-					a = rand() % 6;
-				} while (a % 6 != 0);
-				monNum = a + 6;
+				a = rand() % 30;
+			} while (a % 6 == 0);
+			monNum = a;
+		}
+		else if (nowStageLevel == 0)
+		{
+			monNum = phaseLevel % 30;
+			if (monNum == 0)
+			{
+				monNum = 30;
 			}
-			else {*/
-				int a = 0;
-				do
-				{
-					a = rand() % 6;
-				} while (a % 6 == 0);
-				monNum = a;
-		//	}
 		}
 		else
 		{
+			int phaseStageLevel = (nowStageLevel * 6) - 6;
 			monNum = phaseLevel % 6;
 			if (monNum == 0)
 			{
-				monNum = 6;
+				monNum += 6;
 			}
+			monNum += phaseStageLevel;
+			log("no boss %d", monNum);
 		}
 
 		runAction(SequenceMonsterAdd(0, MONSTERCOUNT, monNum));
@@ -635,22 +651,33 @@ void GameStageScene::myTick(float f)
 		phaseLabel->setString("BOSS phase");
 
 		int monNum;
-		if (nowStageLevel == 0)
+		if (nowStageLevel == 0 && phaseLevel > 30)
 		{
 			int a = 0;
 			do
 			{
-				a = rand() % 6;
+				a = rand() % 30;
 			} while (a % 6 != 0);
 			monNum = a + 6;
 		}
+		else if (nowStageLevel == 0)
+		{
+			monNum = phaseLevel % 30;
+			if (monNum == 0)
+			{
+				monNum = 30;
+			}
+		}
 		else
 		{
+			int phaseStageLevel = (nowStageLevel * 6) - 6;
 			monNum = phaseLevel % 6;
 			if (monNum == 0)
 			{
-				monNum = 6;
+				monNum += 6;
 			}
+			monNum += phaseStageLevel;
+			log("boss %d",monNum);
 		}
 
 		runAction(SequenceMonsterAdd(0, 1, monNum));
@@ -662,6 +689,22 @@ void GameStageScene::myTick(float f)
 void GameStageScene::bossTick(float f)
 {
 	masicGaugeBar->setPercentage(masicGaugeNum);
+	if (80 <= masicGaugeNum)
+	{
+		masicMenuItem1->setOpacity(255.f);
+		masicMenuItem2->setOpacity(255.f);
+	}
+	else if (50 <= masicGaugeNum)
+	{
+		masicMenuItem1->setOpacity(255.f);
+		masicMenuItem2->setOpacity(100.f);
+	}
+	else
+	{
+		masicMenuItem1->setOpacity(100.f);
+		masicMenuItem2->setOpacity(100.f);
+	}
+
 	if (nowStageLevel == 0 && _monster.size() == 0)
 	{
 		bossPhaseCount++;
@@ -914,7 +957,7 @@ void GameStageScene::onTouchEnded(Touch* touch, Event* event)
 			auto seq = Sequence::create(animate, RemoveSelf::create(), nullptr);
 			pMan->runAction(seq);
 			/////////
-			bool soundon = UserDefault::getInstance()->getBoolForKey("sound");
+			bool soundon = UserDefault::getInstance()->getBoolForKey("effect_sound");
 			if (soundon)
 			{
 				CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sound/Effect_Sound/Ice_attack_2.wav");
@@ -1130,22 +1173,22 @@ Vec2 GameStageScene::tileCoordForPosition(Vec2 position)
 
 void GameStageScene::masicMenuCreate()
 {
-	auto masicMenuItem1 = MenuItemImage::create(
-		"Images/spell/starsfury.png",
-		"Images/spell/starsfury.png",
+	masicMenuItem1 = MenuItemImage::create(
+		"Images/spell/cold.png",
+		"Images/spell/cold.png",
 		CC_CALLBACK_1(GameStageScene::doClick, this));
 	masicMenuItem1->setPosition(Vec2(winSize.width, 0));
 	masicMenuItem1->setAnchorPoint(Vec2(1, 0));
-	masicMenuItem1->setTag(521);
+	masicMenuItem1->setTag(522);
 
-	auto masicMenuItem2 = MenuItemImage::create(
-		"Images/spell/cold.png",
-		"Images/spell/cold.png",
+	masicMenuItem2 = MenuItemImage::create(
+		"Images/spell/starsfury.png",
+		"Images/spell/starsfury.png",
 		CC_CALLBACK_1(GameStageScene::doClick, this));
 	masicMenuItem2->setPosition(Vec2(winSize.width, masicMenuItem1->getPositionY() +
 		masicMenuItem1->getContentSize().height));
 	masicMenuItem2->setAnchorPoint(Vec2(1, 0));
-	masicMenuItem2->setTag(522);
+	masicMenuItem2->setTag(521);
 
 	auto masicMenu = Menu::create(masicMenuItem1, masicMenuItem2, NULL);
 	
@@ -1188,6 +1231,18 @@ void GameStageScene::towerMenuCreate()
 	towerMenuItem2->setAnchorPoint(Vec2(0.5, 0));
 	towerMenuItem2->setTag(512);
 
+	auto coin2 = Sprite::create("Images/Treasure/coin.png");
+	coin2->setPosition(Vec2(towerMenuItem2->getContentSize().width / 2, towerMenuItem2->getContentSize().height - 5));
+	coin2->setAnchorPoint(Vec2(1, 0.5));
+	coin2->setScale(0.5f);
+	towerMenuItem2->addChild(coin2);
+
+	auto tower2Cost = LabelTTF::create("20", "Arial", 30);
+	tower2Cost->setPosition(Vec2(coin2->getContentSize().width, coin2->getContentSize().height / 2));
+	tower2Cost->setColor(Color3B::BLACK);
+	tower2Cost->setAnchorPoint(Vec2(0, 0.5));
+	coin2->addChild(tower2Cost);
+
 	auto towerMenuItem1 = MenuItemImage::create(
 		"Images/Tower/Knight1/Horizontal_3.png",
 		"Images/Tower/Knight1/Horizontal_1.png",
@@ -1197,6 +1252,18 @@ void GameStageScene::towerMenuCreate()
 	towerMenuItem1->setAnchorPoint(Vec2(0.5, 0));
 	towerMenuItem1->setTag(511);
 
+	auto coin1 = Sprite::create("Images/Treasure/coin.png");
+	coin1->setPosition(Vec2(towerMenuItem1->getContentSize().width / 2, towerMenuItem1->getContentSize().height - 5));
+	coin1->setAnchorPoint(Vec2(1, 0.5));
+	coin1->setScale(0.5f);
+	towerMenuItem1->addChild(coin1);
+
+	auto tower1Cost = LabelTTF::create("10", "Arial", 30);
+	tower1Cost->setPosition(Vec2(coin1->getContentSize().width, coin1->getContentSize().height / 2));
+	tower1Cost->setColor(Color3B::BLACK);
+	tower1Cost->setAnchorPoint(Vec2(0, 0.5));
+	coin1->addChild(tower1Cost);
+
 	auto towerMenuItem3 = MenuItemImage::create(
 		"Images/Tower/Magician1/Horizontal_3.png",
 		"Images/Tower/Magician1/Horizontal_1.png",
@@ -1205,6 +1272,18 @@ void GameStageScene::towerMenuCreate()
 		towerMenuItem2->getContentSize().width, 0));
 	towerMenuItem3->setAnchorPoint(Vec2(0.5, 0));
 	towerMenuItem3->setTag(513);
+
+	auto coin3 = Sprite::create("Images/Treasure/coin.png");
+	coin3->setPosition(Vec2(towerMenuItem3->getContentSize().width / 2, towerMenuItem3->getContentSize().height - 5));
+	coin3->setAnchorPoint(Vec2(1, 0.5));
+	coin3->setScale(0.5f);
+	towerMenuItem3->addChild(coin3);
+
+	auto tower3Cost = LabelTTF::create("30", "Arial", 30);
+	tower3Cost->setPosition(Vec2(coin3->getContentSize().width, coin3->getContentSize().height / 2));
+	tower3Cost->setColor(Color3B::BLACK);
+	tower3Cost->setAnchorPoint(Vec2(0, 0.5));
+	coin3->addChild(tower3Cost);
 
 	towerMenuOnOff = MenuItemImage::create(
 		"Images/MenuButton/b_menuOn.png",
@@ -1403,7 +1482,7 @@ void GameStageScene::doClick(Ref* pSender)
 		SecondHero = true;
 		heroMenuItem2->setOpacity(100.f);
 	}
-	else if (i == 533 && hero3_have)
+	else if (i == 533 && !ThirdHero && hero3_have)
 	{
 		log("Hero3");
 		hero3 = new Hero(3);
@@ -1434,7 +1513,7 @@ void GameStageScene::trueFalse(float f)
 void GameStageScene::magicDeley(float dt)
 {
 	auto tmapConvertPoint = _magictouchPoint;
-	bool soundon = UserDefault::getInstance()->getBoolForKey("sound");
+	bool soundon = UserDefault::getInstance()->getBoolForKey("effect_sound");
 	if (soundon)
 	{
 		CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sound/Effect_Sound/Fire_impact_1.wav");

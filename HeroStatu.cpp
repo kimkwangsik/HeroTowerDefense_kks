@@ -103,7 +103,7 @@ bool HeroStatu::init()
 	pHeroInfoView->setPosition(Vec2(heroSprite->getContentSize().width / 3, 10));
 	pHeroInfoView->setAnchorPoint(Vec2(0.5, 0));
 
-	auto infoView = LabelTTF::create("상세\n정보", "Arial", 15);
+	auto infoView = LabelTTF::create("상세\n정보", "font/NanumPen.ttf", 15);
 	infoView->setPosition(Vec2(pHeroInfoView->getContentSize().width / 2,
 		pHeroInfoView->getContentSize().height / 2));
 	infoView->setColor(Color3B::BLACK);
@@ -116,7 +116,7 @@ bool HeroStatu::init()
 	pHeroUpgrade->setPosition(Vec2(heroSprite->getContentSize().width / 3 * 2, 10));
 	pHeroUpgrade->setAnchorPoint(Vec2(0.5, 0));
 
-	upgrade = LabelTTF::create("강화", "Arial", 15);
+	upgrade = LabelTTF::create("강화", "font/NanumPen.ttf", 15);
 	upgrade->setPosition(Vec2(pHeroUpgrade->getContentSize().width / 2,
 		pHeroUpgrade->getContentSize().height / 2));
 	upgrade->setColor(Color3B::BLACK);
@@ -169,7 +169,7 @@ void HeroStatu::doClick(Ref * pSender)
 	bool hero1 = UserDefault::getInstance()->getBoolForKey("Hero1");
 	bool hero2 = UserDefault::getInstance()->getBoolForKey("Hero2");
 	bool hero3 = UserDefault::getInstance()->getBoolForKey("Hero3");
-	bool soundon = UserDefault::getInstance()->getBoolForKey("sound");
+	bool soundon = UserDefault::getInstance()->getBoolForKey("effect_sound");
 	if (i == 411)
 	{
 		touchMenu = true;

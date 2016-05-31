@@ -15,6 +15,8 @@ public:
 
 	cocos2d::MenuItemFont* pMenuItem2;
 	cocos2d::MenuItemFont* pMenuItem3;
+	cocos2d::MenuItemFont* pMenuItem4;
+	
 
 	void doClick(Ref* pSender);
 	void doShow(Ref * pSender);

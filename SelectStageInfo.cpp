@@ -1,6 +1,7 @@
 ﻿#include "SelectStageInfo.h"
 #include "GameStageScene.h"
 #include "SimpleAudioEngine.h"
+#include "MainScene.h"
 
 USING_NS_CC;
 
@@ -19,6 +20,7 @@ SelectStageInfo::SelectStageInfo(int selectStage)
 	{
 		return;
 	}
+	stageStart = false;
 
 	soundon = UserDefault::getInstance()->getBoolForKey("sound");
 
@@ -36,12 +38,12 @@ SelectStageInfo::SelectStageInfo(int selectStage)
 
 	if (_selectStage == 0)
 	{
-		sprintf(level, "Infinity mode");
+		sprintf(level, "무한 모드");
 	}
 
 	auto levelLabel = LabelTTF::create(level, "Arial", 20);
-	levelLabel->setPosition(Vec2(10, StageInfo->getContentSize().height-10));
-	levelLabel->setAnchorPoint(Vec2(0, 1));
+	levelLabel->setPosition(Vec2(StageInfo->getContentSize().width / 2, StageInfo->getContentSize().height - 10));
+	levelLabel->setAnchorPoint(Vec2(0.5, 1));
 	levelLabel->setColor(Color3B::BLACK);
 	StageInfo->addChild(levelLabel, 1);
 	
@@ -49,7 +51,10 @@ SelectStageInfo::SelectStageInfo(int selectStage)
 	//sprintf(levelsprite, "Images/stage/Level_%d.PNG", _selectStage);
 	//auto stageSprite = Sprite::create(levelsprite);
 	
-	auto stageSprite = Sprite::create("Images/stage/Level_1.PNG");
+	char levelSprite[50];
+	sprintf(levelSprite, "Images/stage/Level_%d.png", _selectStage);
+
+	auto stageSprite = Sprite::create(levelSprite);
 	stageSprite->setPosition(Vec2(10, StageInfo->getContentSize().height - levelLabel->getContentSize().height - 10));
 	stageSprite->setAnchorPoint(Vec2(0, 1));
 
@@ -128,13 +133,27 @@ void SelectStageInfo::onEnter() {
 	Layer::onEnter();
 	auto listener = EventListenerTouchOneByOne::create();
 
-	listener->setSwallowTouches(true);
+	//listener->setSwallowTouches(true);
 
 	listener->onTouchBegan = CC_CALLBACK_2(SelectStageInfo::onTouchBegan, this);
 
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
 }
 void SelectStageInfo::onExit() {
+	if (!stageStart)
+	{
+		int gold = UserDefault::getInstance()->getIntegerForKey("have_gold");
+		if (menuItem3)
+		{
+			gold += 10;
+			UserDefault::getInstance()->setIntegerForKey("have_gold", gold);
+		}
+		if (menuItem4)
+		{
+			gold += 10;
+			UserDefault::getInstance()->setIntegerForKey("have_gold", gold);
+		}
+	}
 	Layer::onExit();
 }
 bool SelectStageInfo::onTouchBegan(Touch* touch, Event* event) {
@@ -149,7 +168,7 @@ void SelectStageInfo::doClick(Ref* pSender)
 
 	if (i == 621)
 	{
-		if (menuItem3)
+		/*if (menuItem3)
 		{
 			gold += 10;
 			UserDefault::getInstance()->setIntegerForKey("have_gold", gold);
@@ -158,13 +177,17 @@ void SelectStageInfo::doClick(Ref* pSender)
 		{
 			gold += 10;
 			UserDefault::getInstance()->setIntegerForKey("have_gold", gold);
-		}
+		}*/
 
-		this->removeFromParentAndCleanup(true);
+		auto pScene = MainScene::createScene();
+		Director::getInstance()->replaceScene(pScene);
+
+		//this->removeFromParentAndCleanup(true);
 		
 	}
 	else if (i == 622)
 	{
+		stageStart = true;
 		if (soundon)
 		{
 			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sound/Effect_Sound/Menu.wav");

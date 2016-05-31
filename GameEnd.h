@@ -6,6 +6,7 @@
 class GameEnd : public cocos2d::Layer
 {
 public:
+	void addGoldFromJava();
 	static cocos2d::Scene* createScene();
 
 	GameEnd(int stagelevel, int heartCount, int phase);

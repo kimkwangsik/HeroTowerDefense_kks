@@ -56,8 +56,23 @@ bool Options::init()
 	soundSprite->setAnchorPoint(Vec2(0.5, 1));
 	optionbar->addChild(soundSprite);*/
 
-	auto soundSprite = LabelTTF::create("소리","",20);
-	soundSprite->setPosition(Vec2(optionbar->getContentSize().width / 4, optionbar->getContentSize().height - 10));
+	auto effect_soundSprite = LabelTTF::create("효과음", "", 20);
+	effect_soundSprite->setPosition(Vec2(optionbar->getContentSize().width / 4, optionbar->getContentSize().height - 10));
+	effect_soundSprite->setColor(Color3B::BLACK);
+	effect_soundSprite->setAnchorPoint(Vec2(0.5, 1));
+	optionbar->addChild(effect_soundSprite);
+
+	pMenuItem4 = MenuItemFont::create(
+		" On ",
+		CC_CALLBACK_1(Options::doClick, this));
+	pMenuItem4->setPosition(Vec2(optionbar->getContentSize().width / 4 * 3, optionbar->getContentSize().height - 10));
+
+	pMenuItem4->setColor(Color3B::BLACK);
+	pMenuItem4->setAnchorPoint(Vec2(0.5, 1));
+
+
+	auto soundSprite = LabelTTF::create("배경음","",20);
+	soundSprite->setPosition(Vec2(optionbar->getContentSize().width / 4, optionbar->getContentSize().height - 20 - pMenuItem4->getContentSize().height));
 	soundSprite->setAnchorPoint(Vec2(0.5, 1));
 	soundSprite->setColor(Color3B::BLACK);
 	optionbar->addChild(soundSprite);
@@ -65,7 +80,7 @@ bool Options::init()
 	pMenuItem2 = MenuItemFont::create(
 		" On ",
 		CC_CALLBACK_1(Options::doClick, this));
-	pMenuItem2->setPosition(Vec2(optionbar->getContentSize().width / 4 * 3, optionbar->getContentSize().height - 10));
+	pMenuItem2->setPosition(Vec2(optionbar->getContentSize().width / 4 * 3, optionbar->getContentSize().height - 20 - pMenuItem4->getContentSize().height));
 	pMenuItem2->setColor(Color3B::BLACK);
 	pMenuItem2->setAnchorPoint(Vec2(0.5, 1));
 
@@ -75,7 +90,7 @@ bool Options::init()
 	optionbar->addChild(vibSprite);*/
 
 	auto vibSprite = LabelTTF::create("진동", "", 20);
-	vibSprite->setPosition(Vec2(optionbar->getContentSize().width / 4, optionbar->getContentSize().height - 20 - pMenuItem2->getContentSize().height));
+	vibSprite->setPosition(Vec2(optionbar->getContentSize().width / 4, optionbar->getContentSize().height - 30 - pMenuItem2->getContentSize().height - pMenuItem4->getContentSize().height));
 	vibSprite->setColor(Color3B::BLACK);
 	vibSprite->setAnchorPoint(Vec2(0.5, 1));
 	optionbar->addChild(vibSprite);
@@ -83,11 +98,12 @@ bool Options::init()
 	pMenuItem3 = MenuItemFont::create(
 		" On ",
 		CC_CALLBACK_1(Options::doClick, this));
-	pMenuItem3->setPosition(Vec2(optionbar->getContentSize().width / 4 * 3, optionbar->getContentSize().height - 20 - pMenuItem2->getContentSize().height));
+	pMenuItem3->setPosition(Vec2(optionbar->getContentSize().width / 4 * 3, optionbar->getContentSize().height - 30 - pMenuItem2->getContentSize().height - pMenuItem4->getContentSize().height));
 
 	pMenuItem3->setColor(Color3B::BLACK);
 	pMenuItem3->setAnchorPoint(Vec2(0.5, 1));
-	//pMenuItem1->setScale(0.25f);
+
+	
 
 	bool soundon = UserDefault::getInstance()->getBoolForKey("sound");
 	if (soundon)
@@ -97,6 +113,16 @@ bool Options::init()
 	else
 	{
 		pMenuItem2->setString(" Off ");
+	}
+
+	bool effect_sound = UserDefault::getInstance()->getBoolForKey("effect_sound");
+	if (effect_sound)
+	{
+		pMenuItem4->setString(" On ");
+	}
+	else
+	{
+		pMenuItem4->setString(" Off ");
 	}
 
 	bool vibon = UserDefault::getInstance()->getBoolForKey("vibration");
@@ -112,8 +138,9 @@ bool Options::init()
 	pMenuItem1->setTag(621);
 	pMenuItem2->setTag(622);
 	pMenuItem3->setTag(623);
+	pMenuItem4->setTag(624);
 
-	auto pMenu = Menu::create(pMenuItem1, pMenuItem2, pMenuItem3, NULL);
+	auto pMenu = Menu::create(pMenuItem1, pMenuItem2, pMenuItem3, pMenuItem4, NULL);
 	pMenu->setPosition(Vec2::ZERO);
 	optionbar->addChild(pMenu);
 
@@ -149,6 +176,20 @@ void Options::doClick(Ref* pSender)
 	if (i == 621)
 	{
 		this->removeFromParentAndCleanup(true);
+	}
+	else if (i == 624)
+	{
+		bool effect_sound = UserDefault::getInstance()->getBoolForKey("effect_sound");
+		if (effect_sound)
+		{
+			pMenuItem4->setString(" Off ");
+			UserDefault::getInstance()->setBoolForKey("effect_sound", false);
+		}
+		else
+		{
+			pMenuItem4->setString(" On ");
+			UserDefault::getInstance()->setBoolForKey("effect_sound", true);
+		}
 	}
 	else if (i == 622)
 	{

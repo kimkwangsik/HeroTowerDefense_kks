@@ -79,7 +79,6 @@ void MainScene::doClick(Ref* pSender)
 {
 	auto tItem = (MenuItem *)pSender;
 	int i = tItem->getTag();
-	log("%d번째 메뉴가 선택되었습니다.", i);
 	if (i == 101)
 	{
 		auto pScene = StageSelectScene::createScene();
@@ -105,5 +104,4 @@ void MainScene::doNoClick(Ref* pSender)
 {
 	auto tItem = (MenuItem *)pSender;
 	int i = tItem->getTag();
-	log("%d번째 메뉴가 선택되었습니다.", i);
 }

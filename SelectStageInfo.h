@@ -11,6 +11,7 @@ public:
 	int _selectStage;
 
 	bool soundon;
+	bool stageStart;
 
 	cocos2d::Size winSize;
 	bool menuItem3;

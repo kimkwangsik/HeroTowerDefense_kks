@@ -122,7 +122,7 @@ Menus::Menus(std::string SceneName)
 	char gold[10];
 	sprintf(gold, "%d", i);
 
-	goldLabel = LabelTTF::create(gold, "fonts/arial.ttf", 20);
+	goldLabel = LabelTTF::create(gold, "Arial", 20);
 
 	goldLabel->setPosition(Vec2(gold_crystal->getContentSize().width, gold_crystal->getContentSize().height/2));
 	goldLabel->setColor(Color3B::BLACK);

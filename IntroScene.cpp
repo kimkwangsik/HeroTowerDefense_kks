@@ -49,7 +49,7 @@ bool IntroScene::init()
 
 	addChild(Back_Castel, 0);
 
-	auto logo = Sprite::create("Images/Logo/HeroTowerDefense3.png");
+	auto logo = Sprite::create("Images/Logo/HeroTowerDefense.png");
 	logo->setPosition(Vec2(winSize.width / 2, winSize.height / 4 * 3));
 	//logo->setScale(0.5f);
 	logo->setAnchorPoint(Vec2(0.5, 0.7));
@@ -59,7 +59,7 @@ bool IntroScene::init()
 	/*auto pLabel = LabelTTF::create("touch to start",
 		"Arial", 34);*/
 
-	auto pLabel = Sprite::create("Images/Logo/touch_to_start1.png");
+	auto pLabel = Sprite::create("Images/Logo/touch_to_start.png");
 
 	pLabel->setPosition(Vec2(winSize.width - 20, winSize.height / 3));
 	//pLabel->setColor(Color3B::BLACK);
@@ -72,7 +72,7 @@ bool IntroScene::init()
 	createKnight(1);
 
 	//항상 처음 실행 하게 만드는 이벤트
-	UserDefault::getInstance()->setBoolForKey("Start_First", false);
+	//UserDefault::getInstance()->setBoolForKey("Start_First", false);
 
 	bool start_First = UserDefault::getInstance()->getBoolForKey("Start_First");
 	if (start_First)
@@ -88,9 +88,10 @@ bool IntroScene::init()
 		UserDefault::getInstance()->setIntegerForKey("Hero2_Level", 0);
 		UserDefault::getInstance()->setBoolForKey("Hero3", false);
 		UserDefault::getInstance()->setIntegerForKey("Hero3_Level", 0);
-		UserDefault::getInstance()->setIntegerForKey("have_gold", 1000);
+		UserDefault::getInstance()->setIntegerForKey("have_gold", 50);
 		UserDefault::getInstance()->setIntegerForKey("clear_stage", 0);
 		UserDefault::getInstance()->setBoolForKey("sound", true);
+		UserDefault::getInstance()->setBoolForKey("effect_sound", true);
 		UserDefault::getInstance()->setBoolForKey("vibration", true);
 
 
@@ -165,7 +166,8 @@ void IntroScene::onEnter() {
 }
 void IntroScene::onExit() {
 	_eventDispatcher->removeEventListener(introListener);
-	bool soundon = UserDefault::getInstance()->getBoolForKey("sound");
+
+	bool soundon = UserDefault::getInstance()->getBoolForKey("effect_sound");
 	if (soundon)
 	{
 		CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sound/Effect_Sound/Menu.wav");
