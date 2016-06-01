@@ -545,6 +545,15 @@ void GameStageScene::removeMonster(Monster* monster)
 		{
 			if (_heart.size() > 0)
 			{
+				bool vibon = UserDefault::getInstance()->getBoolForKey("vibration");
+				if (vibon)
+				{
+					Device::vibrate(0.5);
+				}
+				else
+				{
+					log("진동 X");
+				}
 				_monster.at(i)->remove();
 				_monster.eraseObject(monsterObj);
 				auto hrartObj = (Sprite*)_heart.at(_heart.size() - 1);
@@ -567,8 +576,6 @@ void GameStageScene::removeMonster(Monster* monster)
 
 				this->addChild(pScene, 3000);
 			}
-			
-			
 			//return;
 		}
 		i++;
@@ -581,7 +588,7 @@ void GameStageScene::myTick(float f)
 
 	if (phase == 0)
 	{
-		gauge = gauge - 4;
+		gauge = gauge - 2;
 	}
 	else if (phase <= 5)
 	{

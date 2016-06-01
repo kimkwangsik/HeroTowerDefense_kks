@@ -267,6 +267,15 @@ GameEnd::GameEnd(int stagelevel, int heartCount, int phase)
 void GameEnd::onEnter() {
 	Layer::onEnter();
 	doShow(this);
+	bool vibon = UserDefault::getInstance()->getBoolForKey("vibration");
+	if (vibon)
+	{
+		Device::vibrate(1.0);
+	}
+	else
+	{
+		log("진동 X");
+	}
 	auto listener = EventListenerTouchOneByOne::create();
 
 	listener->setSwallowTouches(true);

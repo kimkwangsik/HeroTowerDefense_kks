@@ -164,7 +164,7 @@ void StageSelectScene::doClick1(Ref* pSender, int nowstages)
 		b_back->setOpacity(255.0f);
 	}
 
-	if (nowstage == maxStage + 1)
+	if (nowstage == maxStage + 1 || nowstage == 5)
 	{
 		b_forward->setOpacity(100.0f);
 	}
