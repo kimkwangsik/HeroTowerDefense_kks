@@ -2,6 +2,7 @@
 #include "Menus.h"
 #include "GameEnd.h"
 #include "SimpleAudioEngine.h"
+#include "Help.h"
 
 USING_NS_CC;
 #define MONSTERCOUNT 10
@@ -98,6 +99,7 @@ GameStageScene::GameStageScene(int stagelevel)
 
 	dbfileName = cocos2d::FileUtils::getInstance()->getWritablePath();
 	dbfileName = dbfileName + "monster.sqlite";
+
 
 	return;
 }
@@ -213,6 +215,16 @@ void GameStageScene::createStage(int stagelevel)
 	towerMenuCreate();
 	heroMenuCreate();
 
+	bool start_Stage = UserDefault::getInstance()->getBoolForKey("Start_Stage");
+	if (!start_Stage)
+	{
+		UserDefault::getInstance()->setBoolForKey("Start_Stage", true);
+
+		auto pScene5 = Help::createScene();
+		this->addChild(pScene5, 3000);
+	}
+	auto pScene5 = Help::createScene();
+	this->addChild(pScene5, 3000);
 }
 
 void GameStageScene::getOption(bool gold, bool masic)
@@ -1088,9 +1100,9 @@ void GameStageScene::onTouchEnded(Touch* touch, Event* event)
 
 				//obj->animationRename();
 
-				char levelViewstr[10];
-				sprintf(levelViewstr, "%d", obj->towerUpgradeLevel);
-				obj->levelView->setString(levelViewstr);
+				//char levelViewstr[10];
+				//sprintf(levelViewstr, "%d", obj->towerUpgradeLevel);
+				//obj->levelView->setString(levelViewstr);
 				
 				obj->setTexture(str);
 
@@ -1112,7 +1124,7 @@ void GameStageScene::onTouchEnded(Touch* touch, Event* event)
 			//Vec2 LocationInNode = this->convertToNodeSpace(touchPoint);
 			obj->setOpacity(255.f);
 
-			if (rect.containsPoint(tmapConvertPoint) && obj->towerUpgradeLevel < 3)
+			if (rect.containsPoint(tmapConvertPoint) && obj->towerUpgradeLevel < 3 && obj->towerSetup)
 			{
 				int xPoint = obj->getPositionX() / 30;
 				int yPoint = obj->getPositionY() / 30;

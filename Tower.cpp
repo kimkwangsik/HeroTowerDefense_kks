@@ -87,12 +87,12 @@ void Tower::onEnter()
 
 	listener->setSwallowTouches(true);
 
-	char levelViewstr[10];
-	sprintf(levelViewstr, "%d", towerUpgradeLevel);
+	//char levelViewstr[10];
+	//sprintf(levelViewstr, "%d", towerUpgradeLevel);
 
-	levelView = Label::create(levelViewstr,"Arial",20);
-	levelView->setPosition(Vec2(towerContentSize.width / 2, towerContentSize.height / 2));
-	addChild(levelView, 50);
+	//levelView = Label::create(levelViewstr,"Arial",20);
+	//levelView->setPosition(Vec2(towerContentSize.width / 2, towerContentSize.height / 2));
+	//addChild(levelView, 50);
 
 	b_Yes = Sprite::create("Images/Button/b_Yes.png");
 	b_Yes->setPosition(Vec2(towerContentSize.width / 2, towerContentSize.height));
