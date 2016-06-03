@@ -215,7 +215,7 @@ void GameStageScene::createStage(int stagelevel)
 	towerMenuCreate();
 	heroMenuCreate();
 
-	bool start_Stage = UserDefault::getInstance()->getBoolForKey("Start_Stage");
+	/*bool start_Stage = UserDefault::getInstance()->getBoolForKey("Start_Stage");
 	if (!start_Stage)
 	{
 		UserDefault::getInstance()->setBoolForKey("Start_Stage", true);
@@ -224,7 +224,7 @@ void GameStageScene::createStage(int stagelevel)
 		this->addChild(pScene5, 3000);
 	}
 	auto pScene5 = Help::createScene();
-	this->addChild(pScene5, 3000);
+	this->addChild(pScene5, 3000);*/
 }
 
 void GameStageScene::getOption(bool gold, bool masic)

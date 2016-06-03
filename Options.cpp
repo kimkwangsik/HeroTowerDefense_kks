@@ -245,3 +245,10 @@ void Options::doHide(Ref* pSender)
 #endif
 
 }
+
+void Options::doShowLeaderBoard(Ref* pSender)
+{
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+	callJavaMethodOption("ShowLeaderBoard", "");
+#endif
+}

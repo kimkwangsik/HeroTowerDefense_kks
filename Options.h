@@ -21,6 +21,8 @@ public:
 	void doClick(Ref* pSender);
 	void doShow(Ref * pSender);
 	void doHide(Ref * pSender);
+	void doSendScore(Ref * pSender);
+	void doShowLeaderBoard(Ref * pSender);
 	virtual void onEnter();
 	virtual void onExit();
 	virtual bool onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event);
